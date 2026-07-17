@@ -1,10 +1,16 @@
-SUPABASE_URL
-SUPABASE_SERVICE_ROLE_KEY
-WEBHOOK_TOKEN_TRAKTEER
-WEBHOOK_TOKEN_SOCIABUZZ
-WEBHOOK_TOKEN_SAWERIA
-TELEGRAM_BOT_TOKEN   (8267105370:AAH00rC8w2BmEzYZME91zS70Q-VMNd02YY)
-TELEGRAM_CHAT_ID     (-1004361307911)
+// Cloudflare Pages Function
+// Route: POST /webhook/donasi
+// Menerima webhook dari Trakteer / Sociabuzz / Saweria, simpan ke Supabase,
+// dan kirim notifikasi ke Telegram kalau dikonfigurasi.
+//
+// Env vars yang dibutuhkan (set di Cloudflare Pages > Settings > Environment variables):
+//   SUPABASE_URL
+//   SUPABASE_SERVICE_ROLE_KEY
+//   WEBHOOK_TOKEN_TRAKTEER
+//   WEBHOOK_TOKEN_SOCIABUZZ
+//   WEBHOOK_TOKEN_SAWERIA
+//   TELEGRAM_BOT_TOKEN   (opsional, isi kalau mau notifikasi Telegram)
+//   TELEGRAM_CHAT_ID     (opsional, wajib diisi bareng TELEGRAM_BOT_TOKEN)
 
 export async function onRequestPost(context) {
   const { request, env } = context;
