@@ -1,9 +1,3 @@
-// Cloudflare Pages Function
-// Route: POST /webhook/donasi
-// Menerima webhook dari Trakteer / Sociabuzz / Saweria, simpan ke Supabase,
-// dan kirim notifikasi ke Telegram kalau dikonfigurasi.
-
-Env vars yang dibutuhkan (set di Cloudflare Pages > Settings > Environment variables):
 SUPABASE_URL
 SUPABASE_SERVICE_ROLE_KEY
 WEBHOOK_TOKEN_TRAKTEER
