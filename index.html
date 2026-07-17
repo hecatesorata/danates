@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Donasi Trakteer / Saweria</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: #f4f7fb;
+      color: #222;
+    }
+
+    .card {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      padding: 28px;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 28px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .buttons a {
+      display: inline-block;
+      padding: 14px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: white;
+      font-weight: 600;
+      transition: transform 0.2s ease;
+    }
+
+    .buttons a:hover {
+      transform: translateY(-2px);
+    }
+
+    .trakteer {
+      background: #ff6d2d;
+    }
+
+    .saweria {
+      background: #3f51b5;
+    }
+
+    .progress-container {
+      margin-bottom: 20px;
+    }
+
+    .progress-text {
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 28px;
+      border-radius: 999px;
+      background: #e3e8f0;
+      overflow: hidden;
+    }
+
+    .progress-bar .fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4f46e5, #60a5fa);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Donasi &amp; Langganan</h1>
+    <p>
+      Pilih tombol Trakteer atau Saweria untuk membuka halaman donasi,
+      lalu lihat progress target donasi di sini.
+    </p>
+
+    <div class="buttons">
+      <a class="trakteer" href="https://trakteer.id/bintang_cahya_hen/tip" target="_blank" rel="noopener">
+        Donasi lewat Trakteer
+      </a>
+      <a class="saweria" href="https://saweria.co/Bintang_Cahya_Hen" target="_blank" rel="noopener">
+        Donasi lewat Saweria
+      </a>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-text">
+        Terkumpul: <strong id="collectedText">Rp 0</strong> / 
+        <strong id="goalText">Rp 5.000.000</strong>
+      </div>
+      <div class="progress-bar">
+        <div class="fill" id="progressFill"></div>
+      </div>
+      <p id="statusMessage" style="margin-top: 12px; color: #4b5563; font-size: 14px;">
+        Progress akan otomatis terupdate jika jumlah donasi tercatat oleh sistem backend.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const collectedText = document.getElementById("collectedText");
+    const goalText = document.getElementById("goalText");
+    const progressFill = document.getElementById("progressFill");
+    const statusMessage = document.getElementById("statusMessage");
+
+    function formatRupiah(number) {
+      return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+      }).format(number);
+    }
+
+    function updateProgress(collectedAmount, goalAmount) {
+      const percent = Math.min((collectedAmount / goalAmount) * 100, 100);
+      collectedText.textContent = formatRupiah(collectedAmount);
+      goalText.textContent = formatRupiah(goalAmount);
+      progressFill.style.width = `${percent}%`;
+    }
+
+    function setStatus(message) {
+      statusMessage.textContent = message;
+    }
+
+    async function loadProgress() {
+      try {
+        const response = await fetch('/api/donasi');
+        if (!response.ok) {
+          throw new Error('Gagal mengambil data donasi');
+        }
+        const data = await response.json();
+        updateProgress(data.collectedAmount, data.goalAmount);
+        setStatus('Progress otomatis terupdate dari server.');
+      } catch (error) {
+        setStatus('Tidak dapat memuat data donasi. Pastikan server backend berjalan.');
+        console.error(error);
+      }
+    }
+
+    loadProgress();
+    setInterval(loadProgress, 10000); // refresh setiap 10 detik
+  </script>
+
+  <script type="text/javascript" src="https://edge-cdn.trakteer.id/js/embed/trbtn.min.js?v=14-05-2025"></script>
+  <script type="text/javascript">
+    (function(){
+      var trbtnId = trbtn.init(
+        'Dukung Saya di Trakteer',
+        '#0C27D4',
+        'https://trakteer.id/bintang_cahya_hen',
+        'https://trakteer.id/images/mix/cendol.png',
+        '40'
+      );
+      trbtn.draw(trbtnId);
+    })();
+  </script>
+
+  <script type="text/javascript" src="https://storage.sociabuzz.com/storage/js/main/buttononwebsite/index.min.js"></script>
+  <script>
+    sbBoW.draw("hecata","QmVyaSBEdWt1bmdhbg","position-bottom-middle","#76CC11","#000000")
+  </script>
+</body>
+</html>
