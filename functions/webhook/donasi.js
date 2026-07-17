@@ -6,13 +6,13 @@
 // Env vars yang dibutuhkan (set di Cloudflare Pages > Settings > Environment variables):
 //   SUPABASE_URL
 //   SUPABASE_SERVICE_ROLE_KEY
-//   WEBHOOK_TOKEN_TRAKTEER   (token dari X-Webhook-Token, lihat dashboard Trakteer > Integrasi > Webhook)
-//   WEBHOOK_TOKEN_SOCIABUZZ
-//   SAWERIA_STREAM_KEY       (BUKAN token biasa — ini "stream key" akun Saweria kamu,
-//                             dipakai buat verifikasi HMAC signature, cara Saweria
-//                             mengamankan webhook-nya beda dari Trakteer/Sociabuzz)
-//   TELEGRAM_BOT_TOKEN       (opsional, isi kalau mau notifikasi Telegram)
-//   TELEGRAM_CHAT_ID         (opsional, wajib diisi bareng TELEGRAM_BOT_TOKEN)
+//   WEBHOOK_TOKEN_TRAKTEER    (token dari dashboard Trakteer > Integrasi > Webhook)
+//   WEBHOOK_TOKEN_SOCIABUZZ   (token "sbwhook-..." dari dashboard Sociabuzz)
+//   WEBHOOK_TOKEN_SAWERIA     (token "swhook-..." dari dashboard Saweria)
+//   SAWERIA_STREAM_KEY        (opsional, cuma dipakai kalau Saweria kirim header
+//                              Saweria-Callback-Signature — skema HMAC yang lebih lama)
+//   TELEGRAM_BOT_TOKEN        (opsional, isi kalau mau notifikasi Telegram)
+//   TELEGRAM_CHAT_ID          (opsional, wajib diisi bareng TELEGRAM_BOT_TOKEN)
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -24,9 +24,10 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'Payload tidak valid' }, 400);
   }
 
-  // Saweria gak pakai token polos di header/URL/body kayak Trakteer & Sociabuzz.
-  // Dia ngirim HMAC signature di header Saweria-Callback-Signature, jadi harus
-  // dicek pakai jalur verifikasi yang beda sebelum lanjut ke pemrosesan donasi.
+  // Sebagian akun Saweria (versi lama) ngirim HMAC signature di header ini,
+  // bukan token biasa. Kalau header ini ada, pakai jalur verifikasi HMAC.
+  // Kalau enggak ada, Saweria diperlakukan sama kayak Trakteer/Sociabuzz:
+  // token biasa lewat header/URL/body (lihat validTokens di bawah).
   const saweriaSignature = request.headers.get('saweria-callback-signature');
   if (saweriaSignature) {
     const streamKey = env.SAWERIA_STREAM_KEY;
@@ -36,14 +37,13 @@ export async function onRequestPost(context) {
         return jsonResponse({ error: 'Signature Saweria tidak valid' }, 403);
       }
     }
-    // Kalau SAWERIA_STREAM_KEY belum diisi, kita tetap proses (biar gak macet total),
-    // tapi sebaiknya segera diisi supaya request palsu gak ikut ke-insert ke Supabase.
     return handleDonation(payload, 'saweria', env);
   }
 
   const validTokens = {
     trakteer: env.WEBHOOK_TOKEN_TRAKTEER || '',
     sociabuzz: env.WEBHOOK_TOKEN_SOCIABUZZ || '',
+    saweria: env.WEBHOOK_TOKEN_SAWERIA || '',
   };
 
   const tokenHeader =
