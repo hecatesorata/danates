@@ -1,16 +1,5 @@
 // Cloudflare Pages Function
 // Route: POST /webhook/donasi
-// Menerima webhook dari Trakteer / Sociabuzz / Saweria, simpan ke Supabase,
-// dan kirim notifikasi ke Telegram kalau dikonfigurasi.
-//
-// Env vars yang dibutuhkan (set di Cloudflare Pages > Settings > Environment variables):
-//   SUPABASE_URL
-//   SUPABASE_SERVICE_ROLE_KEY
-//   WEBHOOK_TOKEN_TRAKTEER
-//   WEBHOOK_TOKEN_SOCIABUZZ
-//   WEBHOOK_TOKEN_SAWERIA
-//   TELEGRAM_BOT_TOKEN   (opsional, isi kalau mau notifikasi Telegram)
-//   TELEGRAM_CHAT_ID     (opsional, wajib diisi bareng TELEGRAM_BOT_TOKEN)
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -30,8 +19,10 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'Payload tidak valid' }, 400);
   }
 
+  // 1. Identifikasi token dari berbagai kemungkinan header
   const tokenHeader =
     request.headers.get('x-sociabuzz-webhook-token') ||
+    request.headers.get('x-trakteer-token') || // Perbaikan header trakteer (case-insensitive di fetch)
     request.headers.get('x-trakteer-webhook-token') ||
     request.headers.get('x-webhook-token') ||
     request.headers.get('authorization') ||
@@ -54,7 +45,33 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'Webhook token tidak valid' }, 403);
   }
 
-  const amount = Number(payload.amount);
+  const source = payload.source || (matchedSource ? matchedSource[0] : 'unknown');
+
+  // 2. Normalisasi Data Berdasarkan Source
+  let amount = 0;
+  let donor = 'Anonim';
+  let message = '';
+
+  if (source === 'saweria') {
+    amount = Number(payload.amount) || 0;
+    donor = payload.donor || 'Anonim';
+    message = payload.message || '';
+  } else if (source === 'trakteer') {
+    // Trakteer mengirimkan nominal kotor di 'price_gross' atau kalkulasi 'quantity' * 'price'
+    amount = Number(payload.price_gross) || Number(payload.amount) || 0;
+    donor = payload.supporter_name || 'Anonim';
+    message = payload.support_message || '';
+  } else if (source === 'sociabuzz') {
+    amount = Number(payload.nominal) || Number(payload.amount) || 0;
+    donor = payload.name || 'Anonim';
+    message = payload.message || '';
+  } else {
+    // Fallback jika tidak teridentifikasi
+    amount = Number(payload.amount) || 0;
+    donor = payload.donor || payload.name || 'Anonim';
+    message = payload.message || '';
+  }
+
   if (!amount || amount <= 0) {
     return jsonResponse({ error: 'Nominal donasi tidak valid' }, 400);
   }
@@ -63,8 +80,7 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'Supabase belum dikonfigurasi' }, 500);
   }
 
-  const source = payload.source || (matchedSource ? matchedSource[0] : 'unknown');
-
+  // 3. Simpan ke Supabase
   const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/donations`, {
     method: 'POST',
     headers: {
@@ -73,7 +89,13 @@ export async function onRequestPost(context) {
       'Content-Type': 'application/json',
       Prefer: 'return=minimal',
     },
-    body: JSON.stringify({ amount, source, raw_payload: payload }),
+    body: JSON.stringify({ 
+      amount, 
+      source, 
+      donor,
+      message,
+      raw_payload: payload 
+    }),
   });
 
   if (!insertRes.ok) {
@@ -81,7 +103,7 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'Gagal menyimpan ke database', detail }, 500);
   }
 
-  // Hitung total terkumpul terbaru buat dimasukkan ke notifikasi.
+  // 4. Hitung total akumulasi (Opsional)
   let totalCollected = null;
   try {
     const totalRes = await fetch(`${SUPABASE_URL}/rest/v1/donations?select=amount`, {
@@ -92,16 +114,21 @@ export async function onRequestPost(context) {
       totalCollected = rows.reduce((sum, row) => sum + (Number(row.amount) || 0), 0);
     }
   } catch (err) {
-    // Kalau gagal hitung total, tetap lanjut kirim notif tanpa angka total.
+    // Abaikan jika gagal mengambil total akumulasi
   }
 
-  const donor = payload.donor || payload.name || 'Anonim';
+  // 5. Kirim Notifikasi Telegram
   const messageLines = [
     '*Donasi baru masuk\\!*',
     `Nominal: *${escapeMarkdownV2(formatRupiah(amount))}*`,
     `Donatur: *${escapeMarkdownV2(donor)}*`,
     `Sumber: *${escapeMarkdownV2(source)}*`,
   ];
+  
+  if (message) {
+    messageLines.push(`Pesan: _"${escapeMarkdownV2(message)}"_`);
+  }
+
   if (totalCollected !== null) {
     messageLines.push(`Total terkumpul: *${escapeMarkdownV2(formatRupiah(totalCollected))}*`);
   }
