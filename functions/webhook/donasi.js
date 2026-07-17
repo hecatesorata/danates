@@ -1,18 +1,26 @@
 // Cloudflare Pages Function
 // Route: POST /webhook/donasi
-// Menerima webhook dari Trakteer / Sociabuzz dan menyimpan donasi ke Supabase.
+// Menerima webhook dari Trakteer / Sociabuzz / Saweria dan menyimpan donasi ke Supabase.
 //
 // Env vars yang dibutuhkan (set di Cloudflare Pages > Settings > Environment variables):
 //   SUPABASE_URL
 //   SUPABASE_SERVICE_ROLE_KEY
-//   WEBHOOK_TOKEN   -> isi dengan token webhook (mis. sbwhook-9aj18gsxqtubed5vpliorcwh)
-//                      JANGAN hardcode di kode, simpan hanya sebagai env var.
+//   WEBHOOK_TOKEN_TRAKTEER   -> token dari dashboard Trakteer
+//   WEBHOOK_TOKEN_SOCIABUZZ  -> token dari dashboard Sociabuzz
+//   WEBHOOK_TOKEN_SAWERIA    -> token buatan sendiri (Saweria tidak menerbitkan token,
+//                               jadi ini hanya perlu cocok dengan ?token= di URL webhook
+//                               yang kamu daftarkan di Saweria)
 
 export async function onRequestPost(context) {
   const { request, env } = context;
-  const WEBHOOK_TOKEN = env.WEBHOOK_TOKEN || '';
   const SUPABASE_URL = env.SUPABASE_URL;
   const SUPABASE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
+
+  const validTokens = {
+    trakteer: env.WEBHOOK_TOKEN_TRAKTEER || '',
+    sociabuzz: env.WEBHOOK_TOKEN_SOCIABUZZ || '',
+    saweria: env.WEBHOOK_TOKEN_SAWERIA || '',
+  };
 
   let payload;
   try {
@@ -33,13 +41,17 @@ export async function onRequestPost(context) {
   const urlToken = url.searchParams.get('token') || '';
   const bodyToken = payload.webhook_token || payload.token || payload.api_key || '';
 
-  const isValidToken =
-    !WEBHOOK_TOKEN ||
-    tokenHeader === WEBHOOK_TOKEN ||
-    urlToken === WEBHOOK_TOKEN ||
-    bodyToken === WEBHOOK_TOKEN;
+  const incomingTokens = [tokenHeader, urlToken, bodyToken].filter(Boolean);
 
-  if (!isValidToken) {
+  // Cari platform mana yang tokennya cocok dengan salah satu token yang masuk.
+  const matchedSource = Object.entries(validTokens).find(
+    ([, expected]) => expected && incomingTokens.includes(expected)
+  );
+
+  // Kalau belum ada satupun token platform yang dikonfigurasi, terima semua (mode longgar).
+  const noTokensConfigured = Object.values(validTokens).every((t) => !t);
+
+  if (!matchedSource && !noTokensConfigured) {
     return jsonResponse({ error: 'Webhook token tidak valid' }, 403);
   }
 
@@ -52,7 +64,7 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'Supabase belum dikonfigurasi' }, 500);
   }
 
-  const source = payload.source || (tokenHeader.toLowerCase().includes('trakteer') ? 'trakteer' : 'sociabuzz');
+  const source = payload.source || (matchedSource ? matchedSource[0] : 'unknown');
 
   const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/donations`, {
     method: 'POST',
@@ -70,7 +82,7 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'Gagal menyimpan ke database', detail }, 500);
   }
 
-  return jsonResponse({ ok: true }, 200);
+  return jsonResponse({ ok: true, source }, 200);
 }
 
 function jsonResponse(body, status) {
