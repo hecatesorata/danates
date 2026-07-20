@@ -604,7 +604,7 @@
     </div>
   </section>
 <section class="emblem-rule wrap">
-    <img src="https://drive.google.com/file/d/14gZalTyagAolW-adjGNIGX3i-juRXrna/view" alt="" />
+    <img src="assets/logo.png" alt="" />
   <p class="emblem-rule wrap"><img src="assets/logo.png" alt="" /></p>
 
   <section class="donate" id="dukung">
@@ -633,8 +633,8 @@
           <div class="progress-fill" id="progressFill"></div>
         </div>
         <div class="amounts">
-          <span class="collected" id="collectedText">Rp 0</span>
-          <span class="goal">dari <span id="goalText">Rp 5.000.000</span></span>
+          <span class="collected" id="collectedText">USD 0</span>
+          <span class="goal">dari <span id="goalText">USD 20.000.000</span></span>
         </div>
         <p class="status-line" id="statusMessage">
           <span>menghubungkan ke server<span class="cursor"></span></span>
@@ -674,18 +674,18 @@
     const pctText = document.getElementById("pctText");
     const statusMessage = document.getElementById("statusMessage");
 
-    function formatRupiah(number) {
-      return new Intl.NumberFormat("id-ID", {
+    function formatUSD(number) {
+      return new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "IDR",
+        currency: "USD",
         maximumFractionDigits: 0
       }).format(number);
     }
 
     function updateProgress(collectedAmount, goalAmount) {
       const percent = Math.min((collectedAmount / goalAmount) * 100, 100);
-      collectedText.textContent = formatRupiah(collectedAmount);
-      goalText.textContent = formatRupiah(goalAmount);
+      collectedText.textContent = formatUSD(collectedAmount);
+      goalText.textContent = formatUSD(goalAmount);
       progressFill.style.width = percent + "%";
       pctText.textContent = `${percent.toFixed(0)}%`;
     }
