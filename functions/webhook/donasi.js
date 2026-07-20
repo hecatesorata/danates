@@ -6,11 +6,13 @@
 // Env vars yang dibutuhkan (set di Cloudflare Pages > Settings > Environment variables):
 //   SUPABASE_URL
 //   SUPABASE_SERVICE_ROLE_KEY
-//   WEBHOOK_TOKEN_TRAKTEER    (token dari dashboard Trakteer > Integrasi > Webhook)
+//   WEBHOOK_TOKEN_TRAKTEER    (token dari dashboard Trakteer > Integrasi > Webhook,
+//                              dikirim Trakteer lewat header X-Webhook-Token)
 //   WEBHOOK_TOKEN_SOCIABUZZ   (token "sbwhook-..." dari dashboard Sociabuzz)
-//   WEBHOOK_TOKEN_SAWERIA     (token "swhook-..." dari dashboard Saweria)
-//   SAWERIA_STREAM_KEY        (opsional, cuma dipakai kalau Saweria kirim header
-//                              Saweria-Callback-Signature — skema HMAC yang lebih lama)
+//   WEBHOOK_TOKEN_SAWERIA     (token "swhook-..." buatan sendiri, diselipkan di URL
+//                              webhook yang didaftarkan ke Saweria: ?token=...)
+//   SAWERIA_STREAM_KEY        (opsional, cuma dipakai kalau akun Saweria kamu kirim
+//                              header Saweria-Callback-Signature)
 //   TELEGRAM_BOT_TOKEN        (opsional, isi kalau mau notifikasi Telegram)
 //   TELEGRAM_CHAT_ID          (opsional, wajib diisi bareng TELEGRAM_BOT_TOKEN)
 
@@ -24,10 +26,9 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'Payload tidak valid' }, 400);
   }
 
-  // Sebagian akun Saweria (versi lama) ngirim HMAC signature di header ini,
-  // bukan token biasa. Kalau header ini ada, pakai jalur verifikasi HMAC.
-  // Kalau enggak ada, Saweria diperlakukan sama kayak Trakteer/Sociabuzz:
-  // token biasa lewat header/URL/body (lihat validTokens di bawah).
+  // Sebagian akun Saweria ngirim HMAC signature di header ini, bukan token biasa.
+  // Kalau header ini ada, pakai jalur verifikasi HMAC. Kalau enggak ada, Saweria
+  // diperlakukan sama kayak Trakteer/Sociabuzz: token biasa lewat header/URL/body.
   const saweriaSignature = request.headers.get('saweria-callback-signature');
   if (saweriaSignature) {
     const streamKey = env.SAWERIA_STREAM_KEY;
@@ -47,9 +48,9 @@ export async function onRequestPost(context) {
   };
 
   const tokenHeader =
+    request.headers.get('x-webhook-token') ||
     request.headers.get('x-sociabuzz-webhook-token') ||
     request.headers.get('x-trakteer-webhook-token') ||
-    request.headers.get('x-webhook-token') ||
     request.headers.get('authorization') ||
     request.headers.get('x-api-key') ||
     '';
@@ -75,12 +76,12 @@ export async function onRequestPost(context) {
 }
 
 // Proses bareng buat semua sumber donasi setelah lolos verifikasi:
-// ekstrak nominal, simpan ke Supabase, lalu kirim notifikasi Telegram.
+// ekstrak data, simpan ke Supabase, lalu kirim notifikasi Telegram.
 async function handleDonation(payload, source, env) {
   const SUPABASE_URL = env.SUPABASE_URL;
   const SUPABASE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 
-  const { amount, donor } = extractDonationData(payload, source);
+  const { amount, donor, message } = extractDonationData(payload, source);
 
   if (!amount || amount <= 0) {
     return jsonResponse({ error: 'Nominal donasi tidak valid' }, 400);
@@ -98,7 +99,7 @@ async function handleDonation(payload, source, env) {
       'Content-Type': 'application/json',
       Prefer: 'return=minimal',
     },
-    body: JSON.stringify({ amount, source, raw_payload: payload }),
+    body: JSON.stringify({ amount, source, donor, message, raw_payload: payload }),
   });
 
   if (!insertRes.ok) {
@@ -126,6 +127,9 @@ async function handleDonation(payload, source, env) {
     `Donatur: *${escapeMarkdownV2(donor)}*`,
     `Sumber: *${escapeMarkdownV2(source)}*`,
   ];
+  if (message) {
+    messageLines.push(`Pesan: _${escapeMarkdownV2(message)}_`);
+  }
   if (totalCollected !== null) {
     messageLines.push(`Total terkumpul: *${escapeMarkdownV2(formatRupiah(totalCollected))}*`);
   }
@@ -138,10 +142,9 @@ async function handleDonation(payload, source, env) {
   );
 }
 
-// Verifikasi signature Saweria. Skema resminya: HMAC-SHA256 (hex) dengan
-// stream key sebagai secret, atas gabungan string field-field berikut
-// (tanpa separator, urutan harus persis begini):
-//   version + id + amount_raw + donator_name + donator_email
+// Verifikasi signature Saweria. Skema: HMAC-SHA256 (hex) dengan stream key
+// sebagai secret, atas gabungan string field-field berikut (tanpa separator,
+// urutan harus persis begini): version + id + amount_raw + donator_name + donator_email
 async function verifySaweriaSignature(payload, receivedSignature, streamKey) {
   const dataString = ['version', 'id', 'amount_raw', 'donator_name', 'donator_email']
     .map((key) => (payload[key] !== undefined && payload[key] !== null ? String(payload[key]) : ''))
@@ -184,34 +187,40 @@ function detectSource(payload) {
 }
 
 // Trakteer, Saweria, dan Sociabuzz masing-masing pakai nama field yang beda buat
-// nominal & nama donatur. Fungsi ini nyamain jadi { amount, donor } yang konsisten.
+// nominal, nama donatur, dan pesan. Fungsi ini nyamain jadi bentuk konsisten.
+// Referensi field Trakteer (dicek dari help.trakteer.id/help-center/articles/70):
+//   { transaction_id, type, supporter_name, supporter_message, unit, quantity, price, net_amount }
+// Referensi field Saweria: { version, id, amount_raw, cut, donator_name, donator_email, message }
 function extractDonationData(payload, source) {
   let amount;
   let donor;
+  let message;
 
   switch (source) {
     case 'trakteer':
-      // Payload asli: { price: 5000, net_amount: 4750, supporter_name: "...", quantity: 1, unit: "Kopi", ... }
       amount = Number(payload.price ?? payload.net_amount ?? payload.amount);
       donor = payload.supporter_name;
+      message = payload.supporter_message;
       break;
     case 'saweria':
-      // Payload asli: { amount_raw: 69420, donator_name: "...", message: "...", ... }
       amount = Number(payload.amount_raw ?? payload.amount);
       donor = payload.donator_name;
+      message = payload.message;
       break;
     case 'sociabuzz':
       // Skema webhook Sociabuzz belum konsisten didokumentasikan di tempat kami cek;
       // ini best-effort, sesuaikan kalau ternyata beda pas ada donasi masuk beneran.
       amount = Number(payload.amount ?? payload.amount_raw ?? payload.price);
       donor = payload.supporter_name || payload.donator_name || payload.name;
+      message = payload.message || payload.supporter_message;
       break;
     default:
       amount = Number(payload.amount ?? payload.amount_raw ?? payload.price ?? payload.net_amount);
       donor = payload.supporter_name || payload.donator_name || payload.donor || payload.name;
+      message = payload.message || payload.supporter_message || payload.msg;
   }
 
-  return { amount, donor: donor || 'Anonim' };
+  return { amount, donor: donor || 'Anonim', message: message || '' };
 }
 
 function formatRupiah(number) {
