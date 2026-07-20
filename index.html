@@ -23,6 +23,7 @@
     --trakteer: #ff6d2d;
     --saweria: #4c58d6;
     --sociabuzz: #76cc11;
+    --paypal: #0070ba;
     --display: 'Spectral', Georgia, serif;
     --body: 'Karla', system-ui, sans-serif;
     --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
@@ -206,6 +207,7 @@
   }
   .btn.trakteer { background: var(--trakteer); }
   .btn.saweria { background: var(--saweria); }
+  .btn.paypal { background: var(--paypal); }
 
   /* ---------- Ledger strip ---------- */
   .ledger {
@@ -603,9 +605,10 @@
       </div>
     </div>
   </section>
+
   <section class="emblem-rule wrap">
     <img src="assets/logo.png" alt="" />
-  <p class="emblem-rule wrap"><img src="assets/logo.png" alt="" /></p>
+  </section>
 
   <section class="donate" id="dukung">
     <div class="wrap">
@@ -623,6 +626,10 @@
           <a class="btn saweria" href="https://saweria.co/Bintang_Cahya_Hen" target="_blank" rel="noopener">
             <span class="sigil">$</span> Dukung lewat Saweria
           </a>
+          <!-- Tombol PayPal Ditambahkan Di Sini -->
+          <a class="btn paypal" href="https://paypal.me/UsernamePayPalAnda" target="_blank" rel="noopener">
+            <span class="sigil">$</span> Dukung lewat PayPal
+          </a>
         </div>
 
         <div class="progress-label-row">
@@ -633,7 +640,6 @@
           <div class="progress-fill" id="progressFill"></div>
         </div>
         <div class="amounts">
-          <!-- Placeholder diperbarui ke USD -->
           <span class="collected" id="collectedText">$0.00</span>
           <span class="goal">dari <span id="goalText">$5,000.00</span></span>
         </div>
@@ -647,7 +653,7 @@
   <footer class="site">
     <img class="emblem" src="assets/logo.png" alt="" />
     <p>PENJAGA BATAS — LAPORAN PEMBANGUNAN WILAYAH PERBATASAN</p>
-    <p>Dana disalurkan lewat Trakteer &amp; Saweria · Dikelola transparan</p>
+    <p>Dana disalurkan lewat Trakteer, Saweria &amp; PayPal · Dikelola transparan</p>
   </footer>
 
   <!-- ---------- CDN & Dependencies ---------- -->
@@ -658,12 +664,11 @@
 
   <!-- ---------- JAVASCRIPT LOGIC ---------- -->
   <script>
-    // 1. Inisialisasi money.js (Konversi Kurs Utama)
     if (typeof fx !== 'undefined') {
       fx.base = "IDR";
       fx.rates = {
         "IDR": 1,
-        "USD": 0.000064,  // Data nilai tukar (sesuaikan jika perlu)
+        "USD": 0.000064,
         "MYR": 0.00028,
         "SGD": 0.000086
       };
@@ -675,7 +680,6 @@
     const pctText = document.getElementById("pctText");
     const statusMessage = document.getElementById("statusMessage");
 
-    // Fungsi formatUSD diperbarui untuk memaksa 2 desimal
     function formatUSD(number) {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -714,7 +718,6 @@
     loadProgress();
     setInterval(loadProgress, 10000);
 
-    // 2. Widget Trakteer & Sociabuzz
     try {
       var trbtnId = trbtnOverlay.init(
         'Dukung Saya di Trakteer',
@@ -731,7 +734,6 @@
       sbBoW.draw("hecata","QmVyaSBEdWt1bmdhbg","position-bottom-left","#76CC11","#000000");
     } catch(e) { console.warn("SociaBuzz button failed to load", e); }
 
-    // 3. Sistem Deteksi Geografis & Terjemahan Otomatis
     const COUNTRY_LANG_MAP = {
       US: 'en', GB: 'en', AU: 'en', CA: 'en', NZ: 'en', IE: 'en', SG: 'en', PH: 'en', IN: 'en', ZA: 'en',
       MY: 'ms', BN: 'ms', TH: 'th', VN: 'vi', KH: 'km', LA: 'lo', MM: 'my', TL: 'pt',
@@ -760,7 +762,6 @@
           combo.value = langCode;
           combo.dispatchEvent(new Event('change'));
 
-          // Sesuaikan teks banner info agar ramah terhadap turis asing
           const noticeText = document.getElementById('langNoticeText');
           if(langCode === 'en') {
             noticeText.textContent = "This page has been automatically translated.";
