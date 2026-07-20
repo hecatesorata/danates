@@ -603,7 +603,7 @@
       </div>
     </div>
   </section>
-<section class="emblem-rule wrap">
+  <section class="emblem-rule wrap">
     <img src="assets/logo.png" alt="" />
   <p class="emblem-rule wrap"><img src="assets/logo.png" alt="" /></p>
 
@@ -633,8 +633,9 @@
           <div class="progress-fill" id="progressFill"></div>
         </div>
         <div class="amounts">
-          <span class="collected" id="collectedText">USD 0</span>
-          <span class="goal">dari <span id="goalText">USD 20.000.000</span></span>
+          <!-- Placeholder diperbarui ke USD -->
+          <span class="collected" id="collectedText">$0.00</span>
+          <span class="goal">dari <span id="goalText">$5,000.00</span></span>
         </div>
         <p class="status-line" id="statusMessage">
           <span>menghubungkan ke server<span class="cursor"></span></span>
@@ -674,11 +675,13 @@
     const pctText = document.getElementById("pctText");
     const statusMessage = document.getElementById("statusMessage");
 
+    // Fungsi formatUSD diperbarui untuk memaksa 2 desimal
     function formatUSD(number) {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
-        maximumFractionDigits: 0
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
       }).format(number);
     }
 
