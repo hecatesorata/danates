@@ -15,7 +15,7 @@ export async function onRequestGet(context) {
   const GOAL_AMOUNT = Number(env.GOAL_AMOUNT) || 5000;
   
   // Kurs konversi dari IDR ke USD (bisa diatur lewat env, default 16.000)
-  const EXCHANGE_RATE = Number(env.EXCHANGE_RATE) || 16000;
+  const EXCHANGE_RATE = Number(env.EXCHANGE_RATE) || 18000;
 
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     return new Response(
