@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Penjaga Batas — Membangun Kalimantan Utara Berdaulat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #181310;
+    --surface: #211a15;
+    --surface-raised: #291f18;
+    --border: #3a2e23;
+    --text: #f2e9dc;
+    --muted: #a4937d;
+    --muted-dim: #6f6153;
+    --gold: #c9a15a;
+    --gold-dim: rgba(201, 161, 90, 0.14);
+    --red: #a2402f;
+    --red-dim: rgba(162, 64, 47, 0.16);
+    --trakteer: #ff6d2d;
+    --saweria: #4c58d6;
+    --sociabuzz: #76cc11;
+    --display: 'Spectral', Georgia, serif;
+    --body: 'Karla', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    line-height: 1.5;
+  }
+
+  img { max-width: 100%; display: block; }
+
+  a { color: inherit; }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- Emblem (signature motif, reused as divider) ---------- */
+  .emblem {
+    width: 34px;
+    height: auto;
+    opacity: 0.92;
+  }
+  .emblem-rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin: 0;
+    color: var(--muted-dim);
+  }
+  .emblem-rule::before,
+  .emblem-rule::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .emblem-rule img { width: 22px; opacity: 0.55; }
+
+  /* ---------- Header ---------- */
+  header.site {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(24, 19, 16, 0.86);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .site-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+  }
+  .brand img { width: 26px; }
+  .brand small {
+    display: block;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  nav.site-nav {
+    display: flex;
+    gap: 22px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  nav.site-nav a {
+    text-decoration: none;
+    color: var(--muted);
+    transition: color 0.15s ease;
+  }
+  nav.site-nav a:hover { color: var(--gold); }
+  @media (max-width: 640px) { nav.site-nav { display: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    min-height: 88vh;
+    display: flex;
+    align-items: flex-end;
+    background:
+      linear-gradient(180deg, rgba(20,15,12,0.35) 0%, rgba(15,11,9,0.55) 55%, var(--bg) 96%),
+      url('assets/campaign/jalan.jpg') center 62% / cover no-repeat;
+  }
+  .hero-inner {
+    width: 100%;
+    padding: 120px 24px 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201, 161, 90, 0.35);
+    background: var(--gold-dim);
+    padding: 6px 12px;
+    border-radius: 999px;
+    margin-bottom: 22px;
+  }
+  h1.hero-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(32px, 5.4vw, 52px);
+    line-height: 1.14;
+    margin: 0 0 26px;
+    max-width: 20ch;
+    text-wrap: balance;
+  }
+  h1.hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  p.hero-lede {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(16px, 2vw, 19px);
+    line-height: 1.65;
+    color: #ecdfc9;
+    max-width: 62ch;
+    margin: 0 0 18px;
+  }
+  p.hero-lede:last-of-type { margin-bottom: 32px; }
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14.5px;
+    font-family: var(--body);
+    border: 1px solid transparent;
+    transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease;
+    color: #fff;
+  }
+  .btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
+  .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .btn .sigil { font-family: var(--mono); opacity: 0.8; font-size: 13px; }
+  .btn.ghost {
+    background: transparent;
+    border-color: rgba(242, 233, 220, 0.35);
+    color: var(--text);
+  }
+  .btn.trakteer { background: var(--trakteer); }
+  .btn.saweria { background: var(--saweria); }
+
+  /* ---------- Ledger strip ---------- */
+  .ledger {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .ledger-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .ledger-item {
+    padding: 30px 20px;
+    text-align: center;
+    border-left: 1px solid var(--border);
+  }
+  .ledger-item:first-child { border-left: none; }
+  .ledger-num {
+    font-family: var(--mono);
+    font-size: clamp(22px, 3.4vw, 30px);
+    color: var(--gold);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .ledger-label {
+    font-size: 11.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 6px;
+  }
+  @media (max-width: 700px) {
+    .ledger-inner { grid-template-columns: repeat(2, 1fr); }
+    .ledger-item:nth-child(3) { border-left: none; }
+  }
+
+  /* ---------- Section shared ---------- */
+  section { padding: 84px 0; }
+  .section-head {
+    max-width: 62ch;
+    margin: 0 auto 46px;
+    text-align: center;
+  }
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 12px;
+  }
+  h2.section-title {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(26px, 4vw, 36px);
+    margin: 0 0 14px;
+  }
+  p.section-body {
+    color: var(--muted);
+    font-size: 15.5px;
+    margin: 0;
+  }
+
+  /* ---------- Campaign grid ---------- */
+  .campaign-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .campaign-card {
+    position: relative;
+    background: var(--surface);
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+  .campaign-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.92) contrast(1.02);
+    transition: transform 0.5s ease, filter 0.5s ease;
+  }
+  .campaign-card:hover img { transform: scale(1.06); filter: saturate(1.05) contrast(1.04); }
+  .campaign-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(15,11,9,0.92) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px;
+  }
+  .campaign-index {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+  .campaign-name {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 17px;
+    margin: 2px 0 4px;
+  }
+  .campaign-desc {
+    font-size: 12.5px;
+    color: #d8cbb8;
+    line-height: 1.45;
+  }
+  @media (max-width: 760px) {
+    .campaign-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 460px) {
+    .campaign-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Donation section ---------- */
+  .donate {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .donate-card {
+    max-width: 640px;
+    margin: 0 auto;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 36px 32px;
+  }
+  .donate-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+  .donate-buttons .btn { justify-content: center; width: 100%; }
+
+  .progress-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .progress-track {
+    height: 10px;
+    background: rgba(242, 233, 220, 0.08);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--red), var(--gold));
+    transition: width 0.6s ease;
+  }
+  .amounts {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 0 0 4px;
+  }
+  .amounts .collected {
+    font-family: var(--mono);
+    font-size: 20px;
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .amounts .goal {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .status-line {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted-dim);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cursor {
+    display: inline-block;
+    width: 6px;
+    height: 12px;
+    background: var(--gold);
+    animation: blink 1s steps(1) infinite;
+    vertical-align: text-bottom;
+  }
+  @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+  /* ---------- Footer ---------- */
+  footer.site {
+    padding: 56px 24px 40px;
+    text-align: center;
+  }
+  footer.site .emblem { width: 30px; margin: 0 auto 16px; opacity: 0.5; }
+  footer.site p {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted-dim);
+    letter-spacing: 0.03em;
+    margin: 4px 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .cursor { animation: none; opacity: 1; }
+    .campaign-card:hover img { transform: none; }
+    .btn { transition: none; }
+  }
+
+  @media (max-width: 420px) {
+    .donate-card { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="site">
+    <div class="site-inner">
+      <a class="brand" href="#top">
+        <img src="assets/logo.png" alt="Lambang Penjaga Batas" />
+        <span>Penjaga Batas<small>Wilayah Perbatasan Indonesia</small></span>
+      </a>
+      <nav class="site-nav">
+        <a href="#inisiatif">Inisiatif</a>
+        <a href="#dukung">Dukung</a>
+      </nav>
+    </div>
+  </header>
+
+  <div id="top"></div>
+
+  <section class="hero" style="padding:0;">
+    <div class="hero-inner">
+      <span class="hero-eyebrow">Laporan Lapangan · Perbatasan Kalimantan Utara</span>
+      <h1 class="hero-title">Menjemput Titah Leluhur, Membangun <em>Kalimantan Utara Berdaulat</em></h1>
+      <p class="hero-lede">
+        Di atas tanah Benuanta yang megah, mengalir darah dan doa para leluhur yang telah
+        menjaga alam ini dengan ketulusan jiwa. Hari ini, di perbatasan negeri yang
+        berwibawa, kami berdiri untuk meneruskan amanah suci tersebut.
+      </p>
+      <p class="hero-lede">
+        Dengan jiwa yang merdeka dan mandiri, tanpa terikat sekat golongan atau kepentingan
+        pihak mana pun, kami mendedikasikan karya nyata ini murni untuk rakyat Kaltara. Kami
+        bangun sekolah-sekolah sebagai pelita peradaban, kami bentang akses jalan pembuka
+        isolasi, kami dirikan rumah sakit sebagai benteng kemanusiaan, dan kami ulurkan
+        bantuan nyata tanpa pamrih.
+      </p>
+      <p class="hero-lede">
+        Biarlah setiap keringat yang menetes mengalir dalam independensi yang utuh.
+        Menjadikan setiap pembangunan sebagai kerja yang berkah, amanah, dan berdaulat
+        di atas kaki sendiri.
+      </p>
+      <div class="hero-actions">
+        <a class="btn ghost" href="#inisiatif">Lihat inisiatif berjalan</a>
+        <a class="btn trakteer" href="#dukung">Ikut mendukung</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="ledger">
+    <div class="wrap ledger-inner">
+      <div class="ledger-item">
+        <div class="ledger-num">7</div>
+        <div class="ledger-label">Titik pembangunan</div>
+      </div>
+      <div class="ledger-item">
+        <div class="ledger-num">4</div>
+        <div class="ledger-label">Desa terjangkau</div>
+      </div>
+      <div class="ledger-item">
+        <div class="ledger-num">1</div>
+        <div class="ledger-label">RS daerah dibangun</div>
+      </div>
+      <div class="ledger-item">
+        <div class="ledger-num">100%</div>
+        <div class="ledger-label">Dana ke lapangan</div>
+      </div>
+    </div>
+  </div>
+
+  <section id="inisiatif">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-eyebrow">Sedang Berjalan</p>
+        <h2 class="section-title">Tujuh inisiatif di garis depan</h2>
+        <p class="section-body">
+          Dari ruang kelas baru sampai jalur distribusi sungai — ini titik-titik yang
+          sedang dikerjakan tim di lapangan, didanai dari dukungan yang masuk lewat halaman ini.
+        </p>
+      </div>
+    </div>
+
+    <div class="campaign-grid">
+      <div class="campaign-card">
+        <img src="assets/campaign/sekolah.jpg" alt="Pembangunan gedung sekolah" loading="lazy" />
+        <div class="campaign-overlay">
+          <span class="campaign-index">01</span>
+          <h3 class="campaign-name">Ruang Kelas Baru</h3>
+          <p class="campaign-desc">Gedung sekolah dasar yang sebelumnya beratap seng bocor, kini dibangun ulang bersama warga.</p>
+        </div>
+      </div>
+      <div class="campaign-card">
+        <img src="assets/campaign/jalan.jpg" alt="Pengerasan jalan penghubung desa" loading="lazy" />
+        <div class="campaign-overlay">
+          <span class="campaign-index">02</span>
+          <h3 class="campaign-name">Jalan Penghubung</h3>
+          <p class="campaign-desc">Jalur yang dulu hanya bisa dilalui saat kemarau, sekarang diaspal untuk akses sepanjang tahun.</p>
+        </div>
+      </div>
+      <div class="campaign-card">
+        <img src="assets/campaign/jembatan.jpg" alt="Pembangunan jembatan penyeberangan sungai" loading="lazy" />
+        <div class="campaign-overlay">
+          <span class="campaign-index">03</span>
+          <h3 class="campaign-name">Jembatan Sungai</h3>
+          <p class="campaign-desc">Menyambungkan dua desa yang selama ini terpisah saat air pasang, mempercepat akses ke fasilitas kesehatan.</p>
+        </div>
+      </div>
+      <div class="campaign-card">
+        <img src="assets/campaign/rumahsakit.jpg" alt="Rumah Sakit Daerah yang sedang dibangun" loading="lazy" />
+        <div class="campaign-overlay">
+          <span class="campaign-index">04</span>
+          <h3 class="campaign-name">Rumah Sakit Daerah</h3>
+          <p class="campaign-desc">Fasilitas rujukan pertama di kecamatan ini, mengurangi jarak tempuh darurat yang tadinya berjam-jam.</p>
+        </div>
+      </div>
+      <div class="campaign-card">
+        <img src="assets/campaign/bantuan.jpg" alt="Distribusi bantuan kemanusiaan berupa sembako" loading="lazy" />
+        <div class="campaign-overlay">
+          <span class="campaign-index">05</span>
+          <h3 class="campaign-name">Bantuan Sembako</h3>
+          <p class="campaign-desc">Distribusi kebutuhan pokok rutin ke desa-desa yang jalur logistiknya masih sulit dijangkau.</p>
+        </div>
+      </div>
+      <div class="campaign-card">
+        <img src="assets/campaign/kesehatan.jpg" alt="Layanan pemeriksaan kesehatan warga" loading="lazy" />
+        <div class="campaign-overlay">
+          <span class="campaign-index">06</span>
+          <h3 class="campaign-name">Layanan Kesehatan Keliling</h3>
+          <p class="campaign-desc">Pemeriksaan gratis untuk ibu dan anak, mengisi kekosongan tenaga medis di wilayah terpencil.</p>
+        </div>
+      </div>
+      <div class="campaign-card">
+        <img src="assets/campaign/distribusi.jpg" alt="Distribusi bantuan lewat jalur sungai" loading="lazy" />
+        <div class="campaign-overlay">
+          <span class="campaign-index">07</span>
+          <h3 class="campaign-name">Distribusi Jalur Sungai</h3>
+          <p class="campaign-desc">Sungai masih jadi satu-satunya akses ke sejumlah kampung — logistik dikirim langsung lewat perahu.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="emblem-rule wrap"><img src="assets/logo.png" alt="" /></p>
+
+  <section class="donate" id="dukung">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-eyebrow">Dukung Langsung</p>
+        <h2 class="section-title">Setiap kontribusi tercatat, tersalur ke lapangan</h2>
+        <p class="section-body">Pilih salah satu kanal di bawah. Progres pengumpulan dana diperbarui langsung dari server.</p>
+      </div>
+
+      <div class="donate-card">
+        <div class="donate-buttons">
+          <a class="btn trakteer" href="https://trakteer.id/bintang_cahya_hen/tip" target="_blank" rel="noopener">
+            <span class="sigil">$</span> Dukung lewat Trakteer
+          </a>
+          <a class="btn saweria" href="https://saweria.co/Bintang_Cahya_Hen" target="_blank" rel="noopener">
+            <span class="sigil">$</span> Dukung lewat Saweria
+          </a>
+        </div>
+
+        <div class="progress-label-row">
+          <span>PROGRES PENGGALANGAN</span>
+          <span id="pctText">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="amounts">
+          <span class="collected" id="collectedText">Rp 0</span>
+          <span class="goal">dari <span id="goalText">Rp 5.000.000</span></span>
+        </div>
+        <p class="status-line" id="statusMessage">
+          <span>menghubungkan ke server<span class="cursor"></span></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site">
+    <img class="emblem" src="assets/logo.png" alt="" />
+    <p>PENJAGA BATAS — LAPORAN PEMBANGUNAN WILAYAH PERBATASAN</p>
+    <p>Dana disalurkan lewat Trakteer &amp; Saweria · Dikelola transparan</p>
+  </footer>
+
+  <script>
+    const collectedText = document.getElementById("collectedText");
+    const goalText = document.getElementById("goalText");
+    const progressFill = document.getElementById("progressFill");
+    const pctText = document.getElementById("pctText");
+    const statusMessage = document.getElementById("statusMessage");
+
+    function formatRupiah(number) {
+      return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+      }).format(number);
+    }
+
+    function updateProgress(collectedAmount, goalAmount) {
+      const percent = Math.min((collectedAmount / goalAmount) * 100, 100);
+      collectedText.textContent = formatRupiah(collectedAmount);
+      goalText.textContent = formatRupiah(goalAmount);
+      progressFill.style.width = percent + "%";
+      pctText.textContent = `${percent.toFixed(0)}%`;
+    }
+
+    function setStatus(message) {
+      statusMessage.innerHTML = `<span>${message}<span class="cursor"></span></span>`;
+    }
+
+    async function loadProgress() {
+      try {
+        const response = await fetch('/api/donasi');
+        if (!response.ok) throw new Error('Gagal mengambil data donasi');
+        const data = await response.json();
+        updateProgress(data.collectedAmount, data.goalAmount);
+        const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        setStatus(`sinkron terakhir ${time}`);
+      } catch (error) {
+        setStatus('gagal memuat data, cek server backend');
+        console.error(error);
+      }
+    }
+
+    loadProgress();
+    setInterval(loadProgress, 10000);
+  </script>
+
+  <script type='text/javascript' src='https://edge-cdn.trakteer.id/js/trbtn-overlay.min.js?v=14-05-2025'></script>
+  <script type='text/javascript' class='troverlay'>
+    (function() {
+      var trbtnId = trbtnOverlay.init(
+        'Dukung Saya di Trakteer',
+        '#be1e2d',
+        'https://trakteer.id/v1/bintang_cahya_hen/tip/embed/modal',
+        'https://edge-cdn.trakteer.id/images/embed/trbtn-icon.png?v=14-05-2025',
+        '40',
+        'floating-right'
+      );
+      trbtnOverlay.draw(trbtnId);
+    })();
+  </script>
+
+  <script type="text/javascript" src="https://storage.sociabuzz.com/storage/js/main/buttononwebsite/index.min.js"></script>
+  <script>
+    sbBoW.draw("hecata","QmVyaSBEdWt1bmdhbg","position-bottom-left","#76CC11","#000000")
+  </script>
+</body>
+</html>
