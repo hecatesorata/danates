@@ -20,9 +20,7 @@
     --gold-dim: rgba(201, 161, 90, 0.14);
     --red: #a2402f;
     --red-dim: rgba(162, 64, 47, 0.16);
-    --trakteer: #ff6d2d;
-    --saweria: #4c58d6;
-    --sociabuzz: #76cc11;
+    --indodax: #1f3a60;
     --paypal: #0070ba;
     --display: 'Spectral', Georgia, serif;
     --body: 'Karla', system-ui, sans-serif;
@@ -205,8 +203,7 @@
     border-color: rgba(242, 233, 220, 0.35);
     color: var(--text);
   }
-  .btn.trakteer { background: var(--trakteer); }
-  .btn.saweria { background: var(--saweria); }
+  .btn.indodax { background: var(--indodax); border: 1px solid #2d5488; }
   .btn.paypal { background: var(--paypal); }
 
   /* ---------- Ledger strip ---------- */
@@ -343,7 +340,6 @@
   .fakta-slide {
     display: none;
     width: 100%;
-    /* Mengikuti rasio asli media secara fleksibel */
     max-height: 500px;
     background: #000;
     justify-content: center;
@@ -357,7 +353,7 @@
     width: 100%;
     height: auto;
     max-height: 500px;
-    object-fit: contain; /* Menyesuaikan gambar/video tanpa terpotong */
+    object-fit: contain;
     display: block;
     margin: 0 auto;
   }
@@ -595,7 +591,7 @@
   <section class="hero" style="padding:0;">
     <div class="hero-inner">
       <span class="hero-eyebrow">Laporan Lapangan · Perbatasan Kalimantan Utara</span>
-      <h1 class="hero-title">Membangun jalan pulang untuk kampung <em> yang tertinggal kalimantan utara</em></h1>
+      <h1 class="hero-title">Membangun jalan pulang untuk kampung <em>yang tertinggal ke jantung Borneo Kalimantan Utara</em></h1>
       <p class="hero-lede">
         Di atas tanah Benuanta yang megah, mengalir darah dan doa para leluhur yang telah
         menjaga alam ini dengan ketulusan jiwa. Hari ini, di perbatasan negeri yang
@@ -615,7 +611,7 @@
       </p>
       <div class="hero-actions">
         <a class="btn ghost" href="#inisiatif">Lihat inisiatif berjalan</a>
-        <a class="btn trakteer" href="#dukung">Ikut mendukung</a>
+        <a class="btn indodax" href="#dukung">Ikut mendukung</a>
       </div>
     </div>
   </section>
@@ -749,13 +745,12 @@
 
       <div class="donate-card">
         <div class="donate-buttons">
-          <a class="btn trakteer" href="https://trakteer.id/bintang_cahya_hen/tip" target="_blank" rel="noopener">
-            <span class="sigil">$</span> Dukung lewat Trakteer
+          <!-- Tombol Indodax -->
+          <a class="btn indodax" href="https://indodax.com" target="_blank" rel="noopener">
+            <span class="sigil">$</span> Dukung lewat Indodax (Crypto / IDR)
           </a>
-          <a class="btn saweria" href="https://saweria.co/Bintang_Cahya_Hen" target="_blank" rel="noopener">
-            <span class="sigil">$</span> Dukung lewat Saweria
-          </a>
-          <a class="btn paypal" href="https://paypal.com/paypal.me/fauzyazwary" target="_blank" rel="noopener">
+          <!-- Tombol PayPal -->
+          <a class="btn paypal" href="https://paypal.com/paypalme/fauzyazwary" target="_blank" rel="noopener">
             <span class="sigil">$</span> Dukung lewat PayPal
           </a>
         </div>
@@ -769,7 +764,7 @@
         </div>
         <div class="amounts">
           <span class="collected" id="collectedText">$0.00</span>
-          <span class="goal">dari <span id="goalText">$5,000.00</span></span>
+          <span class="goal">dari <span id="goalText">$20,000,000.00</span></span>
         </div>
         <p class="status-line" id="statusMessage">
           <span>menghubungkan ke server<span class="cursor"></span></span>
@@ -781,13 +776,11 @@
   <footer class="site">
     <img class="emblem" src="assets/logo.png" alt="" />
     <p>PENJAGA BATAS — LAPORAN PEMBANGUNAN WILAYAH PERBATASAN</p>
-    <p>Dana disalurkan lewat Trakteer, Saweria &amp; PayPal · Dikelola transparan</p>
+    <p>Dana disalurkan lewat Indodax &amp; PayPal · Dikelola transparan</p>
   </footer>
 
   <!-- ---------- CDN & Dependencies ---------- -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/money.js/0.2.0/money.min.js" integrity="sha512-K17dj/jNbqdLrDhK+j8FJY7iIQ1slk7uULXqzqX9O3Q6a1Yf+A6Wn6DzU3Xv1c6O4bEik6X7xyC5lH1gjrShKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script type='text/javascript' src='https://edge-cdn.trakteer.id/js/trbtn-overlay.min.js?v=14-05-2025'></script>
-  <script type="text/javascript" src="https://storage.sociabuzz.com/storage/js/main/buttononwebsite/index.min.js"></script>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
   <!-- ---------- JAVASCRIPT LOGIC ---------- -->
@@ -808,6 +801,11 @@
     const pctText = document.getElementById("pctText");
     const statusMessage = document.getElementById("statusMessage");
 
+    // Konfigurasi Supabase
+    const SUPABASE_URL = "https://jnkhrqvlqtamdclvwacx.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impua2hycXZscXRhbWRjbHZ3YWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5ODQ0ODUsImV4cCI6MjA5OTU2MDQ4NX0.rNYh35Beg93OJIG-6aF-zRLDfwD2wZFX_wSRmS3v-II";
+    const TARGET_GOAL = 20000000; // Target $20.000.000,00
+
     function formatUSD(number) {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -822,27 +820,43 @@
       collectedText.textContent = formatUSD(collectedAmount);
       goalText.textContent = formatUSD(goalAmount);
       progressFill.style.width = percent + "%";
-      pctText.textContent = `${percent.toFixed(0)}%`;
+      pctText.textContent = `${percent.toFixed(2)}%`;
     }
 
     function setStatus(message) {
       statusMessage.innerHTML = `<span>${message}<span class="cursor"></span></span>`;
     }
 
+    // Mengambil langsung data nominal dari Supabase
     async function loadProgress() {
       try {
-        const response = await fetch('/api/donasi');
-        if (!response.ok) throw new Error('Gagal mengambil data donasi');
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/donations?select=amount`, {
+          method: "GET",
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+          }
+        });
+
+        if (!response.ok) throw new Error('Gagal mengambil data dari Supabase');
+
         const data = await response.json();
-        updateProgress(data.collectedAmount, data.goalAmount);
+
+        // Menghitung total seluruh donasi
+        const totalAmount = data.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+
+        // Update tampilan progres
+        updateProgress(totalAmount, TARGET_GOAL);
+
         const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
         setStatus(`sinkron terakhir ${time}`);
       } catch (error) {
-        setStatus('gagal memuat data, cek server backend');
+        setStatus('gagal memuat data dari database');
         console.error(error);
       }
     }
 
+    // Panggil saat dimuat dan sinkronkan tiap 10 detik
     loadProgress();
     setInterval(loadProgress, 10000);
 
@@ -859,7 +873,7 @@
       try {
         const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
         if (!res.ok) throw new Error("Gagal mengambil folder fakta dari GitHub");
-        
+
         const files = await res.json();
         const mediaExtensions = /\.(jpg|jpeg|png|webp|gif|mp4|webm|ogg)$/i;
         const validFiles = files.filter(file => file.type === 'file' && mediaExtensions.test(file.name));
@@ -873,7 +887,7 @@
         validFiles.forEach((file, index) => {
           const isVideo = /\.(mp4|webm|ogg)$/i.test(file.name);
           const activeClass = index === 0 ? 'active' : '';
-          
+
           if (isVideo) {
             htmlContent += `
               <div class="fakta-slide ${activeClass}" onclick="openLightbox('video', '${file.download_url}')">
@@ -918,7 +932,6 @@
     const lightboxClose = document.getElementById('lightboxClose');
 
     function openLightbox(type, url) {
-      // Hapus elemen media sebelumnya di dalam modal
       const existingMedia = lightboxContent.querySelector('img, video');
       if (existingMedia) existingMedia.remove();
 
@@ -955,22 +968,6 @@
       loadFaktaMedia();
     });
 
-    try {
-      var trbtnId = trbtnOverlay.init(
-        'Dukung Saya di Trakteer',
-        '#be1e2d',
-        'https://trakteer.id/v1/bintang_cahya_hen/tip/embed/modal',
-        'https://edge-cdn.trakteer.id/images/embed/trbtn-icon.png?v=14-05-2025',
-        '40',
-        'floating-right'
-      );
-      trbtnOverlay.draw(trbtnId);
-    } catch(e) { console.warn("Trakteer overlay failed to load", e); }
-
-    try {
-      sbBoW.draw("hecata","QmVyaSBEdWt1bmdhbg","position-bottom-left","#76CC11","#000000");
-    } catch(e) { console.warn("SociaBuzz button failed to load", e); }
-
     const COUNTRY_LANG_MAP = {
       US: 'en', GB: 'en', AU: 'en', CA: 'en', NZ: 'en', IE: 'en', SG: 'en', PH: 'en', IN: 'en', ZA: 'en',
       MY: 'ms', BN: 'ms', TH: 'th', VN: 'vi', KH: 'km', LA: 'lo', MM: 'my', TL: 'pt',
@@ -1004,7 +1001,7 @@
             noticeText.textContent = "This page has been automatically translated.";
             document.getElementById('revertLangBtn').textContent = "Back to Indonesian";
           }
-          
+
           document.getElementById('langNotice').classList.add('visible');
         }
       }, 250);
