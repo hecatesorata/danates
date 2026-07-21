@@ -8,11 +8,11 @@ export async function onRequest(context) {
 
   // Data dummy simulasi transaksi Indodax
   const mockTxId = "INDODAX-TEST-" + Math.floor(100000 + Math.random() * 900000);
-  const mockAmountIDR = 150000; // Contoh donasi 150.000 IDR
+  const mockAmountIDR = 180000; // Contoh donasi 180.000 IDR
   const mockAmountUSD = 10.00;  // Nilai konversi USD
 
   try {
-    // 1. Simpan/Insert dummy data ke Supabase
+    // 1. Simpan/Insert dummy data ke Supabase (disesuaikan dengan skema tabel saat ini)
     const dbResponse = await fetch(`${supabaseUrl}/rest/v1/donations`, {
       method: "POST",
       headers: {
@@ -24,7 +24,6 @@ export async function onRequest(context) {
       body: JSON.stringify({
         transaction_id: mockTxId,
         amount: mockAmountUSD,
-        provider: "Indodax Test",
         created_at: new Date().toISOString()
       })
     });
