@@ -8,7 +8,7 @@ export async function onRequest(context) {
 
   // Data dummy simulasi transaksi Indodax
   const mockTxId = "INDODAX-TEST-" + Math.floor(100000 + Math.random() * 900000);
-  const mockAmountIDR = 180000; // Contoh donasi 180.000 IDR
+  const mockAmountIDR = 180000; // Contoh donasi 150.000 IDR
   const mockAmountUSD = 10.00;  // Nilai konversi USD
 
   try {
