@@ -11,9 +11,11 @@ export async function onRequestPost(context) {
       const payerEmail = resource.payer?.email_address || 'Anonymous';
 
       const supabaseUrl = context.env.SUPABASE_URL;
-      const supabaseKey = context.env.SUPABASE_SERVICE_ROLE_KEY;
+      const supabaseKey = context.env.SUPABASE_SERVICE_ROLE_KEY || context.env.SUPABASE_ANON_KEY;
+      const botToken = context.env.TELEGRAM_BOT_TOKEN;
+      const chatId = context.env.TELEGRAM_CHAT_ID;
 
-      // Kirim data langsung ke REST API Supabase menggunakan fetch bawaan
+      // 1. Simpan data transaksi ke REST API Supabase
       const response = await fetch(`${supabaseUrl}/rest/v1/donations`, {
         method: 'POST',
         headers: {
@@ -23,10 +25,7 @@ export async function onRequestPost(context) {
           'Prefer': 'return=minimal'
         },
         body: JSON.stringify({
-          order_id: orderId,
-          amount: amount,
-          currency: currency,
-          donor: payerEmail
+          amount: parseFloat(amount)
         })
       });
 
@@ -36,7 +35,25 @@ export async function onRequestPost(context) {
         return new Response(JSON.stringify({ error: errText }), { status: 500 });
       }
 
-      return new Response(JSON.stringify({ success: true, message: 'Webhook tercatat di Supabase' }), { 
+      // 2. Kirim Notifikasi ke Telegram
+      if (botToken && chatId) {
+        const message = `🎉 *Donasi PayPal Masuk!*\n\n` +
+                        `🆔 *Order ID:* \`${orderId}\`\n` +
+                        `💵 *Nominal:* $${parseFloat(amount).toFixed(2)} ${currency}\n` +
+                        `👤 *Pengirim:* ${payerEmail}`;
+
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: 'Markdown'
+          })
+        });
+      }
+
+      return new Response(JSON.stringify({ success: true, message: 'Webhook tercatat & notifikasi terkirim' }), { 
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       });
