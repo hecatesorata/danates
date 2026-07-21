@@ -20,9 +20,7 @@
     --gold-dim: rgba(201, 161, 90, 0.14);
     --red: #a2402f;
     --red-dim: rgba(162, 64, 47, 0.16);
-    --trakteer: #ff6d2d;
-    --saweria: #4c58d6;
-    --sociabuzz: #76cc11;
+    --indodax: #1f3a60;
     --paypal: #0070ba;
     --display: 'Spectral', Georgia, serif;
     --body: 'Karla', system-ui, sans-serif;
@@ -51,7 +49,7 @@
     padding: 0 24px;
   }
 
-  /* ---------- Emblem (signature motif, reused as divider) ---------- */
+  /* ---------- Emblem ---------- */
   .emblem {
     width: 34px;
     height: auto;
@@ -205,8 +203,7 @@
     border-color: rgba(242, 233, 220, 0.35);
     color: var(--text);
   }
-  .btn.trakteer { background: var(--trakteer); }
-  .btn.saweria { background: var(--saweria); }
+  .btn.indodax { background: var(--indodax); border: 1px solid #2d5488; }
   .btn.paypal { background: var(--paypal); }
 
   /* ---------- Ledger strip ---------- */
@@ -508,7 +505,7 @@
       </p>
       <div class="hero-actions">
         <a class="btn ghost" href="#inisiatif">Lihat inisiatif berjalan</a>
-        <a class="btn trakteer" href="#dukung">Ikut mendukung</a>
+        <a class="btn indodax" href="#dukung">Ikut mendukung</a>
       </div>
     </div>
   </section>
@@ -620,11 +617,9 @@
 
       <div class="donate-card">
         <div class="donate-buttons">
-          <a class="btn trakteer" href="https://trakteer.id/bintang_cahya_hen/tip" target="_blank" rel="noopener">
-            <span class="sigil">$</span> Dukung lewat Trakteer
-          </a>
-          <a class="btn saweria" href="https://saweria.co/Bintang_Cahya_Hen" target="_blank" rel="noopener">
-            <span class="sigil">$</span> Dukung lewat Saweria
+          <!-- Tombol Indodax -->
+          <a class="btn indodax" href="https://indodax.com" target="_blank" rel="noopener">
+            <span class="sigil">$</span> Dukung lewat Indodax (Crypto / IDR)
           </a>
           <!-- Tombol PayPal -->
           <a class="btn paypal" href="https://paypal.com/paypalme/fauzyazwary" target="_blank" rel="noopener">
@@ -653,13 +648,11 @@
   <footer class="site">
     <img class="emblem" src="assets/logo.png" alt="" />
     <p>PENJAGA BATAS — LAPORAN PEMBANGUNAN WILAYAH PERBATASAN</p>
-    <p>Dana disalurkan lewat Trakteer, Saweria &amp; PayPal · Dikelola transparan</p>
+    <p>Dana disalurkan lewat Indodax &amp; PayPal · Dikelola transparan</p>
   </footer>
 
   <!-- ---------- CDN & Dependencies ---------- -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/money.js/0.2.0/money.min.js" integrity="sha512-K17dj/jNbqdLrDhK+j8FJY7iIQ1slk7uULXqzqX9O3Q6a1Yf+A6Wn6DzU3Xv1c6O4bEik6X7xyC5lH1gjrShKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script type='text/javascript' src='https://edge-cdn.trakteer.id/js/trbtn-overlay.min.js?v=14-05-2025'></script>
-  <script type="text/javascript" src="https://storage.sociabuzz.com/storage/js/main/buttononwebsite/index.min.js"></script>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
   <!-- ---------- JAVASCRIPT LOGIC ---------- -->
@@ -738,22 +731,6 @@
     // Panggil saat dimuat dan sinkronkan tiap 10 detik
     loadProgress();
     setInterval(loadProgress, 10000);
-
-    try {
-      var trbtnId = trbtnOverlay.init(
-        'Dukung Saya di Trakteer',
-        '#be1e2d',
-        'https://trakteer.id/v1/bintang_cahya_hen/tip/embed/modal',
-        'https://edge-cdn.trakteer.id/images/embed/trbtn-icon.png?v=14-05-2025',
-        '40',
-        'floating-right'
-      );
-      trbtnOverlay.draw(trbtnId);
-    } catch(e) { console.warn("Trakteer overlay failed to load", e); }
-
-    try {
-      sbBoW.draw("hecata","QmVyaSBEdWt1bmdhbg","position-bottom-left","#76CC11","#000000");
-    } catch(e) { console.warn("SociaBuzz button failed to load", e); }
 
     const COUNTRY_LANG_MAP = {
       US: 'en', GB: 'en', AU: 'en', CA: 'en', NZ: 'en', IE: 'en', SG: 'en', PH: 'en', IN: 'en', ZA: 'en',
