@@ -34,7 +34,6 @@ export async function onRequest(context) {
 }
 
 async function processIndodaxDeposits(env) {
-  // Bersihkan spasi atau karakter newline tak sengaja dari env
   const apiKey = (env.INDODAX_API_KEY || '').trim();
   const secretKey = (env.INDODAX_SECRET_KEY || '').trim();
   const supabaseUrl = (env.SUPABASE_URL || '').trim();
@@ -44,10 +43,7 @@ async function processIndodaxDeposits(env) {
     throw new Error("Environment variables belum lengkap di Cloudflare!");
   }
 
-  // Waktu timestamp server dalam milidetik
   const timestamp = Date.now();
-  
-  // Buat query string untuk Trade API Indodax
   const bodyParams = new URLSearchParams();
   bodyParams.append('method', 'transHistory');
   bodyParams.append('timestamp', timestamp.toString());
@@ -74,15 +70,22 @@ async function processIndodaxDeposits(env) {
   const deposits = result.return.deposit || {};
   const IDR_TO_USD_RATE = parseFloat(env.EXCHANGE_RATE || '0.000064');
 
-  const existingRes = await fetch(`${supabaseUrl}/rest/v1/donations?platform=eq.Indodax&select=transaction_id`, {
-    headers: {
-      'apikey': supabaseServiceKey,
-      'Authorization': `Bearer ${supabaseServiceKey}`
+  // Ambil data transaksi lama di Supabase untuk pencegahan duplikasi
+  let processedTxIds = new Set();
+  try {
+    const existingRes = await fetch(`${supabaseUrl}/rest/v1/donations?select=transaction_id`, {
+      headers: {
+        'apikey': supabaseServiceKey,
+        'Authorization': `Bearer ${supabaseServiceKey}`
+      }
+    });
+    const existingData = await existingRes.json();
+    if (Array.isArray(existingData)) {
+      processedTxIds = new Set(existingData.map(item => item.transaction_id).filter(Boolean));
     }
-  });
-  
-  const existingData = await existingRes.json();
-  const processedTxIds = new Set((existingData || []).map(item => item.transaction_id));
+  } catch (e) {
+    console.warn("Gagal mengecek transaksi lama dari Supabase:", e);
+  }
 
   let addedCount = 0;
 
@@ -100,6 +103,7 @@ async function processIndodaxDeposits(env) {
 
       if (amountInUSD <= 0) continue;
 
+      // Masukkan data sesuai nama kolom di Supabase: amount, donor, source, transaction_id
       const insertRes = await fetch(`${supabaseUrl}/rest/v1/donations`, {
         method: 'POST',
         headers: {
@@ -109,9 +113,9 @@ async function processIndodaxDeposits(env) {
           'Prefer': 'return=minimal'
         },
         body: JSON.stringify({
-          amount: amountInUSD.toFixed(2),
-          donor_name: 'Donatur Indodax',
-          platform: 'Indodax',
+          amount: parseFloat(amountInUSD.toFixed(2)),
+          donor: 'Donatur Indodax',
+          source: 'indodax',
           transaction_id: txId
         })
       });
