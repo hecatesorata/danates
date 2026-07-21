@@ -626,7 +626,7 @@
           <a class="btn saweria" href="https://saweria.co/Bintang_Cahya_Hen" target="_blank" rel="noopener">
             <span class="sigil">$</span> Dukung lewat Saweria
           </a>
-          <!-- Tombol PayPal Ditambahkan Di Sini -->
+          <!-- Tombol PayPal -->
           <a class="btn paypal" href="https://paypal.com/paypalme/fauzyazwary" target="_blank" rel="noopener">
             <span class="sigil">$</span> Dukung lewat PayPal
           </a>
@@ -641,7 +641,7 @@
         </div>
         <div class="amounts">
           <span class="collected" id="collectedText">$0.00</span>
-          <span class="goal">dari <span id="goalText">$5,000.00</span></span>
+          <span class="goal">dari <span id="goalText">$20,000,000.00</span></span>
         </div>
         <p class="status-line" id="statusMessage">
           <span>menghubungkan ke server<span class="cursor"></span></span>
@@ -680,6 +680,11 @@
     const pctText = document.getElementById("pctText");
     const statusMessage = document.getElementById("statusMessage");
 
+    // Konfigurasi Supabase
+    const SUPABASE_URL = "https://jnkhrqvlqtamdclvwacx.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impua2hycXZscXRhbWRjbHZ3YWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5ODQ0ODUsImV4cCI6MjA5OTU2MDQ4NX0.rNYh35Beg93OJIG-6aF-zRLDfwD2wZFX_wSRmS3v-II";
+    const TARGET_GOAL = 20000000; // Target $20.000.000,00
+
     function formatUSD(number) {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -694,27 +699,43 @@
       collectedText.textContent = formatUSD(collectedAmount);
       goalText.textContent = formatUSD(goalAmount);
       progressFill.style.width = percent + "%";
-      pctText.textContent = `${percent.toFixed(0)}%`;
+      pctText.textContent = `${percent.toFixed(2)}%`;
     }
 
     function setStatus(message) {
       statusMessage.innerHTML = `<span>${message}<span class="cursor"></span></span>`;
     }
 
+    // Mengambil langsung data nominal dari Supabase
     async function loadProgress() {
       try {
-        const response = await fetch('/api/donasi');
-        if (!response.ok) throw new Error('Gagal mengambil data donasi');
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/donations?select=amount`, {
+          method: "GET",
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+          }
+        });
+
+        if (!response.ok) throw new Error('Gagal mengambil data dari Supabase');
+
         const data = await response.json();
-        updateProgress(data.collectedAmount, data.goalAmount);
+        
+        // Menghitung total seluruh donasi
+        const totalAmount = data.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+
+        // Update tampilan progres
+        updateProgress(totalAmount, TARGET_GOAL);
+
         const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
         setStatus(`sinkron terakhir ${time}`);
       } catch (error) {
-        setStatus('gagal memuat data, cek server backend');
+        setStatus('gagal memuat data dari database');
         console.error(error);
       }
     }
 
+    // Panggil saat dimuat dan sinkronkan tiap 10 detik
     loadProgress();
     setInterval(loadProgress, 10000);
 
