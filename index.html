@@ -343,16 +343,23 @@
   .fakta-slide {
     display: none;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    /* Mengikuti rasio asli media secara fleksibel */
+    max-height: 500px;
     background: #000;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
   }
   .fakta-slide.active {
-    display: block;
+    display: flex;
   }
   .fakta-slide img, .fakta-slide video {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    max-height: 500px;
+    object-fit: contain; /* Menyesuaikan gambar/video tanpa terpotong */
+    display: block;
+    margin: 0 auto;
   }
   .fakta-nav-btn {
     position: absolute;
@@ -379,6 +386,50 @@
     color: var(--muted);
     font-size: 14px;
   }
+
+  /* ---------- Lightbox Modal (Zoom / Membesar) ---------- */
+  .lightbox-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background: rgba(15, 11, 9, 0.92);
+    backdrop-filter: blur(6px);
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+  }
+  .lightbox-modal.active {
+    display: flex;
+  }
+  .lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .lightbox-content img, .lightbox-content video {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px 10px;
+  }
+  .lightbox-close:hover { color: var(--gold); }
 
   /* ---------- Donation section ---------- */
   .donate {
@@ -668,7 +719,7 @@
       <div class="section-head">
         <p class="section-eyebrow">Dokumentasi Nyata</p>
         <h2 class="section-title">Fakta Lapangan</h2>
-        <p class="section-body">Menampilkan foto dan video langsung dari folder penyimpanan repository.</p>
+        <p class="section-body">Menampilkan foto dan video langsung dari folder penyimpanan repository (Klik untuk memperbesar).</p>
       </div>
 
       <div class="fakta-slider-container" id="faktaContainer">
@@ -676,6 +727,13 @@
       </div>
     </div>
   </section>
+
+  <!-- ---------- Lightbox Modal (Zoom / Membesar) ---------- -->
+  <div class="lightbox-modal" id="lightboxModal">
+    <div class="lightbox-content" id="lightboxContent">
+      <button class="lightbox-close" id="lightboxClose">&times;</button>
+    </div>
+  </div>
 
   <section class="emblem-rule wrap">
     <img src="assets/logo.png" alt="" />
@@ -788,7 +846,7 @@
     loadProgress();
     setInterval(loadProgress, 10000);
 
-    /* ---------- Load GitHub Assets for Fakta Slider ---------- */
+    /* ---------- Load GitHub Assets for Fakta Slider & Lightbox ---------- */
     let currentSlide = 0;
     let slidesCount = 0;
 
@@ -818,15 +876,14 @@
           
           if (isVideo) {
             htmlContent += `
-              <div class="fakta-slide ${activeClass}">
-                <video controls muted>
+              <div class="fakta-slide ${activeClass}" onclick="openLightbox('video', '${file.download_url}')">
+                <video muted playsinline>
                   <source src="${file.download_url}" type="video/mp4">
-                  Browser Anda tidak mendukung tag video.
                 </video>
               </div>`;
           } else {
             htmlContent += `
-              <div class="fakta-slide ${activeClass}">
+              <div class="fakta-slide ${activeClass}" onclick="openLightbox('image', '${file.download_url}')">
                 <img src="${file.download_url}" alt="${file.name}" loading="lazy" />
               </div>`;
           }
@@ -834,8 +891,8 @@
 
         if (validFiles.length > 1) {
           htmlContent += `
-            <button class="fakta-nav-btn fakta-prev" onclick="changeSlide(-1)">&#10094;</button>
-            <button class="fakta-nav-btn fakta-next" onclick="changeSlide(1)">&#10095;</button>
+            <button class="fakta-nav-btn fakta-prev" onclick="event.stopPropagation(); changeSlide(-1)">&#10094;</button>
+            <button class="fakta-nav-btn fakta-next" onclick="event.stopPropagation(); changeSlide(1)">&#10095;</button>
           `;
         }
 
@@ -854,6 +911,45 @@
       currentSlide = (currentSlide + direction + slidesCount) % slidesCount;
       slides[currentSlide].classList.add('active');
     }
+
+    /* Lightbox Functions */
+    const lightboxModal = document.getElementById('lightboxModal');
+    const lightboxContent = document.getElementById('lightboxContent');
+    const lightboxClose = document.getElementById('lightboxClose');
+
+    function openLightbox(type, url) {
+      // Hapus elemen media sebelumnya di dalam modal
+      const existingMedia = lightboxContent.querySelector('img, video');
+      if (existingMedia) existingMedia.remove();
+
+      if (type === 'video') {
+        const vid = document.createElement('video');
+        vid.src = url;
+        vid.controls = true;
+        vid.autoplay = true;
+        lightboxContent.insertBefore(vid, lightboxClose);
+      } else {
+        const img = document.createElement('img');
+        img.src = url;
+        lightboxContent.insertBefore(img, lightboxClose);
+      }
+
+      lightboxModal.classList.add('active');
+    }
+
+    lightboxClose.addEventListener('click', () => {
+      lightboxModal.classList.remove('active');
+      const existingMedia = lightboxContent.querySelector('img, video');
+      if (existingMedia) existingMedia.remove();
+    });
+
+    lightboxModal.addEventListener('click', (e) => {
+      if (e.target === lightboxModal) {
+        lightboxModal.classList.remove('active');
+        const existingMedia = lightboxContent.querySelector('img, video');
+        if (existingMedia) existingMedia.remove();
+      }
+    });
 
     window.addEventListener('load', () => {
       loadFaktaMedia();
