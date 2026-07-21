@@ -1,26 +1,28 @@
 export default {
   async fetch(request, env) {
-    // Hanya menerima HTTP POST (karena PayPal mengirim POST)
+    // Hanya menerima HTTP POST dari PayPal
     if (request.method !== "POST") {
       return new Response("Method Not Allowed", { status: 405 });
     }
 
     try {
-      // 1. Ambil data JSON dari PayPal
+      // 1. Ambil payload JSON dari PayPal
       const event = await request.json();
 
-      // 2. Filter hanya untuk event pembayaran sukses
+      // 2. Filter event pembayaran sukses
       if (event.event_type === "PAYMENT.SALE.COMPLETED") {
         const payment = event.resource;
-        
-        const txId = payment.id;
-        const amount = payment.amount.total;
-        const currency = payment.amount.currency;
-        const emailPenerima = payment.receipt_id || "No Receipt Email";
 
-        // 3. SIMPAN KE SUPABASE (Menggunakan Supabase REST API bawaan)
-        // Pastikan Anda sudah membuat tabel bernama 'transaksi' di Supabase
-        const supabaseResponse = await fetch(`${env.SUPABASE_URL}/rest/v1/transaksi`, {
+        const amount = parseFloat(payment.amount.total);
+        const currency = payment.amount.currency;
+        
+        // Ambil nama donatur jika ada
+        const donorName = payment.payer?.payer_info?.first_name 
+          ? `${payment.payer.payer_info.first_name} ${payment.payer.payer_info.last_name || ''}`.trim()
+          : "PayPal Donor";
+
+        // 3. SIMPAN KE TABEL 'donations' DI SUPABASE
+        const supabaseRes = await fetch(`${env.SUPABASE_URL}/rest/v1/donations`, {
           method: "POST",
           headers: {
             "apikey": env.SUPABASE_ANON_KEY,
@@ -29,20 +31,24 @@ export default {
             "Prefer": "return=minimal"
           },
           body: JSON.stringify({
-            transaction_id: txId,
-            amount: parseFloat(amount),
-            currency: currency,
-            status: "COMPLETED",
+            amount: amount,
+            source: "paypal",
+            raw_payload: event,
+            donor: donorName,
             created_at: new Date().toISOString()
           })
         });
 
-        // 4. KIRIM NOTIFIKASI KE TELEGRAM
-        const pesanTelegram = `💸 *ADA TRANSFERAN MASUK!* 💸\n\n` +
-                              `• *ID Transaksi:* \`${txId}\`\n` +
-                              `• *Jumlah:* ${amount} ${currency}\n` +
-                              `• *Status:* Berhasil\n\n` +
-                              `Data telah otomatis dicatat di Supabase.`;
+        if (!supabaseRes.ok) {
+          console.error("Gagal simpan ke Supabase:", await supabaseRes.text());
+        }
+
+        // 4. KIRIM NOTIFIKASI TELEGRAM (Format Jarvis)
+        const pesanTelegram = `*Donasi baru masuk!*\n` +
+                              `*Nominal:* ${currency} ${amount}\n` +
+                              `*Donatur:* [ ${donorName} ]\n` +
+                              `*Sumber:* paypal\n` +
+                              `*Pesan:* Terima kasih atas dukungannya!`;
 
         await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
           method: "POST",
@@ -50,17 +56,16 @@ export default {
           body: JSON.stringify({
             chat_id: env.TELEGRAM_CHAT_ID,
             text: pesanTelegram,
-            parse_mode: "Markdown" // Agar teks bisa tebal/kode rapi
+            parse_mode: "Markdown"
           })
         });
       }
 
-      // PayPal meminta respon 200 OK dengan cepat
+      // Beritahu PayPal bahwa event berhasil diterima
       return new Response("OK", { status: 200 });
 
     } catch (err) {
-      console.error(err);
-      // Tetap kembalikan 200 atau 500 tergantung kebutuhan log Anda
+      console.error("Error Processing Webhook:", err);
       return new Response("Error Processing Webhook", { status: 500 });
     }
   }
