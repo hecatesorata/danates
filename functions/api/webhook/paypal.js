@@ -21,12 +21,12 @@ export default {
           ? `${payment.payer.payer_info.first_name} ${payment.payer.payer_info.last_name || ''}`.trim()
           : "PayPal Donor";
 
-        // 3. SIMPAN KE TABEL 'donations' DI SUPABASE
+        // 3. SIMPAN KE TABEL 'donations' DI SUPABASE (Memakai SERVICE ROLE KEY)
         const supabaseRes = await fetch(`${env.SUPABASE_URL}/rest/v1/donations`, {
           method: "POST",
           headers: {
-            "apikey": env.SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${env.SUPABASE_ANON_KEY}`,
+            "apikey": env.SUPABASE_SERVICE_ROLE_KEY,
+            "Authorization": `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
             "Content-Type": "application/json",
             "Prefer": "return=minimal"
           },
