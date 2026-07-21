@@ -11,15 +11,19 @@ export default {
 
       // 2. Filter event pembayaran sukses
       if (event.event_type === "PAYMENT.SALE.COMPLETED") {
-        const payment = event.resource;
+        const payment = event.resource || {};
 
-        const amount = parseFloat(payment.amount.total);
-        const currency = payment.amount.currency;
+        const amount = parseFloat(payment.amount?.total || "0");
+        const currency = payment.amount?.currency || "USD";
         
-        // Ambil nama donatur jika ada
-        const donorName = payment.payer?.payer_info?.first_name 
-          ? `${payment.payer.payer_info.first_name} ${payment.payer.payer_info.last_name || ''}`.trim()
-          : "PayPal Donor";
+        // Ambil nama donatur dengan aman (mencegah TypeError jika payer undefined)
+        const firstName = payment.payer?.payer_info?.first_name;
+        const lastName = payment.payer?.payer_info?.last_name;
+        
+        let donorName = "PayPal Donor";
+        if (firstName) {
+          donorName = `${firstName} ${lastName || ''}`.trim();
+        }
 
         // 3. SIMPAN KE TABEL 'donations' DI SUPABASE (Memakai SERVICE ROLE KEY)
         const supabaseRes = await fetch(`${env.SUPABASE_URL}/rest/v1/donations`, {
@@ -40,7 +44,10 @@ export default {
         });
 
         if (!supabaseRes.ok) {
-          console.error("Gagal simpan ke Supabase:", await supabaseRes.text());
+          const errText = await supabaseRes.text();
+          console.error("Gagal simpan ke Supabase:", errText);
+        } else {
+          console.log("Berhasil menyimpan donasi ke Supabase!");
         }
 
         // 4. KIRIM NOTIFIKASI TELEGRAM (Format Jarvis)
@@ -50,7 +57,7 @@ export default {
                               `*Sumber:* paypal\n` +
                               `*Pesan:* Terima kasih atas dukungannya!`;
 
-        await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        const tgRes = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -59,13 +66,17 @@ export default {
             parse_mode: "Markdown"
           })
         });
+
+        if (!tgRes.ok) {
+          console.error("Gagal kirim ke Telegram:", await tgRes.text());
+        }
       }
 
       // Beritahu PayPal bahwa event berhasil diterima
       return new Response("OK", { status: 200 });
 
     } catch (err) {
-      console.error("Error Processing Webhook:", err);
+      console.error("Error Processing Webhook:", err.stack || err);
       return new Response("Error Processing Webhook", { status: 500 });
     }
   }
