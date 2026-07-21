@@ -2,7 +2,7 @@ export async function onRequestPost(context) {
   try {
     const event = await context.request.json();
 
-    if (event.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
+    if (event.event_type === 'PAYMENT.SALE.COMPLETED') {
       const resource = event.resource;
       
       const orderId = resource.id;
