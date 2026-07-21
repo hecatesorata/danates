@@ -17,7 +17,6 @@ async function generateHmacSha512(secretKey, message) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Endpoint onRequest yang dipanggil Cloudflare Pages
 export async function onRequest(context) {
   const { env } = context;
   
@@ -35,20 +34,23 @@ export async function onRequest(context) {
 }
 
 async function processIndodaxDeposits(env) {
-  const apiKey = env.INDODAX_API_KEY;
-  const secretKey = env.INDODAX_SECRET_KEY;
-  const supabaseUrl = env.SUPABASE_URL;
-  const supabaseServiceKey = env.SUPABASE_SERVICE_ROLE_KEY;
+  // Bersihkan spasi atau karakter newline tak sengaja dari env
+  const apiKey = (env.INDODAX_API_KEY || '').trim();
+  const secretKey = (env.INDODAX_SECRET_KEY || '').trim();
+  const supabaseUrl = (env.SUPABASE_URL || '').trim();
+  const supabaseServiceKey = (env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
 
   if (!apiKey || !secretKey || !supabaseUrl || !supabaseServiceKey) {
     throw new Error("Environment variables belum lengkap di Cloudflare!");
   }
 
+  // Waktu timestamp server dalam milidetik
   const timestamp = Date.now();
-  const bodyParams = new URLSearchParams({
-    method: 'transHistory',
-    timestamp: timestamp.toString()
-  });
+  
+  // Buat query string untuk Trade API Indodax
+  const bodyParams = new URLSearchParams();
+  bodyParams.append('method', 'transHistory');
+  bodyParams.append('timestamp', timestamp.toString());
 
   const bodyString = bodyParams.toString();
   const signature = await generateHmacSha512(secretKey, bodyString);
@@ -70,7 +72,7 @@ async function processIndodaxDeposits(env) {
   }
 
   const deposits = result.return.deposit || {};
-  const IDR_TO_USD_RATE = 0.000064;
+  const IDR_TO_USD_RATE = parseFloat(env.EXCHANGE_RATE || '0.000064');
 
   const existingRes = await fetch(`${supabaseUrl}/rest/v1/donations?platform=eq.Indodax&select=transaction_id`, {
     headers: {
@@ -80,7 +82,7 @@ async function processIndodaxDeposits(env) {
   });
   
   const existingData = await existingRes.json();
-  const processedTxIds = new Set(existingData.map(item => item.transaction_id));
+  const processedTxIds = new Set((existingData || []).map(item => item.transaction_id));
 
   let addedCount = 0;
 
