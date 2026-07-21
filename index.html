@@ -204,7 +204,6 @@
     color: var(--text);
   }
   .btn.indodax { background: var(--indodax); border: 1px solid #2d5488; }
-  .btn.paypal { background: var(--paypal); }
 
   /* ---------- Ledger strip ---------- */
   .ledger {
@@ -621,10 +620,9 @@
           <a class="btn indodax" href="https://indodax.com" target="_blank" rel="noopener">
             <span class="sigil">$</span> Dukung lewat Indodax (Crypto / IDR)
           </a>
-          <!-- Tombol PayPal -->
-          <a class="btn paypal" href="https://paypal.com/paypalme/AustinSuryani" target="_blank" rel="noopener">
-            <span class="sigil">$</span> Dukung lewat PayPal
-          </a>
+          
+          <!-- Container Tombol PayPal SDK -->
+          <div id="paypal-button-container" style="margin-top: 5px; width: 100%;"></div>
         </div>
 
         <div class="progress-label-row">
@@ -654,6 +652,9 @@
   <!-- ---------- CDN & Dependencies ---------- -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/money.js/0.2.0/money.min.js" integrity="sha512-K17dj/jNbqdLrDhK+j8FJY7iIQ1slk7uULXqzqX9O3Q6a1Yf+A6Wn6DzU3Xv1c6O4bEik6X7xyC5lH1gjrShKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <!-- PayPal JS SDK -->
+  <script src="https://www.paypal.com/sdk/js?client-id=ARu9inIMZmM8EYDrjFLBYETOTugzSW1g73cR6emzXarEplsYvUfBKw-eSG5H8uKnohlYf_PRAu5wQL6d&currency=USD"></script>
 
   <!-- ---------- JAVASCRIPT LOGIC ---------- -->
   <script>
@@ -732,6 +733,39 @@
     loadProgress();
     setInterval(loadProgress, 10000);
 
+    // ---------- Render Tombol PayPal SDK ----------
+    if (window.paypal) {
+      paypal.Buttons({
+        style: {
+          layout: 'vertical',
+          color:  'gold',
+          shape:  'rect',
+          label:  'paypal'
+        },
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              description: "Donasi Penjaga Batas Kaltara",
+              amount: {
+                value: '10.00' // Nominal default ($10 USD)
+              }
+            }]
+          });
+        },
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(details) {
+            setStatus('Terima kasih! Donasi berhasil diterima.');
+            setTimeout(loadProgress, 2000);
+          });
+        },
+        onError: function(err) {
+          console.error('PayPal Checkout Error:', err);
+          setStatus('Terjadi kesalahan saat memproses pembayaran PayPal.');
+        }
+      }).render('#paypal-button-container');
+    }
+
+    // ---------- Auto Translate Script ----------
     const COUNTRY_LANG_MAP = {
       US: 'en', GB: 'en', AU: 'en', CA: 'en', NZ: 'en', IE: 'en', SG: 'en', PH: 'en', IN: 'en', ZA: 'en',
       MY: 'ms', BN: 'ms', TH: 'th', VN: 'vi', KH: 'km', LA: 'lo', MM: 'my', TL: 'pt',
