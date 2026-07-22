@@ -3,18 +3,28 @@
 // Menerima webhook dari Trakteer / Sociabuzz / Saweria, simpan ke Supabase,
 // dan kirim notifikasi ke Telegram kalau dikonfigurasi.
 //
+// PENTING: Trakteer/Saweria/Sociabuzz kirim nominal dalam RUPIAH. Kolom
+// `amount` di tabel donations HARUS selalu dalam USD (progress bar di
+// index.html langsung nampilin kolom ini sebagai USD tanpa konversi lagi).
+// Makanya di sini nominal asli disimpan ke `amount_original` +
+// `currency_original`, dan `amount` adalah hasil konversi ke USD.
+//
 // Env vars yang dibutuhkan (set di Cloudflare Pages > Settings > Environment variables):
 //   SUPABASE_URL
 //   SUPABASE_SERVICE_ROLE_KEY
-//   WEBHOOK_TOKEN_TRAKTEER    (token dari dashboard Trakteer > Integrasi > Webhook,
-//                              dikirim Trakteer lewat header X-Webhook-Token)
-//   WEBHOOK_TOKEN_SOCIABUZZ   (token "sbwhook-..." dari dashboard Sociabuzz)
-//   WEBHOOK_TOKEN_SAWERIA     (token "swhook-..." buatan sendiri, diselipkan di URL
-//                              webhook yang didaftarkan ke Saweria: ?token=...)
-//   SAWERIA_STREAM_KEY        (opsional, cuma dipakai kalau akun Saweria kamu kirim
-//                              header Saweria-Callback-Signature)
-//   TELEGRAM_BOT_TOKEN        (opsional, isi kalau mau notifikasi Telegram)
-//   TELEGRAM_CHAT_ID          (opsional, wajib diisi bareng TELEGRAM_BOT_TOKEN)
+//   EXCHANGE_RATE              (kurs IDR per 1 USD, misal 16300. Update berkala,
+//                               cek kurs terbaru — jangan dibiarkan basi kelamaan)
+//   WEBHOOK_TOKEN_TRAKTEER     (token dari dashboard Trakteer > Integrasi > Webhook,
+//                               dikirim Trakteer lewat header X-Webhook-Token)
+//   WEBHOOK_TOKEN_SOCIABUZZ    (token "sbwhook-..." dari dashboard Sociabuzz)
+//   WEBHOOK_TOKEN_SAWERIA      (token "swhook-..." buatan sendiri, diselipkan di URL
+//                               webhook yang didaftarkan ke Saweria: ?token=...)
+//   SAWERIA_STREAM_KEY         (opsional, cuma dipakai kalau akun Saweria kamu kirim
+//                               header Saweria-Callback-Signature)
+//   TELEGRAM_BOT_TOKEN         (opsional, isi kalau mau notifikasi Telegram)
+//   TELEGRAM_CHAT_ID           (opsional, wajib diisi bareng TELEGRAM_BOT_TOKEN)
+
+const DEFAULT_EXCHANGE_RATE = 16300; // IDR per 1 USD — fallback kalau env belum diisi
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -76,12 +86,13 @@ export async function onRequestPost(context) {
 }
 
 // Proses bareng buat semua sumber donasi setelah lolos verifikasi:
-// ekstrak data, simpan ke Supabase, lalu kirim notifikasi Telegram.
+// ekstrak data, convert ke USD, simpan ke Supabase, lalu kirim notifikasi Telegram.
 async function handleDonation(payload, source, env) {
   const SUPABASE_URL = env.SUPABASE_URL;
   const SUPABASE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
+  const EXCHANGE_RATE = Number(env.EXCHANGE_RATE) || DEFAULT_EXCHANGE_RATE;
 
-  const { amount, donor, message } = extractDonationData(payload, source);
+  const { amount, donor, message, transactionId } = extractDonationData(payload, source);
 
   if (!amount || amount <= 0) {
     return jsonResponse({ error: 'Nominal donasi tidak valid' }, 400);
@@ -91,20 +102,40 @@ async function handleDonation(payload, source, env) {
     return jsonResponse({ error: 'Supabase belum dikonfigurasi' }, 500);
   }
 
+  const amountUSD = Number((amount / EXCHANGE_RATE).toFixed(2));
+  const txId = transactionId || `${source}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
   const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/donations`, {
     method: 'POST',
     headers: {
       apikey: SUPABASE_KEY,
       Authorization: `Bearer ${SUPABASE_KEY}`,
       'Content-Type': 'application/json',
-      Prefer: 'return=minimal',
+      Prefer: 'return=representation,resolution=ignore-duplicates',
     },
-    body: JSON.stringify({ amount, source, donor, message, raw_payload: payload }),
+    body: JSON.stringify({
+      amount: amountUSD,
+      amount_original: amount,
+      currency_original: 'IDR',
+      source,
+      donor,
+      message,
+      transaction_id: txId,
+      raw_payload: payload,
+    }),
   });
 
   if (!insertRes.ok) {
     const detail = await insertRes.text();
     return jsonResponse({ error: 'Gagal menyimpan ke database', detail }, 500);
+  }
+
+  const inserted = await insertRes.json().catch(() => []);
+  const isNew = Array.isArray(inserted) && inserted.length > 0;
+
+  if (!isNew) {
+    // Duplikat (transaction_id sudah pernah masuk) — jangan kirim notif ulang.
+    return jsonResponse({ ok: true, source, duplicate: true }, 200);
   }
 
   // Hitung total terkumpul terbaru buat dimasukkan ke notifikasi.
@@ -123,7 +154,7 @@ async function handleDonation(payload, source, env) {
 
   const messageLines = [
     '*Donasi baru masuk\\!*',
-    `Nominal: *${escapeMarkdownV2(formatRupiah(amount))}*`,
+    `Nominal: *${escapeMarkdownV2(formatRupiah(amount))}* \\(≈ $${escapeMarkdownV2(amountUSD.toFixed(2))}\\)`,
     `Donatur: *${escapeMarkdownV2(donor)}*`,
     `Sumber: *${escapeMarkdownV2(source)}*`,
   ];
@@ -131,13 +162,13 @@ async function handleDonation(payload, source, env) {
     messageLines.push(`Pesan: _${escapeMarkdownV2(message)}_`);
   }
   if (totalCollected !== null) {
-    messageLines.push(`Total terkumpul: *${escapeMarkdownV2(formatRupiah(totalCollected))}*`);
+    messageLines.push(`Total terkumpul: *$${escapeMarkdownV2(totalCollected.toFixed(2))}*`);
   }
 
   const telegramResult = await sendTelegramMessage(env, messageLines.join('\n'));
 
   return jsonResponse(
-    { ok: true, source, telegram: telegramResult.sent ? 'sent' : 'skipped' },
+    { ok: true, source, amount_usd: amountUSD, telegram: telegramResult.sent ? 'sent' : 'skipped' },
     200
   );
 }
@@ -188,6 +219,7 @@ function detectSource(payload) {
 
 // Trakteer, Saweria, dan Sociabuzz masing-masing pakai nama field yang beda buat
 // nominal, nama donatur, dan pesan. Fungsi ini nyamain jadi bentuk konsisten.
+// Nominal yang dikembalikan di sini MASIH dalam Rupiah (belum dikonversi).
 // Referensi field Trakteer (dicek dari help.trakteer.id/help-center/articles/70):
 //   { transaction_id, type, supporter_name, supporter_message, unit, quantity, price, net_amount }
 // Referensi field Saweria: { version, id, amount_raw, cut, donator_name, donator_email, message }
@@ -195,17 +227,20 @@ function extractDonationData(payload, source) {
   let amount;
   let donor;
   let message;
+  let transactionId;
 
   switch (source) {
     case 'trakteer':
       amount = Number(payload.price ?? payload.net_amount ?? payload.amount);
       donor = payload.supporter_name;
       message = payload.supporter_message;
+      transactionId = payload.transaction_id ? `trakteer-${payload.transaction_id}` : undefined;
       break;
     case 'saweria':
       amount = Number(payload.amount_raw ?? payload.amount);
       donor = payload.donator_name;
       message = payload.message;
+      transactionId = payload.id ? `saweria-${payload.id}` : undefined;
       break;
     case 'sociabuzz':
       // Skema webhook Sociabuzz belum konsisten didokumentasikan di tempat kami cek;
@@ -213,14 +248,18 @@ function extractDonationData(payload, source) {
       amount = Number(payload.amount ?? payload.amount_raw ?? payload.price);
       donor = payload.supporter_name || payload.donator_name || payload.name;
       message = payload.message || payload.supporter_message;
+      transactionId = payload.transaction_id || payload.id ? `sociabuzz-${payload.transaction_id || payload.id}` : undefined;
       break;
     default:
       amount = Number(payload.amount ?? payload.amount_raw ?? payload.price ?? payload.net_amount);
       donor = payload.supporter_name || payload.donator_name || payload.donor || payload.name;
       message = payload.message || payload.supporter_message || payload.msg;
+      transactionId = payload.transaction_id || payload.id
+        ? `${source}-${payload.transaction_id || payload.id}`
+        : undefined;
   }
 
-  return { amount, donor: donor || 'Anonim', message: message || '' };
+  return { amount, donor: donor || 'Anonim', message: message || '', transactionId };
 }
 
 function formatRupiah(number) {
