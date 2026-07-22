@@ -11,5 +11,5 @@ jobs:
     steps:
       - name: Panggil endpoint sync Indodax
         run: |
-          curl -sf "https://danates.pages.dev/webhook/indodax?token=${{ secrets.INDODAX_CRON_SECRET }}" \
+          curl -sf "https://danatesting.pages.dev/webhook/indodax?token=${{ secrets.INDODAX_CRON_SECRET }}" \
             || (echo "Sync gagal!" && exit 1)
