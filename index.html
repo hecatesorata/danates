@@ -783,7 +783,7 @@
       <div class="donate-card">
         <div class="donate-buttons">
           <!-- Tombol Indodax / Crypto (membuka modal QR) -->
-          <button class="btn indodax" type="button" onclick="openIndodaxModal()" style="cursor: pointer;">
+          <button class="btn indodax" type="button" onclick="openIndodaxModal()">
             <span class="sigil">$</span> Dukung lewat Crypto / Indodax
           </button>
           <!-- Container Tombol PayPal SDK -->
@@ -810,27 +810,24 @@
 
   <!-- ---------- Modal Popup Deposit Indodax (USDT TRC-20) ---------- -->
   <div id="indodaxModal" style="display:none; position:fixed; inset:0; background:rgba(15, 11, 9, 0.92); backdrop-filter:blur(6px); z-index:9999; justify-content:center; align-items:center; padding:20px;">
-    <div style="background:var(--surface-raised); border:1px solid var(--border); padding:28px; border-radius:8px; max-width:420px; width:100%; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-
-      <h3 style="font-family:var(--display); color:var(--gold); margin:0 0 8px; font-size:20px;">Donasi via Indodax (USDT)</h3>
+    <div style="background:var(--surface-raised); border:1px solid var(--border); padding:28px; border-radius:8px; max-width:380px; width:100%; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+      <h3 style="font-family:var(--display); color:var(--gold); margin:0 0 8px; font-size:20px;">Donasi via Crypto (USDT TRC-20)</h3>
       <p style="font-size:12.5px; color:var(--muted); margin:0 0 16px; line-height:1.4;">
-        Scan QR Code atau salin alamat wallet <b>USDT (TRC-20)</b> di bawah ini untuk mengirim donasi:
+        Scan QR di bawah pakai scanner aplikasi wallet kamu untuk langsung membuka menu kirim:
       </p>
-
-      <!-- QR Code Generator Otomatis berbasis Alamat Wallet TRC20 -->
-      <div style="background:#fff; padding:12px; border-radius:8px; display:inline-block; margin-bottom:16px;">
-        <img id="cryptoQrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=TUoiJ8qwPY6sKCqNbEL7dAgdKdQKUTenH7" alt="QR Code Deposit TRC20" style="width:160px; height:160px; display:block;" />
+      <!-- QR Code Deep Link (Langsung Buka Menu Transfer TRC20 USDT) -->
+      <div style="background:#fff; padding:12px; border-radius:8px; display:inline-block; margin-bottom:14px;">
+        <img id="cryptoQrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=tron%3ATUoiJ8qwPY6sKCqNbEL7dAgdKdQKUTenH7%3Ftoken%3DUSDT" alt="Direct Transfer USDT TRC20" style="width:180px; height:180px; display:block;" />
       </div>
-
       <!-- Tampilan Alamat Wallet -->
-      <div style="background:var(--bg); border:1px solid var(--border); padding:10px 12px; border-radius:4px; font-family:var(--mono); font-size:11px; color:var(--text); word-break:break-all; margin-bottom:16px;" id="walletAddressText">
+      <div style="background:var(--bg); border:1px solid var(--border); padding:8px 12px; border-radius:4px; font-family:var(--mono); font-size:10.5px; color:var(--muted); word-break:break-all; margin-bottom:14px;">
         TUoiJ8qwPY6sKCqNbEL7dAgdKdQKUTenH7
       </div>
-
-      <!-- Tombol Aksi -->
-      <button onclick="copyWalletAddr()" style="background:var(--gold); border:none; color:var(--bg); padding:10px 18px; border-radius:4px; font-weight:600; font-family:var(--mono); font-size:12px; cursor:pointer; width:100%; margin-bottom:8px;">
-        📋 Salin Alamat Wallet
-      </button>
+      <!-- Tombol Direct Link Kirim (Jika dibuka dari HP) -->
+      <a href="tron:TUoiJ8qwPY6sKCqNbEL7dAgdKdQKUTenH7?token=USDT" style="display:block; background:var(--gold); border:none; color:var(--bg); padding:11px 18px; border-radius:4px; font-weight:600; font-family:var(--mono); font-size:12px; cursor:pointer; text-decoration:none; margin-bottom:8px;">
+        🚀 Buka Aplikasi Wallet / Kirim Sekarang
+      </a>
+      <!-- Tombol Tutup -->
       <button onclick="closeIndodaxModal()" style="background:transparent; border:1px solid var(--border); color:var(--muted); padding:8px 18px; border-radius:4px; font-family:var(--mono); font-size:12px; cursor:pointer; width:100%;">
         Tutup
       </button>
@@ -1138,14 +1135,6 @@
     function closeIndodaxModal() {
       document.getElementById('indodaxModal').style.display = 'none';
     }
-    function copyWalletAddr() {
-      const addr = document.getElementById('walletAddressText').innerText.trim();
-      navigator.clipboard.writeText(addr).then(() => {
-        alert('Alamat Wallet USDT (TRC-20) berhasil disalin!');
-      }).catch(err => {
-        console.error('Gagal menyalin:', err);
-      });
-    }
     // Tutup modal jika user mengeklik di luar kotak modal
     window.addEventListener('click', function(e) {
       const modal = document.getElementById('indodaxModal');
@@ -1154,7 +1143,7 @@
       }
     });
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <div id="google_translate_element"></div>
 </body>
 </html>
