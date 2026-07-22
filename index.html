@@ -314,6 +314,36 @@
     color: #d8cbb8;
     line-height: 1.45;
   }
+  .campaign-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--gold);
+    padding: 5px 10px 5px 8px;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+  .campaign-badge .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--bg);
+    animation: badge-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes badge-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
   @media (max-width: 760px) {
     .campaign-grid { grid-template-columns: repeat(2, 1fr); }
   }
@@ -526,6 +556,7 @@
     .cursor { animation: none; opacity: 1; }
     .campaign-card:hover img { transform: none; }
     .btn { transition: none; }
+    .campaign-badge .dot { animation: none; }
   }
 
   @media (max-width: 420px) {
@@ -650,6 +681,7 @@
 
     <div class="campaign-grid">
       <div class="campaign-card">
+        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
         <img src="assets/campaign/sekolah.jpg" alt="Pembangunan gedung sekolah" loading="lazy" />
         <div class="campaign-overlay">
           <span class="campaign-index">01</span>
@@ -658,6 +690,7 @@
         </div>
       </div>
       <div class="campaign-card">
+        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
         <img src="assets/campaign/jalan.jpg" alt="Pengerasan jalan penghubung desa" loading="lazy" />
         <div class="campaign-overlay">
           <span class="campaign-index">02</span>
@@ -666,6 +699,7 @@
         </div>
       </div>
       <div class="campaign-card">
+        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
         <img src="assets/campaign/jembatan.jpg" alt="Pembangunan jembatan penyeberangan sungai" loading="lazy" />
         <div class="campaign-overlay">
           <span class="campaign-index">03</span>
@@ -674,6 +708,7 @@
         </div>
       </div>
       <div class="campaign-card">
+        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
         <img src="assets/campaign/rumahsakit.jpg" alt="Rumah Sakit Daerah yang sedang dibangun" loading="lazy" />
         <div class="campaign-overlay">
           <span class="campaign-index">04</span>
@@ -682,6 +717,7 @@
         </div>
       </div>
       <div class="campaign-card">
+        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
         <img src="assets/campaign/bantuan.jpg" alt="Distribusi bantuan kemanusiaan berupa sembako" loading="lazy" />
         <div class="campaign-overlay">
           <span class="campaign-index">05</span>
@@ -690,6 +726,7 @@
         </div>
       </div>
       <div class="campaign-card">
+        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
         <img src="assets/campaign/kesehatan.jpg" alt="Layanan pemeriksaan kesehatan warga" loading="lazy" />
         <div class="campaign-overlay">
           <span class="campaign-index">06</span>
@@ -698,6 +735,7 @@
         </div>
       </div>
       <div class="campaign-card">
+        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
         <img src="assets/campaign/distribusi.jpg" alt="Distribusi bantuan lewat jalur sungai" loading="lazy" />
         <div class="campaign-overlay">
           <span class="campaign-index">07</span>
