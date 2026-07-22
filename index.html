@@ -786,6 +786,11 @@
           <button class="btn indodax" type="button" onclick="openIndodaxModal()">
             <span class="sigil">$</span> Dukung lewat Crypto / Indodax
           </button>
+          <!-- Tombol PayPal.Me (link langsung) -->
+          <a class="btn" href="https://paypal.me/AustinSuryani" target="_blank" rel="noopener" style="background:var(--paypal); border:1px solid #005a99; justify-content:center;">
+            <span class="sigil">$</span> Dukung lewat PayPal.Me
+          </a>
+
           <!-- Container Tombol PayPal SDK -->
           <div id="paypal-button-container" style="margin-top: 5px; width: 100%;"></div>
         </div>
@@ -820,13 +825,20 @@
         <img id="cryptoQrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=tron%3ATUoiJ8qwPY6sKCqNbEL7dAgdKdQKUTenH7%3Ftoken%3DUSDT" alt="Direct Transfer USDT TRC20" style="width:180px; height:180px; display:block;" />
       </div>
       <!-- Tampilan Alamat Wallet -->
-      <div style="background:var(--bg); border:1px solid var(--border); padding:8px 12px; border-radius:4px; font-family:var(--mono); font-size:10.5px; color:var(--muted); word-break:break-all; margin-bottom:14px;">
+      <div style="background:var(--bg); border:1px solid var(--border); padding:8px 12px; border-radius:4px; font-family:var(--mono); font-size:10.5px; color:var(--muted); word-break:break-all; margin-bottom:14px;" id="walletAddressText">
         TUoiJ8qwPY6sKCqNbEL7dAgdKdQKUTenH7
       </div>
-      <!-- Tombol Direct Link Kirim (Jika dibuka dari HP) -->
+      <!-- Tombol Direct Link Kirim (mungkin tidak jalan di semua wallet, tergantung skema URI yang didukung app) -->
       <a href="tron:TUoiJ8qwPY6sKCqNbEL7dAgdKdQKUTenH7?token=USDT" style="display:block; background:var(--gold); border:none; color:var(--bg); padding:11px 18px; border-radius:4px; font-weight:600; font-family:var(--mono); font-size:12px; cursor:pointer; text-decoration:none; margin-bottom:8px;">
         🚀 Buka Aplikasi Wallet / Kirim Sekarang
       </a>
+      <p style="font-size:10.5px; color:var(--muted-dim); margin:0 0 12px; line-height:1.4;">
+        Tombol di atas tidak jalan di sebagian wallet? Salin alamat manual di bawah dan tempel di app wallet kamu.
+      </p>
+      <!-- Tombol Salin Alamat (fallback) -->
+      <button onclick="copyWalletAddr()" style="background:transparent; border:1px solid var(--gold); color:var(--gold); padding:9px 18px; border-radius:4px; font-weight:600; font-family:var(--mono); font-size:12px; cursor:pointer; width:100%; margin-bottom:8px;">
+        📋 Salin Alamat Wallet
+      </button>
       <!-- Tombol Tutup -->
       <button onclick="closeIndodaxModal()" style="background:transparent; border:1px solid var(--border); color:var(--muted); padding:8px 18px; border-radius:4px; font-family:var(--mono); font-size:12px; cursor:pointer; width:100%;">
         Tutup
@@ -1134,6 +1146,14 @@
     }
     function closeIndodaxModal() {
       document.getElementById('indodaxModal').style.display = 'none';
+    }
+    function copyWalletAddr() {
+      const addr = document.getElementById('walletAddressText').innerText.trim();
+      navigator.clipboard.writeText(addr).then(() => {
+        alert('Alamat Wallet USDT (TRC-20) berhasil disalin!');
+      }).catch(err => {
+        console.error('Gagal menyalin:', err);
+      });
     }
     // Tutup modal jika user mengeklik di luar kotak modal
     window.addEventListener('click', function(e) {
