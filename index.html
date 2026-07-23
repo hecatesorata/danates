@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" integrity="sha512-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14/YivfrPQPvnI9UB4hE0/D14ZLvNqTAmMB5Qr9BSbTNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
   :root {
     --bg: #181310;
@@ -351,6 +352,81 @@
     .campaign-grid { grid-template-columns: 1fr; }
   }
 
+  /* ---------- Peta Section ---------- */
+  .peta-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .peta-frame {
+    max-width: 1032px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+  }
+  #petaMap {
+    width: 100%;
+    height: 480px;
+    background: var(--surface-raised);
+  }
+  @media (max-width: 640px) {
+    #petaMap { height: 360px; }
+  }
+  .peta-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    justify-content: center;
+    margin-top: 20px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .peta-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .peta-legend .swatch {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: inline-block;
+  }
+  /* Leaflet dark theme overrides */
+  .leaflet-popup-content-wrapper {
+    background: var(--surface-raised);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--body);
+  }
+  .leaflet-popup-tip { background: var(--surface-raised); border: 1px solid var(--border); }
+  .leaflet-popup-content { margin: 12px 14px; font-size: 13px; line-height: 1.5; }
+  .leaflet-popup-content b {
+    font-family: var(--display);
+    color: var(--gold);
+    font-size: 14.5px;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
+  .leaflet-control-attribution {
+    background: rgba(24,19,16,0.75) !important;
+    color: var(--muted-dim) !important;
+    font-size: 10px !important;
+  }
+  .leaflet-control-attribution a { color: var(--muted) !important; }
+  .leaflet-control-zoom a {
+    background: var(--surface-raised) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+  }
+  .leaflet-control-zoom a:hover { background: var(--gold) !important; color: var(--bg) !important; }
+
   /* ---------- Fakta Section & Slider ---------- */
   .fakta-section {
     background: var(--surface);
@@ -605,6 +681,7 @@
       </a>
       <nav class="site-nav">
         <a href="#inisiatif">Inisiatif</a>
+        <a href="#peta">Peta</a>
         <a href="#fakta">Fakta Lapangan</a>
         <a href="#dukung">Dukung</a>
       </nav>
@@ -746,6 +823,24 @@
     </div>
   </section>
 
+  <!-- ---------- SECTION PETA ---------- -->
+  <section class="peta-section" id="peta">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-eyebrow">Titik Koordinat</p>
+        <h2 class="section-title">Peta wilayah kerja perbatasan</h2>
+        <p class="section-body">Tujuh titik inisiatif tersebar di sepanjang kawasan perbatasan Kalimantan Utara — dari Krayan sampai Sebatik.</p>
+      </div>
+      <div class="peta-frame">
+        <div id="petaMap"></div>
+      </div>
+      <div class="peta-legend">
+        <span><span class="swatch"></span>Titik inisiatif</span>
+        <span>Geser &amp; zoom peta untuk menjelajah kawasan perbatasan</span>
+      </div>
+    </div>
+  </section>
+
   <!-- ---------- SECTION FAKTA & SLIDER ---------- -->
   <section class="fakta-section" id="fakta">
     <div class="wrap">
@@ -853,6 +948,7 @@
   </footer>
 
   <!-- ---------- CDN & Dependencies ---------- -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/money.js/0.2.0/money.min.js" integrity="sha512-K17dj/jNbqdLrDhK+j8FJY7iIQ1slk7uULXqzqX9O3Q6a1Yf+A6Wn6DzU3Xv1c6O4bEik6X7xyC5lH1gjrShKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
@@ -968,6 +1064,89 @@
       }).render('#paypal-button-container');
     }
 
+    /* ---------- PETA WILAYAH KERJA (Leaflet.js) ---------- */
+    const PETA_TITIK = [
+      {
+        lat: 3.7594, lng: 115.6928,
+        nama: "Ruang Kelas Baru",
+        lokasi: "Long Bawan, Krayan — Nunukan",
+        desc: "Gedung sekolah dasar yang sebelumnya beratap seng bocor, kini dibangun ulang bersama warga."
+      },
+      {
+        lat: 3.9333, lng: 116.8667,
+        nama: "Jalan Penghubung",
+        lokasi: "Lumbis Pansiangan — Nunukan",
+        desc: "Jalur yang dulu hanya bisa dilalui saat kemarau, sekarang diaspal untuk akses sepanjang tahun."
+      },
+      {
+        lat: 3.5833, lng: 116.6333,
+        nama: "Jembatan Sungai",
+        lokasi: "Malinau",
+        desc: "Menyambungkan dua desa yang selama ini terpisah saat air pasang."
+      },
+      {
+        lat: 2.8382, lng: 117.3679,
+        nama: "Rumah Sakit Daerah",
+        lokasi: "Tanjung Selor — Bulungan",
+        desc: "Fasilitas rujukan pertama di kecamatan ini, mengurangi jarak tempuh darurat."
+      },
+      {
+        lat: 4.1667, lng: 117.9167,
+        nama: "Bantuan Sembako",
+        lokasi: "Pulau Sebatik — Nunukan",
+        desc: "Distribusi kebutuhan pokok rutin ke desa-desa yang jalur logistiknya sulit dijangkau."
+      },
+      {
+        lat: 4.1333, lng: 117.6667,
+        nama: "Layanan Kesehatan Keliling",
+        lokasi: "Nunukan",
+        desc: "Pemeriksaan gratis untuk ibu dan anak, mengisi kekosongan tenaga medis."
+      },
+      {
+        lat: 3.7333, lng: 115.7333,
+        nama: "Distribusi Jalur Sungai",
+        lokasi: "Krayan — Nunukan",
+        desc: "Sungai masih jadi satu-satunya akses ke sejumlah kampung — logistik dikirim lewat perahu."
+      }
+    ];
+
+    function initPetaMap() {
+      const mapEl = document.getElementById('petaMap');
+      if (!mapEl || typeof L === 'undefined') return;
+
+      const map = L.map('petaMap', {
+        scrollWheelZoom: false
+      }).setView([3.4, 116.8], 7);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        maxZoom: 18,
+        subdomains: 'abcd'
+      }).addTo(map);
+
+      const goldIcon = L.divIcon({
+        className: '',
+        html: '<div style="width:16px;height:16px;border-radius:50%;background:#c9a15a;border:2px solid #181310;box-shadow:0 0 0 3px rgba(201,161,90,0.28);"></div>',
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+      });
+
+      const markers = [];
+      PETA_TITIK.forEach((titik, i) => {
+        const marker = L.marker([titik.lat, titik.lng], { icon: goldIcon }).addTo(map);
+        marker.bindPopup(
+          `<b>0${i + 1} · ${titik.nama}</b>${titik.lokasi}<br/>${titik.desc}`
+        );
+        markers.push(marker);
+      });
+
+      const group = L.featureGroup(markers);
+      map.fitBounds(group.getBounds().pad(0.35));
+
+      map.on('focus', () => map.scrollWheelZoom.enable());
+      map.on('blur', () => map.scrollWheelZoom.disable());
+    }
+
     /* ---------- Load GitHub Assets for Fakta Slider & Lightbox ---------- */
     let currentSlide = 0;
     let slidesCount = 0;
@@ -1074,6 +1253,7 @@
 
     window.addEventListener('load', () => {
       loadFaktaMedia();
+      initPetaMap();
     });
 
     const COUNTRY_LANG_MAP = {
