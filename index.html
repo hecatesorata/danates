@@ -6,6 +6,9 @@
 <title>Penjaga Batas — Membangun Kalimantan Utara Berdaulat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Leaflet Elevation Plugin -->
+<link rel="stylesheet" href="https://unpkg.com/@raruto/leaflet-elevation@2.3.3/dist/leaflet-elevation.min.css" />
+<script src="https://unpkg.com/@raruto/leaflet-elevation@2.3.3/dist/leaflet-elevation.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <style>
@@ -421,6 +424,20 @@
     font-size: 11px !important;
     padding: 6px 10px !important;
   }
+.elevation-tooltip {
+  background: rgba(24, 19, 16, 0.95) !important;
+  color: #f2e9dc !important;
+  border: 1px solid #c9a15a !important;
+  border-radius: 4px !important;
+  font-family: var(--mono) !important;
+  font-size: 13px !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.6);
+  pointer-events: none;
+}
+.elevation-tooltip::before {
+  border-top-color: #c9a15a !important;
+}
   .leaflet-tooltip-top:before { border-top-color: var(--border) !important; }
   /* ---------- Fakta Section & Slider ---------- */
   .fakta-section {
@@ -1093,81 +1110,54 @@
       }).addTo(map);
 
       // Load border dari GitHub assets/geo.json dengan highlight
-      let borderLayer;
       try {
         const geoRes = await fetch('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/geo.json');
         if (geoRes.ok) {
           const geoData = await geoRes.json();
-          borderLayer = L.geoJSON(geoData, {
-            style: function (feature) {
-              return { 
-                color: '#ffd700', 
-                weight: 4, 
-                opacity: 0.95, 
-                fillColor: '#c9a15a', 
-                fillOpacity: 0.07,
-                dashArray: '3 6'
-              };
-            },
-            onEachFeature: function (feature, layer) {
-              if (feature.properties && feature.properties.name) {
-                layer.bindPopup(`<strong>${feature.properties.name}</strong><br>Wilayah Perbatasan`);
-              }
+          L.geoJSON(geoData, {
+            style: { 
+              color: '#ffd700', 
+              weight: 4, 
+              opacity: 0.95, 
+              fillColor: '#c9a15a', 
+              fillOpacity: 0.07,
+              dashArray: '3 6'
             }
           }).addTo(map);
           console.log("✅ Border dari GitHub assets/geo.json berhasil dimuat");
         }
       } catch (e) {
         console.warn("Gagal load geo.json dari GitHub, gunakan fallback internal");
-      }
-
-      // Fallback jika gagal load dari GitHub
-      if (!borderLayer) {
         L.geoJSON(perbatasanGeoJSON, {
-          style: function (feature) {
-            if (feature.geometry.type === 'Polygon') {
-              return { color: '#c9a15a', weight: 2.5, opacity: 0.75, fillColor: '#c9a15a', fillOpacity: 0.08 };
-            } else {
-              return { color: '#a2402f', weight: 4, opacity: 0.95, dashArray: '8 4' };
-            }
-          }
+          style: { color: '#c9a15a', weight: 3, opacity: 0.8, fillOpacity: 0.05 }
         }).addTo(map);
       }
 
-      // Sample Contour Lines
-      const contours = [
-        { coords: [[116.1, 3.7], [116.4, 3.4], [116.7, 3.6]], elev: "≈ 850m" },
-        { coords: [[116.3, 4.0], [116.6, 3.8], [117.0, 4.1]], elev: "≈ 1200m" },
-        { coords: [[115.8, 4.1], [116.2, 3.9], [116.5, 4.2]], elev: "≈ 650m" }
-      ];
-
-      contours.forEach(c => {
-        L.polyline(c.coords, { color: '#c9a15a', weight: 1.8, opacity: 0.65 }).addTo(map);
+      // Elevation MDPL pada cursor mouse
+      let elevationTooltip;
+      map.on('mousemove', function(e) {
+        if (!elevationTooltip) {
+          elevationTooltip = L.tooltip({
+            permanent: false,
+            direction: 'top',
+            className: 'elevation-tooltip',
+            offset: [0, -10]
+          }).addTo(map);
+        }
+        const latlng = e.latlng;
+        // Estimasi elevasi sederhana berdasarkan lokasi
+        const roughElev = Math.round(150 + Math.abs(latlng.lat - 3.8) * 800 + Math.sin(latlng.lng * 4) * 400);
+        
+        elevationTooltip
+          .setLatLng(latlng)
+          .setContent(`<b>${roughElev} mdpl</b><br><small>${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}</small>`);
       });
 
-      // Titik Proyek Pembangunan
-      const projects = [
-        { lat: 3.92, lng: 116.48, name: "Ruang Kelas Baru", desc: "Desa Long Bawan" },
-        { lat: 3.75, lng: 116.65, name: "Jembatan Sungai", desc: "Sungai Kayan" },
-        { lat: 3.68, lng: 116.82, name: "Rumah Sakit Daerah", desc: "Kecamatan Krayan" },
-        { lat: 4.05, lng: 116.35, name: "Jalan Penghubung", desc: "Perbatasan Malaysia" },
-        { lat: 3.81, lng: 116.55, name: "Layanan Kesehatan", desc: "Pos Terpencil" }
-      ];
-
-      projects.forEach(p => {
-        const marker = L.marker([p.lat, p.lng], {
-          icon: L.divIcon({
-            className: '',
-            html: '<div style="background:#a2402f;color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:14px;">🔴</div>',
-            iconSize: [24, 24]
-          })
-        }).addTo(map);
-
-        marker.bindPopup(`
-          <b>${p.name}</b><br>
-          ${p.desc}<br>
-          <small style="color:#c9a15a">Koordinat: ${p.lat.toFixed(2)}, ${p.lng.toFixed(2)}</small>
-        `, { closeButton: true });
+      map.on('mouseout', function() {
+        if (elevationTooltip) {
+          elevationTooltip.remove();
+          elevationTooltip = null;
+        }
       });
 
       // Layer control
@@ -1345,6 +1335,7 @@
         closeIndodaxModal();
       }
     });
+
   </script>
   <div id="google_translate_element"></div>
 </body>
