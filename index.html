@@ -963,6 +963,7 @@
 
   <!-- PayPal JS SDK -->
   <script src="https://www.paypal.com/sdk/js?client-id=ARu9inIMZmM8EYDrjFLBYETOTugzSW1g73cR6emzXarEplsYvUfBKw-eSG5H8uKnohlYf_PRAu5wQL6d&currency=USD"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- ---------- JAVASCRIPT LOGIC ---------- -->
   <script>
@@ -1073,72 +1074,62 @@
       }).render('#paypal-button-container');
     }
 
- const perbatasanGeoJSON = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Kawasan Perbatasan Kalimantan Utara — RI · Malaysia"
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [115.40, 4.90],
-          [115.50, 4.30],
-          [115.55, 3.98],
-          [115.75, 3.75],
-          [116.20, 3.60],
-          [116.65, 3.55],
-          [117.10, 3.85],
-          [117.60, 4.17],
-          [117.90, 4.20],
-          [117.75, 3.85],
-          [117.45, 3.75],
-          [116.95, 3.45],
-          [116.55, 3.15],
-          [116.05, 3.15],
-          [115.65, 3.35],
-          [115.50, 3.55],
-          [115.45, 3.90],
-          [115.35, 4.50],
-          [115.40, 4.90]
-        ]]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Garis Batas RI–Malaysia"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [115.40, 4.90],
-          [115.50, 4.30],
-          [115.55, 3.98],
-          [115.75, 3.75],
-          [116.20, 3.60],
-          [116.65, 3.55],
-          [117.10, 3.85],
-          [117.60, 4.17],
-          [117.90, 4.20]
-        ]
-      }
-    }
-  ]
-};
-
-// Cara memasukkannya ke peta Leaflet:
-L.geoJSON(perbatasanGeoJSON, {
-  style: function (feature) {
-    if (feature.geometry.type === 'Polygon') {
-      return { color: '#c9a15a', weight: 1.5, opacity: 0.6, fillColor: '#c9a15a', fillOpacity: 0.14 };
-    } else {
-      return { color: '#a2402f', weight: 3, opacity: 0.9, dashArray: '6 6' };
-    }
-  }
-}).addTo(map);
+    // ---------- Data GeoJSON Perbatasan Kaltara ----------
+    const perbatasanGeoJSON = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "properties": {
+            "name": "Kawasan Perbatasan Kalimantan Utara — RI · Malaysia"
+          },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+              [115.40, 4.90],
+              [115.50, 4.30],
+              [115.55, 3.98],
+              [115.75, 3.75],
+              [116.20, 3.60],
+              [116.65, 3.55],
+              [117.10, 3.85],
+              [117.60, 4.17],
+              [117.90, 4.20],
+              [117.75, 3.85],
+              [117.45, 3.75],
+              [116.95, 3.45],
+              [116.55, 3.15],
+              [116.05, 3.15],
+              [115.65, 3.35],
+              [115.50, 3.55],
+              [115.45, 3.90],
+              [115.35, 4.50],
+              [115.40, 4.90]
+            ]]
+          }
+        },
+        {
+          "type": "Feature",
+          "properties": {
+            "name": "Garis Batas RI–Malaysia"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [115.40, 4.90],
+              [115.50, 4.30],
+              [115.55, 3.98],
+              [115.75, 3.75],
+              [116.20, 3.60],
+              [116.65, 3.55],
+              [117.10, 3.85],
+              [117.60, 4.17],
+              [117.90, 4.20]
+            ]
+          }
+        }
+      ]
+    };
 
     function initPetaMap() {
       const mapEl = document.getElementById('petaMap');
@@ -1154,31 +1145,26 @@ L.geoJSON(perbatasanGeoJSON, {
         subdomains: 'abcd'
       }).addTo(map);
 
-      // Pita area highlight sepanjang kawasan perbatasan
-      const areaBatas = L.polygon([...GARIS_BATAS, ...GARIS_DALAM], {
-        color: '#c9a15a',
-        weight: 1.5,
-        opacity: 0.6,
-        fillColor: '#c9a15a',
-        fillOpacity: 0.14
+      const geoLayer = L.geoJSON(perbatasanGeoJSON, {
+        style: function (feature) {
+          if (feature.geometry.type === 'Polygon') {
+            return { color: '#c9a15a', weight: 1.5, opacity: 0.6, fillColor: '#c9a15a', fillOpacity: 0.14 };
+          } else {
+            return { color: '#a2402f', weight: 3, opacity: 0.9, dashArray: '6 6' };
+          }
+        },
+        onEachFeature: function (feature, layer) {
+          if (feature.properties && feature.properties.name) {
+            layer.bindTooltip(feature.properties.name, { sticky: true });
+          }
+        }
       }).addTo(map);
 
-      areaBatas.bindTooltip('Kawasan Perbatasan Kalimantan Utara — RI · Malaysia', {
-        sticky: true,
-        className: 'peta-tooltip'
-      });
+      map.fitBounds(geoLayer.getBounds().pad(0.15));
 
-      // Garis merah tegas menandai garis batas negara
-      const garisNegara = L.polyline(GARIS_BATAS, {
-        color: '#a2402f',
-        weight: 3,
-        opacity: 0.9,
-        dashArray: '6 6'
-      }).addTo(map);
-
-      garisNegara.bindTooltip('Garis Batas RI–Malaysia', { sticky: true });
-
-      map.fitBounds(areaBatas.getBounds().pad(0.15));
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 200);
 
       map.on('focus', () => map.scrollWheelZoom.enable());
       map.on('blur', () => map.scrollWheelZoom.disable());
@@ -1372,7 +1358,6 @@ L.geoJSON(perbatasanGeoJSON, {
         console.error('Gagal menyalin:', err);
       });
     }
-    // Tutup modal jika user mengeklik di luar kotak modal
     window.addEventListener('click', function(e) {
       const modal = document.getElementById('indodaxModal');
       if (e.target === modal) {
@@ -1380,7 +1365,6 @@ L.geoJSON(perbatasanGeoJSON, {
       }
     });
   </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <div id="google_translate_element"></div>
 </body>
 </html>
