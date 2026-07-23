@@ -1073,34 +1073,72 @@
       }).render('#paypal-button-container');
     }
 
-    /* ---------- PETA WILAYAH KERJA (Leaflet.js) ---------- */
-    // Garis batas RI–Malaysia di sepanjang Kalimantan Utara (perkiraan, dari utara/Lawas
-    // turun lewat pegunungan Krayan, Malinau, sampai Sebatik) untuk menandai kawasan kerja.
-    const GARIS_BATAS = [
-      [4.90, 115.40],
-      [4.30, 115.50],
-      [3.98, 115.55],
-      [3.75, 115.75],
-      [3.60, 116.20],
-      [3.55, 116.65],
-      [3.85, 117.10],
-      [4.17, 117.60],
-      [4.20, 117.90]
-    ];
+ const perbatasanGeoJSON = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kawasan Perbatasan Kalimantan Utara — RI · Malaysia"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [115.40, 4.90],
+          [115.50, 4.30],
+          [115.55, 3.98],
+          [115.75, 3.75],
+          [116.20, 3.60],
+          [116.65, 3.55],
+          [117.10, 3.85],
+          [117.60, 4.17],
+          [117.90, 4.20],
+          [117.75, 3.85],
+          [117.45, 3.75],
+          [116.95, 3.45],
+          [116.55, 3.15],
+          [116.05, 3.15],
+          [115.65, 3.35],
+          [115.50, 3.55],
+          [115.45, 3.90],
+          [115.35, 4.50],
+          [115.40, 4.90]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Garis Batas RI–Malaysia"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [115.40, 4.90],
+          [115.50, 4.30],
+          [115.55, 3.98],
+          [115.75, 3.75],
+          [116.20, 3.60],
+          [116.65, 3.55],
+          [117.10, 3.85],
+          [117.60, 4.17],
+          [117.90, 4.20]
+        ]
+      }
+    }
+  ]
+};
 
-    // Garis bantu di sisi wilayah Indonesia (agak masuk ke selatan/timur) untuk
-    // membentuk pita area highlight di sepanjang garis batas.
-    const GARIS_DALAM = [
-      [3.85, 117.75],
-      [3.75, 117.45],
-      [3.45, 116.95],
-      [3.15, 116.55],
-      [3.15, 116.05],
-      [3.35, 115.65],
-      [3.55, 115.50],
-      [3.90, 115.45],
-      [4.50, 115.35]
-    ];
+// Cara memasukkannya ke peta Leaflet:
+L.geoJSON(perbatasanGeoJSON, {
+  style: function (feature) {
+    if (feature.geometry.type === 'Polygon') {
+      return { color: '#c9a15a', weight: 1.5, opacity: 0.6, fillColor: '#c9a15a', fillOpacity: 0.14 };
+    } else {
+      return { color: '#a2402f', weight: 3, opacity: 0.9, dashArray: '6 6' };
+    }
+  }
+}).addTo(map);
 
     function initPetaMap() {
       const mapEl = document.getElementById('petaMap');
