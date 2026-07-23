@@ -1090,84 +1090,122 @@
         }
       ]
     };
-    async function initPetaMap() {
-      const mapEl = document.getElementById('petaMap');
-      if (!mapEl || typeof L === 'undefined') return;
+async function initPetaMap() {
+  const mapEl = document.getElementById('petaMap');
+  if (!mapEl || typeof L === 'undefined') return;
 
-      const map = L.map('petaMap', { scrollWheelZoom: false })
-        .setView([3.85, 116.55], 8);
+  const map = L.map('petaMap', { 
+    scrollWheelZoom: false,
+    zoomControl: true 
+  }).setView([3.85, 116.55], 8);
 
-      // Base Topography Layer
-      L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        attribution: 'Kartografi: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
-        maxZoom: 17
+  // Base Topography Layer
+  L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    attribution: 'Kartografi: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
+    maxZoom: 17
+  }).addTo(map);
+
+  // Hillshade
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', {
+    opacity: 0.32,
+    attribution: 'Esri'
+  }).addTo(map);
+
+  // Load border
+  try {
+    const geoRes = await fetch('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/geo.json');
+    if (geoRes.ok) {
+      const geoData = await geoRes.json();
+      L.geoJSON(geoData, {
+        style: {
+          color: '#ffd700',
+          weight: 4,
+          opacity: 0.95,
+          fillColor: '#c9a15a',
+          fillOpacity: 0.07,
+          dashArray: '3 6'
+        }
       }).addTo(map);
+      console.log("✅ Border dari GitHub berhasil dimuat");
+    }
+  } catch (e) {
+    console.warn("Gagal load geo.json, gunakan fallback");
+    L.geoJSON(perbatasanGeoJSON, {
+      style: { color: '#c9a15a', weight: 3, opacity: 0.8, fillOpacity: 0.05 }
+    }).addTo(map);
+  }
 
-      // Hillshade untuk efek relief
-      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', {
-        opacity: 0.28,
-        attribution: 'Esri'
+  // ==================== ELEVASI REAL-TIME + POPUP KLIK ====================
+  let elevationTooltip = null;
+  let lastFetch = 0;
+
+  // Hover = kursor MDPL real-time
+  map.on('mousemove', async function(e) {
+    const now = Date.now();
+    if (now - lastFetch < 800) return;
+    lastFetch = now;
+
+    if (!elevationTooltip) {
+      elevationTooltip = L.tooltip({
+        permanent: false,
+        direction: 'top',
+        className: 'elevation-tooltip',
+        offset: [0, -12]
       }).addTo(map);
+    }
 
-      // Load border dari GitHub assets/geo.json dengan highlight
-      try {
-        const geoRes = await fetch('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/geo.json');
-        if (geoRes.ok) {
-          const geoData = await geoRes.json();
-          L.geoJSON(geoData, {
-            style: { 
-              color: '#ffd700', 
-              weight: 4, 
-              opacity: 0.95, 
-              fillColor: '#c9a15a', 
-              fillOpacity: 0.07,
-              dashArray: '3 6'
-            }
-          }).addTo(map);
-          console.log("✅ Border dari GitHub assets/geo.json berhasil dimuat");
-        }
-      } catch (e) {
-        console.warn("Gagal load geo.json dari GitHub, gunakan fallback internal");
-        L.geoJSON(perbatasanGeoJSON, {
-          style: { color: '#c9a15a', weight: 3, opacity: 0.8, fillOpacity: 0.05 }
-        }).addTo(map);
-      }
+    const { lat, lng } = e.latlng;
 
-      // Elevation MDPL pada cursor mouse
-      let elevationTooltip;
-      map.on('mousemove', function(e) {
-        if (!elevationTooltip) {
-          elevationTooltip = L.tooltip({
-            permanent: false,
-            direction: 'top',
-            className: 'elevation-tooltip',
-            offset: [0, -10]
-          }).addTo(map);
-        }
-        const latlng = e.latlng;
-        // Estimasi elevasi sederhana berdasarkan lokasi
-        const roughElev = Math.round(150 + Math.abs(latlng.lat - 3.8) * 800 + Math.sin(latlng.lng * 4) * 400);
-        
-        elevationTooltip
-          .setLatLng(latlng)
-          .setContent(`<b>${roughElev} mdpl</b><br><small>${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}</small>`);
-      });
+    try {
+      const res = await fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lng}`);
+      const data = await res.json();
+      const elev = data.results?.[0]?.elevation ? Math.round(data.results[0].elevation) : 280;
 
-      map.on('mouseout', function() {
-        if (elevationTooltip) {
-          elevationTooltip.remove();
-          elevationTooltip = null;
-        }
-      });
+      elevationTooltip
+        .setLatLng(e.latlng)
+        .setContent(`<b>${elev} mdpl</b><br><small>${lat.toFixed(4)}, ${lng.toFixed(4)}</small>`);
+    } catch (err) {
+      const fallbackElev = Math.round(280 + Math.abs(lat - 3.8) * 650);
+      elevationTooltip.setLatLng(e.latlng).setContent(`<b>${fallbackElev} mdpl</b><br><small>${lat.toFixed(4)}, ${lng.toFixed(4)} (estimasi)</small>`);
+    }
+  });
 
-      // Layer control
-      L.control.layers({}, {
-        "OpenTopoMap": null,
-        "Hillshade Relief": null
-      }, { collapsed: false }).addTo(map);
+  map.on('mouseout', function() {
+    if (elevationTooltip) {
+      elevationTooltip.remove();
+      elevationTooltip = null;
+    }
+  });
 
-      map.on('focus', () => map.scrollWheelZoom.enable());
-      map.on('blur', () => map.scrollWheelZoom.disable());
+  // Klik di peta = popup elevasi
+  map.on('click', async function(e) {
+    const { lat, lng } = e.latlng;
+    try {
+      const res = await fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lng}`);
+      const data = await res.json();
+      const elev = data.results?.[0]?.elevation ? Math.round(data.results[0].elevation) : '?';
+
+      L.popup()
+        .setLatLng(e.latlng)
+        .setContent(`<b>${elev} mdpl</b><br><small>${lat.toFixed(4)}, ${lng.toFixed(4)}</small>`)
+        .openOn(map);
+    } catch (err) {
+      L.popup()
+        .setLatLng(e.latlng)
+        .setContent(`Koordinat<br><small>${lat.toFixed(4)}, ${lng.toFixed(4)}</small>`)
+        .openOn(map);
+    }
+  });
+
+  // Layer Control
+  L.control.layers({}, {
+    "OpenTopoMap": null,
+    "Hillshade Relief": null
+  }, { collapsed: false }).addTo(map);
+
+  map.on('focus', () => map.scrollWheelZoom.enable());
+  map.on('blur', () => map.scrollWheelZoom.disable());
+}
     }
     /* ---------- Load GitHub Assets for Fakta Slider & Lightbox ---------- */
     let currentSlide = 0;
