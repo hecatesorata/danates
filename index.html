@@ -396,7 +396,7 @@
     background: var(--gold);
     display: inline-block;
   }
-  /* Leaflet dark theme overrides */
+  /* Leaflet theme overrides for Topo/Terrain */
   .leaflet-popup-content-wrapper {
     background: var(--surface-raised);
     color: var(--text);
@@ -690,7 +690,7 @@
       </a>
       <nav class="site-nav">
         <a href="#inisiatif">Inisiatif</a>
-        <a href="#peta">Peta</a>
+        <a href="#peta">Peta Topografi</a>
         <a href="#fakta">Fakta Lapangan</a>
         <a href="#dukung">Dukung</a>
       </nav>
@@ -706,7 +706,7 @@
 
   <section class="hero" style="padding:0;">
     <div class="hero-inner">
-      <span class="hero-eyebrow">Laporan Lapangan · Perbatasan Kalimantan Utara</span>
+      <span class="hero-eyebrow">Laporan Topografi · Perbatasan Kalimantan Utara</span>
       <h1 class="hero-title">Membangun jalan pulang untuk kampung <em>yang tertinggal ke jantung Borneo Kalimantan Utara</em></h1>
       <p class="hero-lede">
         Di atas tanah Benuanta yang megah, mengalir darah dan doa para leluhur yang telah
@@ -759,7 +759,7 @@
         <p class="section-eyebrow">Sedang Berjalan</p>
         <h2 class="section-title">Tujuh inisiatif di garis depan</h2>
         <p class="section-body">
-          Dari ruang kelas baru sampai jalur distribusi sungai — ini titik-titik yang
+           Dari ruang kelas baru sampai jalur distribusi sungai — ini titik-titik yang
           sedang dikerjakan tim di lapangan, didanai dari dukungan yang masuk lewat halaman ini.
         </p>
       </div>
@@ -832,20 +832,20 @@
     </div>
   </section>
 
-  <!-- ---------- SECTION PETA ---------- -->
+  <!-- ---------- SECTION PETA TOPOGRAFI ---------- -->
   <section class="peta-section" id="peta">
     <div class="wrap">
       <div class="section-head">
-        <p class="section-eyebrow">Titik Koordinat</p>
-        <h2 class="section-title">Peta wilayah kerja perbatasan</h2>
-        <p class="section-body">Tujuh titik inisiatif tersebar di sepanjang kawasan perbatasan Kalimantan Utara — dari Krayan sampai Sebatik.</p>
+        <p class="section-eyebrow">Kontur &amp; Relief Medan</p>
+        <h2 class="section-title">Peta Topografi Wilayah Perbatasan</h2>
+        <p class="section-body">Visualisasi kontur ketinggian, punggung bukit, dan relief terjal di sepanjang kawasan perbatasan Kalimantan Utara.</p>
       </div>
       <div class="peta-frame">
         <div id="petaMap"></div>
       </div>
       <div class="peta-legend">
-        <span><span class="swatch"></span>Kawasan garis perbatasan RI–Malaysia</span>
-        <span>Geser &amp; zoom peta untuk menjelajah kawasan perbatasan</span>
+        <span><span class="swatch"></span>Kontur Wilayah Perbatasan RI–Malaysia</span>
+        <span>Gunakan peta topografi untuk meninjau jalur elevasi ekstrem</span>
       </div>
     </div>
   </section>
@@ -1074,59 +1074,90 @@
       }).render('#paypal-button-container');
     }
 
-async function initPetaMap() {
-  const mapEl = document.getElementById('petaMap');
-  if (!mapEl || typeof L === 'undefined') return;
-
-  const map = L.map('petaMap', {
-    scrollWheelZoom: false
-  }).setView([3.9, 116.6], 7);
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    maxZoom: 18,
-    subdomains: 'abcd'
-  }).addTo(map);
-
-  try {
-    const owner = "hecatesorata";
-    const repo = "danates";
-    const branch = "main";
-    const url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/assets/geo.json`;
-
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error("Gagal mengambil geo.json dari GitHub");
-
-    const geoData = await res.json();
-
-    const geoLayer = L.geoJSON(geoData, {
-      style: function (feature) {
-        if (feature.geometry.type === 'Polygon') {
-          return { color: '#c9a15a', weight: 1.5, opacity: 0.6, fillColor: '#c9a15a', fillOpacity: 0.14 };
-        } else {
-          return { color: '#a2402f', weight: 3, opacity: 0.9, dashArray: '6 6' };
+    const perbatasanGeoJSON = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "properties": {
+            "name": "Kawasan Perbatasan Kalimantan Utara — RI · Malaysia"
+          },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+              [115.40, 4.90],
+              [115.50, 4.30],
+              [115.55, 3.98],
+              [115.75, 3.75],
+              [116.20, 3.60],
+              [116.65, 3.55],
+              [117.10, 3.85],
+              [117.60, 4.17],
+              [117.90, 4.20],
+              [117.75, 3.85],
+              [117.45, 3.75],
+              [116.95, 3.45],
+              [116.55, 3.15],
+              [116.05, 3.15],
+              [115.65, 3.35],
+              [115.50, 3.55],
+              [115.45, 3.90],
+              [115.35, 4.50],
+              [115.40, 4.90]
+            ]]
+          }
+        },
+        {
+          "type": "Feature",
+          "properties": {
+            "name": "Garis Batas RI–Malaysia"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [115.40, 4.90],
+              [115.50, 4.30],
+              [115.55, 3.98],
+              [115.75, 3.75],
+              [116.20, 3.60],
+              [116.65, 3.55],
+              [117.10, 3.85],
+              [117.60, 4.17],
+              [117.90, 4.20]
+            ]
+          }
         }
-      },
-      onEachFeature: function (feature, layer) {
-        if (feature.properties && feature.properties.name) {
-          layer.bindTooltip(feature.properties.name, { sticky: true });
+      ]
+    };
+
+    function initPetaMap() {
+      const mapEl = document.getElementById('petaMap');
+      if (!mapEl || typeof L === 'undefined') return;
+
+      const map = L.map('petaMap', {
+        scrollWheelZoom: false
+      }).setView([3.9, 116.6], 7);
+
+      // Menggunakan OpenTopoMap untuk visualisasi peta topografi kontur & relief ketinggian
+      L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        attribution: 'Kartografi: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>), Data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 17
+      }).addTo(map);
+
+      L.geoJSON(perbatasanGeoJSON, {
+        style: function (feature) {
+          if (feature.geometry.type === 'Polygon') {
+            return { color: '#c9a15a', weight: 1.5, opacity: 0.7, fillColor: '#c9a15a', fillOpacity: 0.12 };
+          } else {
+            return { color: '#a2402f', weight: 3, opacity: 0.9, dashArray: '6 6' };
+          }
         }
-      }
-    }).addTo(map);
+      }).addTo(map);
 
-    map.fitBounds(geoLayer.getBounds().pad(0.15));
-  } catch (err) {
-    console.error(err);
-    // fallback: peta tetap tampil walau geo.json gagal dimuat
-  }
+      map.on('focus', () => map.scrollWheelZoom.enable());
+      map.on('blur', () => map.scrollWheelZoom.disable());
+    }
 
-  setTimeout(() => {
-    map.invalidateSize();
-  }, 200);
-
-  map.on('focus', () => map.scrollWheelZoom.enable());
-  map.on('blur', () => map.scrollWheelZoom.disable());
-}
     /* ---------- Load GitHub Assets for Fakta Slider & Lightbox ---------- */
     let currentSlide = 0;
     let slidesCount = 0;
