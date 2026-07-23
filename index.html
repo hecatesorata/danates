@@ -426,6 +426,15 @@
     border-color: var(--border) !important;
   }
   .leaflet-control-zoom a:hover { background: var(--gold) !important; color: var(--bg) !important; }
+  .leaflet-tooltip {
+    background: var(--surface-raised) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    font-family: var(--mono) !important;
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+  }
+  .leaflet-tooltip-top:before { border-top-color: var(--border) !important; }
 
   /* ---------- Fakta Section & Slider ---------- */
   .fakta-section {
@@ -835,7 +844,7 @@
         <div id="petaMap"></div>
       </div>
       <div class="peta-legend">
-        <span><span class="swatch"></span>Titik inisiatif</span>
+        <span><span class="swatch"></span>Kawasan garis perbatasan RI–Malaysia</span>
         <span>Geser &amp; zoom peta untuk menjelajah kawasan perbatasan</span>
       </div>
     </div>
@@ -1065,49 +1074,32 @@
     }
 
     /* ---------- PETA WILAYAH KERJA (Leaflet.js) ---------- */
-    const PETA_TITIK = [
-      {
-        lat: 3.7594, lng: 115.6928,
-        nama: "Ruang Kelas Baru",
-        lokasi: "Long Bawan, Krayan — Nunukan",
-        desc: "Gedung sekolah dasar yang sebelumnya beratap seng bocor, kini dibangun ulang bersama warga."
-      },
-      {
-        lat: 3.9333, lng: 116.8667,
-        nama: "Jalan Penghubung",
-        lokasi: "Lumbis Pansiangan — Nunukan",
-        desc: "Jalur yang dulu hanya bisa dilalui saat kemarau, sekarang diaspal untuk akses sepanjang tahun."
-      },
-      {
-        lat: 3.5833, lng: 116.6333,
-        nama: "Jembatan Sungai",
-        lokasi: "Malinau",
-        desc: "Menyambungkan dua desa yang selama ini terpisah saat air pasang."
-      },
-      {
-        lat: 2.8382, lng: 117.3679,
-        nama: "Rumah Sakit Daerah",
-        lokasi: "Tanjung Selor — Bulungan",
-        desc: "Fasilitas rujukan pertama di kecamatan ini, mengurangi jarak tempuh darurat."
-      },
-      {
-        lat: 4.1667, lng: 117.9167,
-        nama: "Bantuan Sembako",
-        lokasi: "Pulau Sebatik — Nunukan",
-        desc: "Distribusi kebutuhan pokok rutin ke desa-desa yang jalur logistiknya sulit dijangkau."
-      },
-      {
-        lat: 4.1333, lng: 117.6667,
-        nama: "Layanan Kesehatan Keliling",
-        lokasi: "Nunukan",
-        desc: "Pemeriksaan gratis untuk ibu dan anak, mengisi kekosongan tenaga medis."
-      },
-      {
-        lat: 3.7333, lng: 115.7333,
-        nama: "Distribusi Jalur Sungai",
-        lokasi: "Krayan — Nunukan",
-        desc: "Sungai masih jadi satu-satunya akses ke sejumlah kampung — logistik dikirim lewat perahu."
-      }
+    // Garis batas RI–Malaysia di sepanjang Kalimantan Utara (perkiraan, dari utara/Lawas
+    // turun lewat pegunungan Krayan, Malinau, sampai Sebatik) untuk menandai kawasan kerja.
+    const GARIS_BATAS = [
+      [4.90, 115.40],
+      [4.30, 115.50],
+      [3.98, 115.55],
+      [3.75, 115.75],
+      [3.60, 116.20],
+      [3.55, 116.65],
+      [3.85, 117.10],
+      [4.17, 117.60],
+      [4.20, 117.90]
+    ];
+
+    // Garis bantu di sisi wilayah Indonesia (agak masuk ke selatan/timur) untuk
+    // membentuk pita area highlight di sepanjang garis batas.
+    const GARIS_DALAM = [
+      [3.85, 117.75],
+      [3.75, 117.45],
+      [3.45, 116.95],
+      [3.15, 116.55],
+      [3.15, 116.05],
+      [3.35, 115.65],
+      [3.55, 115.50],
+      [3.90, 115.45],
+      [4.50, 115.35]
     ];
 
     function initPetaMap() {
@@ -1116,7 +1108,7 @@
 
       const map = L.map('petaMap', {
         scrollWheelZoom: false
-      }).setView([3.4, 116.8], 7);
+      }).setView([3.9, 116.6], 7);
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -1124,24 +1116,31 @@
         subdomains: 'abcd'
       }).addTo(map);
 
-      const goldIcon = L.divIcon({
-        className: '',
-        html: '<div style="width:16px;height:16px;border-radius:50%;background:#c9a15a;border:2px solid #181310;box-shadow:0 0 0 3px rgba(201,161,90,0.28);"></div>',
-        iconSize: [16, 16],
-        iconAnchor: [8, 8]
+      // Pita area highlight sepanjang kawasan perbatasan
+      const areaBatas = L.polygon([...GARIS_BATAS, ...GARIS_DALAM], {
+        color: '#c9a15a',
+        weight: 1.5,
+        opacity: 0.6,
+        fillColor: '#c9a15a',
+        fillOpacity: 0.14
+      }).addTo(map);
+
+      areaBatas.bindTooltip('Kawasan Perbatasan Kalimantan Utara — RI · Malaysia', {
+        sticky: true,
+        className: 'peta-tooltip'
       });
 
-      const markers = [];
-      PETA_TITIK.forEach((titik, i) => {
-        const marker = L.marker([titik.lat, titik.lng], { icon: goldIcon }).addTo(map);
-        marker.bindPopup(
-          `<b>0${i + 1} · ${titik.nama}</b>${titik.lokasi}<br/>${titik.desc}`
-        );
-        markers.push(marker);
-      });
+      // Garis merah tegas menandai garis batas negara
+      const garisNegara = L.polyline(GARIS_BATAS, {
+        color: '#a2402f',
+        weight: 3,
+        opacity: 0.9,
+        dashArray: '6 6'
+      }).addTo(map);
 
-      const group = L.featureGroup(markers);
-      map.fitBounds(group.getBounds().pad(0.35));
+      garisNegara.bindTooltip('Garis Batas RI–Malaysia', { sticky: true });
+
+      map.fitBounds(areaBatas.getBounds().pad(0.15));
 
       map.on('focus', () => map.scrollWheelZoom.enable());
       map.on('blur', () => map.scrollWheelZoom.disable());
