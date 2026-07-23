@@ -1177,24 +1177,42 @@ async function initPetaMap() {
     }
   });
 
-  // Klik di peta = popup elevasi
+  // Cari nama lokasi terdekat lewat reverse geocoding (Nominatim/OSM)
+  async function getNearestPlaceName(lat, lng) {
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=12&addressdetails=1`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      const a = data.address || {};
+      return a.village || a.town || a.city || a.municipality || a.county || a.state_district || a.state || null;
+    } catch (err) {
+      console.warn('Gagal mengambil nama lokasi:', err);
+      return null;
+    }
+  }
+
+  // Klik di peta = popup elevasi + nama lokasi terdekat
   map.on('click', async function(e) {
     const { lat, lng } = e.latlng;
+    const coordLine = `<small>${lat.toFixed(4)}, ${lng.toFixed(4)}</small>`;
+    const popup = L.popup()
+      .setLatLng(e.latlng)
+      .setContent(`<b>Memuat data lokasi...</b><br>${coordLine}`)
+      .openOn(map);
+
+    let elev = '?';
     try {
       const res = await fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lng}`);
       const data = await res.json();
-      const elev = data.results?.[0]?.elevation ? Math.round(data.results[0].elevation) : '?';
-
-      L.popup()
-        .setLatLng(e.latlng)
-        .setContent(`<b>${elev} mdpl</b><br><small>${lat.toFixed(4)}, ${lng.toFixed(4)}</small>`)
-        .openOn(map);
+      elev = data.results?.[0]?.elevation ? Math.round(data.results[0].elevation) : '?';
     } catch (err) {
-      L.popup()
-        .setLatLng(e.latlng)
-        .setContent(`Koordinat<br><small>${lat.toFixed(4)}, ${lng.toFixed(4)}</small>`)
-        .openOn(map);
+      console.warn('Gagal mengambil elevasi:', err);
     }
+
+    const placeName = await getNearestPlaceName(lat, lng);
+    const placeLine = placeName ? `<br>📍 ${placeName}` : '';
+
+    popup.setContent(`<b>${elev} mdpl</b>${placeLine}<br>${coordLine}`);
   });
 
   // Layer Control
