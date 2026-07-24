@@ -1334,22 +1334,22 @@ async function initPetaMap() {
       googleTranslateReady = true;
     }
     function applyTranslation(langCode) {
-      const tryApply = setInterval(() => {
-        const combo = document.querySelector('.goog-te-combo');
-        if (combo && googleTranslateReady) {
-          clearInterval(tryApply);
-          combo.value = langCode;
-          combo.dispatchEvent(new Event('change'));
-          const noticeText = document.getElementById('langNoticeText');
-          if(langCode === 'en') {
-            noticeText.textContent = "This page has been automatically translated.";
-            document.getElementById('revertLangBtn').textContent = "Back to Indonesian";
-          }
-          document.getElementById('langNotice').classList.add('visible');
-        }
-      }, 250);
-      setTimeout(() => clearInterval(tryApply), 8000);
+  const tryApply = setInterval(() => {
+    const combo = document.querySelector('.goog-te-combo');
+    if (combo && googleTranslateReady) {
+      clearInterval(tryApply);
+      combo.value = langCode;
+      combo.dispatchEvent(new Event('change', { bubbles: true })); // <-- fix di sini
+      const noticeText = document.getElementById('langNoticeText');
+      if(langCode === 'en') {
+        noticeText.textContent = "This page has been automatically translated.";
+        document.getElementById('revertLangBtn').textContent = "Back to Indonesian";
+      }
+      document.getElementById('langNotice').classList.add('visible');
     }
+  }, 250);
+  setTimeout(() => clearInterval(tryApply), 8000);
+}
     function revertToIndonesian() {
       document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${location.hostname}`;
