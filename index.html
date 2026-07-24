@@ -1317,14 +1317,70 @@ async function initPetaMap() {
       initPetaMap();
     });
     const COUNTRY_LANG_MAP = {
-      US: 'en', GB: 'en', AU: 'en', CA: 'en', NZ: 'en', IE: 'en', SG: 'en', PH: 'en', IN: 'en', ZA: 'en',
+      // Asia Tenggara & Asia Timur
       MY: 'ms', BN: 'ms', TH: 'th', VN: 'vi', KH: 'km', LA: 'lo', MM: 'my', TL: 'pt',
-      JP: 'ja', KR: 'ko', CN: 'zh-CN', TW: 'zh-TW', HK: 'zh-TW',
-      SA: 'ar', AE: 'ar', QA: 'ar', EG: 'ar', TR: 'tr',
-      DE: 'de', AT: 'de', CH: 'de', FR: 'fr', BE: 'nl', NL: 'nl', ES: 'es', MX: 'es',
-      IT: 'it', PT: 'pt', BR: 'pt', RU: 'ru', PL: 'pl', SE: 'sv', NO: 'no', DK: 'da', FI: 'fi',
-      PK: 'ur', BD: 'bn', LK: 'si',
+      SG: 'en', PH: 'tl', JP: 'ja', KR: 'ko', KP: 'ko', CN: 'zh-CN', TW: 'zh-TW', HK: 'zh-TW', MO: 'zh-TW',
+      IN: 'hi', BD: 'bn', LK: 'si', PK: 'ur', NP: 'ne', BT: 'en', MV: 'en',
+      MN: 'mn', AF: 'fa',
+      // Asia Tengah
+      KZ: 'kk', UZ: 'uz', KG: 'ky', TJ: 'tg', TM: 'en', AZ: 'az', AM: 'hy', GE: 'ka',
+      // Timur Tengah
+      SA: 'ar', AE: 'ar', QA: 'ar', BH: 'ar', KW: 'ar', OM: 'ar', YE: 'ar',
+      IQ: 'ar', JO: 'ar', LB: 'ar', SY: 'ar', PS: 'ar', IL: 'he', IR: 'fa', TR: 'tr',
+      // Eropa
+      GB: 'en', IE: 'en', DE: 'de', AT: 'de', CH: 'de', LI: 'de',
+      FR: 'fr', BE: 'nl', LU: 'fr', MC: 'fr',
+      NL: 'nl', ES: 'es', PT: 'pt', IT: 'it', SM: 'it', VA: 'it',
+      RU: 'ru', UA: 'uk', BY: 'be', PL: 'pl', CZ: 'cs', SK: 'sk',
+      HU: 'hu', RO: 'ro', MD: 'ro', BG: 'bg', GR: 'el', CY: 'el',
+      HR: 'hr', BA: 'bs', RS: 'sr', ME: 'sr', XK: 'sq', AL: 'sq',
+      MK: 'mk', SI: 'sl', SE: 'sv', NO: 'no', DK: 'da', FI: 'fi',
+      IS: 'is', EE: 'et', LV: 'lv', LT: 'lt', MT: 'mt', AD: 'ca',
+      // Afrika
+      EG: 'ar', LY: 'ar', TN: 'ar', DZ: 'ar', MA: 'ar', SD: 'ar', MR: 'ar', KM: 'ar', ER: 'ar',
+      ET: 'am', SO: 'so', KE: 'sw', TZ: 'sw', UG: 'en', RW: 'fr', BI: 'fr',
+      NG: 'en', GH: 'en', ZA: 'en', ZM: 'en', ZW: 'en', BW: 'en', NA: 'en', SZ: 'en', LS: 'st',
+      MW: 'ny', SS: 'en', LR: 'en', SL: 'en', GM: 'en',
+      CM: 'fr', CI: 'fr', SN: 'fr', ML: 'fr', NE: 'fr', BF: 'fr', TD: 'fr', GA: 'fr',
+      CG: 'fr', CD: 'fr', CF: 'fr', DJ: 'fr', GN: 'fr', TG: 'fr', SC: 'fr', MU: 'fr',
+      AO: 'pt', MZ: 'pt', GW: 'pt', CV: 'pt', ST: 'pt', GQ: 'es', MG: 'mg',
+      // Amerika
+      US: 'en', CA: 'en', MX: 'es', BR: 'pt',
+      AR: 'es', CL: 'es', CO: 'es', PE: 'es', VE: 'es', EC: 'es', BO: 'es', PY: 'es',
+      UY: 'es', CR: 'es', PA: 'es', GT: 'es', HN: 'es', NI: 'es', SV: 'es', CU: 'es', DO: 'es',
+      HT: 'ht', JM: 'en', TT: 'en', BS: 'en', BB: 'en', BZ: 'en', GY: 'en', SR: 'nl',
+      DM: 'en', GD: 'en', KN: 'en', LC: 'en', VC: 'en',
+      // Oseania
+      AU: 'en', NZ: 'en', FJ: 'en', PG: 'en', SB: 'en', VU: 'en', WS: 'sm',
+      KI: 'en', TO: 'en', TV: 'en', NR: 'en', MH: 'en', FM: 'en', PW: 'en',
     };
+
+    // Teks notice per bahasa. Kalau bahasanya nggak ada di sini, pakai fallback English (baris di bawah map ini).
+    const NOTICE_TEXT_MAP = {
+      en: { notice: "This page has been automatically translated.", button: "Back to Indonesian" },
+      ms: { notice: "Halaman ini telah diterjemahkan secara automatik.", button: "Kembali ke Bahasa Indonesia" },
+      th: { notice: "หน้านี้ได้รับการแปลโดยอัตโนมัติ", button: "กลับไปเป็นภาษาอินโดนีเซีย" },
+      vi: { notice: "Trang này đã được dịch tự động.", button: "Quay lại tiếng Indonesia" },
+      ja: { notice: "このページは自動翻訳されています。", button: "インドネシア語に戻す" },
+      ko: { notice: "이 페이지는 자동 번역되었습니다.", button: "인도네시아어로 돌아가기" },
+      'zh-CN': { notice: "此页面已自动翻译。", button: "返回印尼语" },
+      'zh-TW': { notice: "此頁面已自動翻譯。", button: "返回印尼語" },
+      ar: { notice: "تمت ترجمة هذه الصفحة تلقائيًا.", button: "العودة إلى الإندونيسية" },
+      tr: { notice: "Bu sayfa otomatik olarak çevrilmiştir.", button: "Endonezceye geri dön" },
+      de: { notice: "Diese Seite wurde automatisch übersetzt.", button: "Zurück zu Indonesisch" },
+      fr: { notice: "Cette page a été traduite automatiquement.", button: "Retour à l'indonésien" },
+      nl: { notice: "Deze pagina is automatisch vertaald.", button: "Terug naar Indonesisch" },
+      es: { notice: "Esta página ha sido traducida automáticamente.", button: "Volver al indonesio" },
+      pt: { notice: "Esta página foi traduzida automaticamente.", button: "Voltar para o indonésio" },
+      it: { notice: "Questa pagina è stata tradotta automaticamente.", button: "Torna all'indonesiano" },
+      ru: { notice: "Эта страница переведена автоматически.", button: "Вернуться на индонезийский" },
+      uk: { notice: "Цю сторінку перекладено автоматично.", button: "Повернутися до індонезійської" },
+      pl: { notice: "Ta strona została automatycznie przetłumaczona.", button: "Powrót do indonezyjskiego" },
+      hi: { notice: "इस पृष्ठ का स्वतः अनुवाद किया गया है।", button: "इंडोनेशियाई भाषा पर वापस जाएं" },
+      bn: { notice: "এই পৃষ্ঠাটি স্বয়ংক্রিয়ভাবে অনুবাদ করা হয়েছে।", button: "ইন্দোনেশিয়ান ভাষায় ফিরে যান" },
+      ur: { notice: "اس صفحے کا خودکار ترجمہ کیا گیا ہے۔", button: "انڈونیشین زبان پر واپس جائیں" },
+    };
+
     let googleTranslateReady = false;
     function googleTranslateElementInit() {
       new google.translate.TranslateElement(
@@ -1333,40 +1389,45 @@ async function initPetaMap() {
       );
       googleTranslateReady = true;
     }
+
     function applyTranslation(langCode) {
-  const tryApply = setInterval(() => {
-    const combo = document.querySelector('.goog-te-combo');
-    if (combo && googleTranslateReady) {
-      clearInterval(tryApply);
-      combo.value = langCode;
-      combo.dispatchEvent(new Event('change', { bubbles: true })); // <-- fix di sini
-      const noticeText = document.getElementById('langNoticeText');
-      if(langCode === 'en') {
-        noticeText.textContent = "This page has been automatically translated.";
-        document.getElementById('revertLangBtn').textContent = "Back to Indonesian";
-      }
-      document.getElementById('langNotice').classList.add('visible');
+      const tryApply = setInterval(() => {
+        const combo = document.querySelector('.goog-te-combo');
+        if (combo && googleTranslateReady) {
+          clearInterval(tryApply);
+          combo.value = langCode;
+          combo.dispatchEvent(new Event('change', { bubbles: true }));
+
+          const noticeText = document.getElementById('langNoticeText');
+          const revertBtn = document.getElementById('revertLangBtn');
+          const texts = NOTICE_TEXT_MAP[langCode] || NOTICE_TEXT_MAP['en']; // fallback teks ke English
+          noticeText.textContent = texts.notice;
+          revertBtn.textContent = texts.button;
+          document.getElementById('langNotice').classList.add('visible');
+        }
+      }, 250);
+      setTimeout(() => clearInterval(tryApply), 8000);
     }
-  }, 250);
-  setTimeout(() => clearInterval(tryApply), 8000);
-}
+
     function revertToIndonesian() {
       document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${location.hostname}`;
       location.reload();
     }
+
     async function detectCountryAndTranslate() {
       try {
         const res = await fetch('/api/geo');
         if (!res.ok) return;
         const { country } = await res.json();
         if (!country || country === 'ID') return;
-        const langCode = COUNTRY_LANG_MAP[country];
-        if (langCode) applyTranslation(langCode);
+        const langCode = COUNTRY_LANG_MAP[country] || 'en'; // fallback ke English kalau negara nggak ada di daftar
+        applyTranslation(langCode);
       } catch (error) {
         console.warn('Deteksi negara gagal, halaman tetap Bahasa Indonesia', error);
       }
     }
+
     document.getElementById('revertLangBtn').addEventListener('click', revertToIndonesian);
     window.addEventListener('load', detectCountryAndTranslate);
     /* ---------- Kontrol Modal Indodax / Crypto & Salin Alamat ---------- */
