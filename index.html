@@ -937,8 +937,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/money.js/0.2.0/money.min.js" integrity="sha512-K17dj/jNbqdLrDhK+j8FJY7iIQ1slk7uULXqzqX9O3Q6a1Yf+A6Wn6DzU3Xv1c6O4bEik6X7xyC5lH1gjrShKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-  <!-- PayPal JS SDK -->
-  <script src="https://www.paypal.com/sdk/js?client-id=ARu9inIMZmM8EYDrjFLBYETOTugzSW1g73cR6emzXarEplsYvUfBKw-eSG5H8uKnohlYf_PRAu5wQL6d&currency=USD"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- ---------- JAVASCRIPT LOGIC ---------- -->
   <script>
@@ -1004,8 +1002,17 @@
     // Panggil saat dimuat dan sinkronkan tiap 10 detik
     loadProgress();
     setInterval(loadProgress, 10000);
-    // ---------- Render Tombol PayPal SDK ----------
-    if (window.paypal) {
+
+    // ---------- Render Tombol PayPal SDK (locale mengikuti bahasa terdeteksi) ----------
+    const PAYPAL_LOCALE_MAP = {
+      en: 'en_US', ms: 'en_MY', th: 'th_TH', vi: 'en_US', ja: 'ja_JP', ko: 'ko_KR',
+      'zh-CN': 'zh_CN', 'zh-TW': 'zh_TW', ar: 'ar_EG', tr: 'tr_TR', de: 'de_DE',
+      fr: 'fr_FR', nl: 'nl_NL', es: 'es_ES', pt: 'pt_PT', it: 'it_IT', ru: 'ru_RU',
+      pl: 'pl_PL', hi: 'en_US', bn: 'en_US', ur: 'en_US', id: 'id_ID',
+    };
+
+    function renderPaypalButton() {
+      if (!window.paypal) return;
       paypal.Buttons({
         style: {
           layout: 'vertical',
@@ -1035,6 +1042,14 @@
         }
       }).render('#paypal-button-container');
     }
+
+    function loadPaypalSDK(locale) {
+      const script = document.createElement('script');
+      script.src = `https://www.paypal.com/sdk/js?client-id=ARu9inIMZmM8EYDrjFLBYETOTugzSW1g73cR6emzXarEplsYvUfBKw-eSG5H8uKnohlYf_PRAu5wQL6d&currency=USD&locale=${locale}`;
+      script.onload = renderPaypalButton;
+      document.body.appendChild(script);
+    }
+
     const perbatasanGeoJSON = {
       "type": "FeatureCollection",
       "features": [
@@ -1355,7 +1370,7 @@ async function initPetaMap() {
       KI: 'en', TO: 'en', TV: 'en', NR: 'en', MH: 'en', FM: 'en', PW: 'en',
     };
 
-    // Teks notice per bahasa. Kalau bahasanya nggak ada di sini, pakai fallback English (baris di bawah map ini).
+    // Teks notice per bahasa. Kalau bahasanya nggak ada di sini, pakai fallback English.
     const NOTICE_TEXT_MAP = {
       en: { notice: "This page has been automatically translated.", button: "Back to Indonesian" },
       ms: { notice: "Halaman ini telah diterjemahkan secara automatik.", button: "Kembali ke Bahasa Indonesia" },
@@ -1416,15 +1431,21 @@ async function initPetaMap() {
     }
 
     async function detectCountryAndTranslate() {
+      let paypalLocale = 'id_ID'; // default kalau di Indonesia / deteksi gagal
       try {
         const res = await fetch('/api/geo');
-        if (!res.ok) return;
-        const { country } = await res.json();
-        if (!country || country === 'ID') return;
-        const langCode = COUNTRY_LANG_MAP[country] || 'en'; // fallback ke English kalau negara nggak ada di daftar
-        applyTranslation(langCode);
+        if (res.ok) {
+          const { country } = await res.json();
+          if (country && country !== 'ID') {
+            const langCode = COUNTRY_LANG_MAP[country] || 'en';
+            paypalLocale = PAYPAL_LOCALE_MAP[langCode] || 'en_US';
+            applyTranslation(langCode);
+          }
+        }
       } catch (error) {
         console.warn('Deteksi negara gagal, halaman tetap Bahasa Indonesia', error);
+      } finally {
+        loadPaypalSDK(paypalLocale); // selalu jalan, apapun hasil deteksinya
       }
     }
 
