@@ -231,6 +231,7 @@
     border-radius: 8px;
     padding: 14px 16px;
     margin-bottom: 10px;
+    transition: opacity 0.25s ease, transform 0.25s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease;
   }
   .row-item img, .row-item video {
     width: 72px;
@@ -491,6 +492,35 @@
       return div.innerHTML;
     }
 
+    // Animasi hapus: fade + collapse tinggi row, tanpa reload/refetch seluruh list.
+    function animateRemoveRow(el) {
+      return new Promise(resolve => {
+        if (!el) { resolve(); return; }
+        const h = el.getBoundingClientRect().height;
+        el.style.height = h + 'px';
+        el.style.overflow = 'hidden';
+        void el.offsetHeight; // force reflow biar transisi dari height eksplisit jalan
+        requestAnimationFrame(() => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateX(24px) scale(0.97)';
+          el.style.height = '0px';
+          el.style.marginBottom = '0px';
+          el.style.paddingTop = '0px';
+          el.style.paddingBottom = '0px';
+        });
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          el.removeEventListener('transitionend', onEnd);
+          resolve();
+        };
+        const onEnd = (e) => { if (e.propertyName === 'height') finish(); };
+        el.addEventListener('transitionend', onEnd);
+        setTimeout(finish, 450); // fallback kalau transitionend gak fire
+      });
+    }
+
     // ---------- AUTH ----------
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -541,6 +571,14 @@
     // ==================== DONASI ====================
     let donationRows = []; // cache data terakhir, diakses via data-id (hindari embed JSON di HTML attribute)
 
+    function renderDonationStats(rows) {
+      const total = rows.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+      document.getElementById('statTotal').textContent = formatUSD(total);
+      document.getElementById('statCount').textContent = rows.length;
+      document.getElementById('statAvg').textContent = formatUSD(rows.length ? total / rows.length : 0);
+      document.getElementById('donasiCountLabel').textContent = rows.length + ' catatan donasi';
+    }
+
     async function loadDonations() {
       const list = document.getElementById('donasiList');
       list.innerHTML = '<div class="empty-note">Memuat data donasi...</div>';
@@ -551,11 +589,7 @@
       }
       const rows = data || [];
       donationRows = rows;
-      const total = rows.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
-      document.getElementById('statTotal').textContent = formatUSD(total);
-      document.getElementById('statCount').textContent = rows.length;
-      document.getElementById('statAvg').textContent = formatUSD(rows.length ? total / rows.length : 0);
-      document.getElementById('donasiCountLabel').textContent = rows.length + ' catatan donasi';
+      renderDonationStats(rows);
 
       if (rows.length === 0) {
         list.innerHTML = '<div class="empty-note">Belum ada catatan donasi.</div>';
@@ -572,7 +606,7 @@
           ? `${String(r.currency_original).toUpperCase()} ${Number(r.amount_original).toLocaleString('id-ID')}`
           : '';
         return `
-        <div class="row-item">
+        <div class="row-item" data-row-id="${r.id}">
           <div class="row-body">
             <p class="row-title">${formatUSD(r.amount)} — ${escapeHtml(name)} <span class="badge">${escapeHtml(sourceLabel)}</span></p>
             <p class="row-meta">
@@ -644,10 +678,17 @@
 
     async function deleteDonation(id) {
       if (!confirm('Hapus catatan donasi ini?')) return;
+      const el = document.querySelector(`#donasiList .row-item[data-row-id="${id}"]`);
       const { error } = await sb.from('donations').delete().eq('id', id);
       if (error) { showToast('Gagal hapus: ' + error.message); return; }
       showToast('Donasi dihapus');
-      loadDonations();
+      donationRows = donationRows.filter(r => String(r.id) !== String(id));
+      await animateRemoveRow(el);
+      el?.remove();
+      renderDonationStats(donationRows);
+      if (donationRows.length === 0) {
+        document.getElementById('donasiList').innerHTML = '<div class="empty-note">Belum ada catatan donasi.</div>';
+      }
     }
 
     // ==================== INISIATIF (CAMPAIGNS) ====================
@@ -669,7 +710,7 @@
         return;
       }
       list.innerHTML = rows.map(r => `
-        <div class="row-item">
+        <div class="row-item" data-row-id="${r.id}">
           <img src="${escapeHtml(r.image_url)}" alt="" onerror="this.style.opacity=0" />
           <div class="row-body">
             <p class="row-title">${String(r.position).padStart(2,'0')} · ${escapeHtml(r.name)} <span class="badge">${escapeHtml(r.status)}</span></p>
@@ -744,10 +785,17 @@
 
     async function deleteCampaign(id) {
       if (!confirm('Hapus inisiatif ini?')) return;
+      const el = document.querySelector(`#campaignList .row-item[data-row-id="${id}"]`);
       const { error } = await sb.from('campaigns').delete().eq('id', id);
       if (error) { showToast('Gagal hapus: ' + error.message); return; }
       showToast('Inisiatif dihapus');
-      loadCampaigns();
+      campaignRows = campaignRows.filter(r => String(r.id) !== String(id));
+      await animateRemoveRow(el);
+      el?.remove();
+      document.getElementById('campaignCountLabel').textContent = campaignRows.length + ' inisiatif';
+      if (campaignRows.length === 0) {
+        document.getElementById('campaignList').innerHTML = '<div class="empty-note">Belum ada inisiatif. Tambahkan lewat form di atas.</div>';
+      }
     }
 
     // ==================== FAKTA LAPANGAN ====================
@@ -769,7 +817,7 @@
         return;
       }
       list.innerHTML = rows.map(r => `
-        <div class="row-item">
+        <div class="row-item" data-row-id="${r.id}">
           ${r.media_type === 'video'
             ? `<video src="${escapeHtml(r.url)}" muted></video>`
             : `<img src="${escapeHtml(r.url)}" alt="" />`}
@@ -822,11 +870,18 @@
 
     async function deleteFaktaMedia(row) {
       if (!confirm('Hapus media ini?')) return;
+      const el = document.querySelector(`#faktaList .row-item[data-row-id="${row.id}"]`);
       await sb.storage.from(FAKTA_BUCKET).remove([row.storage_path]);
       const { error } = await sb.from('fakta_media').delete().eq('id', row.id);
       if (error) { showToast('Gagal hapus: ' + error.message); return; }
       showToast('Media dihapus');
-      loadFaktaMedia();
+      faktaRows = faktaRows.filter(r => String(r.id) !== String(row.id));
+      await animateRemoveRow(el);
+      el?.remove();
+      document.getElementById('faktaCountLabel').textContent = faktaRows.length + ' file media';
+      if (faktaRows.length === 0) {
+        document.getElementById('faktaList').innerHTML = '<div class="empty-note">Belum ada foto/video. Upload lewat tombol di atas.</div>';
+      }
     }
   </script>
 </body>
