@@ -843,7 +843,7 @@
       <div class="section-head">
         <p class="section-eyebrow">Kontur &amp; Relief Medan</p>
         <h2 class="section-title">Peta Topografi Wilayah Perbatasan</h2>
-        <p class="section-body">Visualisasi kontur ketinggian, punggung bukit, dan relief terjal di sepanjang kawasan perbatasan Kalimantan Utara.</p>
+        <p class="section-body">Visualisasi kontur ketinggian, punggung bukit, dan relief terjal di sepanjang kawasan perbatasan Kalimantan Utara. Titik merah menandai lokasi pembangunan yang ditambahkan langsung oleh tim admin.</p>
       </div>
       <div class="peta-frame">
         <div id="petaMap"></div>
@@ -1188,6 +1188,34 @@ async function initPetaMap() {
     L.geoJSON(perbatasanGeoJSON, {
       style: { color: '#c9a15a', weight: 3, opacity: 0.8, fillOpacity: 0.05 }
     }).addTo(map);
+  }
+
+  // ==================== TITIK LOKASI PROYEK (DITAMBAHKAN ADMIN) ====================
+  // Ditarik dari tabel project_locations di Supabase, ditandai bulatan merah
+  // sesuai legenda "🔴 Titik Proyek Pembangunan".
+  try {
+    const { data: lokasiData, error: lokasiError } = await sbClient
+      .from('project_locations')
+      .select('*');
+    if (lokasiError) throw lokasiError;
+    (lokasiData || []).forEach(loc => {
+      const lat = Number(loc.lat);
+      const lng = Number(loc.lng);
+      if (isNaN(lat) || isNaN(lng)) return;
+      const marker = L.circleMarker([lat, lng], {
+        radius: 8,
+        color: '#ffd7c9',
+        weight: 2,
+        fillColor: '#a2402f',
+        fillOpacity: 0.9
+      }).addTo(map);
+      const namaAman = escapeHtmlIndex(loc.name || 'Titik Proyek');
+      const deskripsiAman = loc.description ? `<br>${escapeHtmlIndex(loc.description)}` : '';
+      marker.bindPopup(`<b>${namaAman}</b>${deskripsiAman}<br><small>${lat.toFixed(4)}, ${lng.toFixed(4)}</small>`);
+      marker.bindTooltip(namaAman, { direction: 'top', offset: [0, -8] });
+    });
+  } catch (e) {
+    console.warn('Gagal memuat titik lokasi proyek:', e);
   }
 
   // ==================== ELEVASI REAL-TIME + POPUP KLIK ====================
