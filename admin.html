@@ -370,7 +370,7 @@
           <div class="stat-box"><div class="num" id="statAvg">$0.00</div><div class="lbl">Rata-rata</div></div>
         </div>
         <div class="card">
-          <h3 id="donationFormTitle">Tambah Catatan Donasi</h3>
+          <h3 id="donationFormTitle">Tambah Catatan Donasi Manual</h3>
           <input type="hidden" id="donId" />
           <div class="form-grid">
             <div>
@@ -558,19 +558,34 @@
         list.innerHTML = '<div class="empty-note">Belum ada catatan donasi.</div>';
         return;
       }
-      list.innerHTML = rows.map(r => `
+      list.innerHTML = rows.map(r => {
+        // Sesuaikan dengan schema penuh tabel donations di Supabase:
+        // donasi webhook (Trakteer/Saweria/Sociabuzz) pakai kolom donor & message,
+        // donasi manual dari form ini pakai donor_name & note. Fallback ke keduanya.
+        const name = r.donor_name || r.donor || 'Hamba Allah';
+        const msg = r.note || r.message || '';
+        const sourceLabel = r.source || 'manual';
+        const original = (r.amount_original && r.currency_original && String(r.currency_original).toUpperCase() !== 'USD')
+          ? `${String(r.currency_original).toUpperCase()} ${Number(r.amount_original).toLocaleString('id-ID')}`
+          : '';
+        return `
         <div class="row-item">
           <div class="row-body">
-            <p class="row-title">${formatUSD(r.amount)} ${r.donor_name ? '— ' + escapeHtml(r.donor_name) : ''}</p>
-            <p class="row-meta">${r.created_at ? new Date(r.created_at).toLocaleString('id-ID') : ''}</p>
-            ${r.note ? `<p class="row-desc">${escapeHtml(r.note)}</p>` : ''}
+            <p class="row-title">${formatUSD(r.amount)} — ${escapeHtml(name)} <span class="badge">${escapeHtml(sourceLabel)}</span></p>
+            <p class="row-meta">
+              ${r.created_at ? new Date(r.created_at).toLocaleString('id-ID') : ''}
+              ${original ? ' · asli: ' + escapeHtml(original) : ''}
+              ${r.transaction_id ? ' · trx: ' + escapeHtml(r.transaction_id) : ''}
+            </p>
+            ${msg ? `<p class="row-desc">${escapeHtml(msg)}</p>` : ''}
           </div>
           <div class="row-actions">
             <button class="btn ghost small" onclick='editDonation(${JSON.stringify(r).replace(/'/g, "&apos;")})'>Edit</button>
             <button class="btn danger small" onclick="deleteDonation(${r.id})">Hapus</button>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     document.getElementById('addDonationBtn').addEventListener('click', async () => {
@@ -583,7 +598,7 @@
       if (id) {
         ({ error } = await sb.from('donations').update({ amount, donor_name, note }).eq('id', id));
       } else {
-        ({ error } = await sb.from('donations').insert([{ amount, donor_name, note }]));
+        ({ error } = await sb.from('donations').insert([{ amount, donor_name, note, source: 'manual' }]));
       }
       if (error) { showToast('Gagal simpan: ' + error.message); return; }
       showToast(id ? 'Donasi diperbarui' : 'Donasi tersimpan');
@@ -594,8 +609,8 @@
     function editDonation(row) {
       document.getElementById('donId').value = row.id;
       document.getElementById('donAmount').value = row.amount;
-      document.getElementById('donName').value = row.donor_name || '';
-      document.getElementById('donNote').value = row.note || '';
+      document.getElementById('donName').value = row.donor_name || row.donor || '';
+      document.getElementById('donNote').value = row.note || row.message || '';
       document.getElementById('donationFormTitle').textContent = 'Edit Catatan Donasi';
       document.getElementById('cancelDonationEditBtn').style.display = 'inline-flex';
       document.getElementById('panel-donasi').scrollIntoView({ behavior: 'smooth' });
@@ -606,7 +621,7 @@
       document.getElementById('donAmount').value = '';
       document.getElementById('donName').value = '';
       document.getElementById('donNote').value = '';
-      document.getElementById('donationFormTitle').textContent = 'Tambah Catatan Donasi';
+      document.getElementById('donationFormTitle').textContent = 'Tambah Catatan Donasi Manual';
       document.getElementById('cancelDonationEditBtn').style.display = 'none';
     }
     document.getElementById('cancelDonationEditBtn').addEventListener('click', resetDonationForm);
