@@ -843,7 +843,7 @@
       <div class="section-head">
         <p class="section-eyebrow">Kontur &amp; Relief Medan</p>
         <h2 class="section-title">Peta Topografi Wilayah Perbatasan</h2>
-        <p class="section-body">Visualisasi kontur ketinggian, punggung bukit, dan relief terjal di sepanjang kawasan perbatasan Kalimantan Utara. Titik merah menandai lokasi pembangunan yang ditambahkan langsung oleh tim admin.</p>
+        <p class="section-body">Visualisasi kontur ketinggian, punggung bukit, dan relief terjal di sepanjang kawasan perbatasan Kalimantan Utara.</p>
       </div>
       <div class="peta-frame">
         <div id="petaMap"></div>
@@ -949,18 +949,18 @@
   <!-- ---------- Floating Chat Widget (WhatsApp / Email) ---------- -->
   <div class="chat-fab-wrap">
     <div class="chat-menu" id="chatMenu">
-      <a class="chat-menu-item wa" id="waLink" href="https://wa.me/6281251794955?text=Halo%2C%20saya%20ingin%20bertanya" target="_blank" rel="noopener">
+      <a class="chat-menu-item wa" id="waLink" href="https://wa.me/6281251794955?text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20Penjaga%20Batas" target="_blank" rel="noopener">
         <span class="chat-icon">
           <svg viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.02c-.24.68-1.42 1.32-1.95 1.4-.5.08-1.13.11-1.82-.12-.42-.14-.96-.32-1.65-.62-2.9-1.25-4.79-4.16-4.94-4.35-.14-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.02-2.41.27-.29.58-.36.78-.36h.56c.18 0 .42-.03.65.5.24.55.81 1.9.88 2.04.07.14.12.3.02.49-.1.19-.15.3-.29.46-.14.16-.3.36-.43.48-.14.14-.29.29-.13.57.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.14.46.12.63-.07.17-.19.72-.84.91-1.13.19-.29.38-.24.65-.14.27.1 1.68.79 1.97.93.29.14.48.21.55.33.07.12.07.68-.17 1.35z"/></svg>
         </span>
         WhatsApp
       </a>
-<a class="chat-menu-item mail" id="mailLink" href="mailto:bintangcahyahen@gmail.com?subject=Pertanyaan">
-    <span class="chat-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16v16H4z" stroke="none"/><path d="M3 5.5h18v13H3z"/><path d="M3 6l9 7 9-7"/></svg>
-    </span>
-    Email
-  </a>
+      <a class="chat-menu-item mail" id="mailLink" href="mailto:bintangcahyahen@gmail.com?subject=Pertanyaan%20Penjaga%20Batas" target="_blank" rel="noopener">
+        <span class="chat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16v16H4z" stroke="none"/><path d="M3 5.5h18v13H3z"/><path d="M3 6l9 7 9-7"/></svg>
+        </span>
+        Email
+      </a>
     </div>
     <button class="chat-fab" id="chatFabBtn" type="button" aria-label="Buka menu chat">
       <svg class="icon-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
@@ -1190,34 +1190,6 @@ async function initPetaMap() {
     }).addTo(map);
   }
 
-  // ==================== TITIK LOKASI PROYEK (DITAMBAHKAN ADMIN) ====================
-  // Ditarik dari tabel project_locations di Supabase, ditandai bulatan merah
-  // sesuai legenda "🔴 Titik Proyek Pembangunan".
-  try {
-    const { data: lokasiData, error: lokasiError } = await sbClient
-      .from('project_locations')
-      .select('*');
-    if (lokasiError) throw lokasiError;
-    (lokasiData || []).forEach(loc => {
-      const lat = Number(loc.lat);
-      const lng = Number(loc.lng);
-      if (isNaN(lat) || isNaN(lng)) return;
-      const marker = L.circleMarker([lat, lng], {
-        radius: 8,
-        color: '#ffd7c9',
-        weight: 2,
-        fillColor: '#a2402f',
-        fillOpacity: 0.9
-      }).addTo(map);
-      const namaAman = escapeHtmlIndex(loc.name || 'Titik Proyek');
-      const deskripsiAman = loc.description ? `<br>${escapeHtmlIndex(loc.description)}` : '';
-      marker.bindPopup(`<b>${namaAman}</b>${deskripsiAman}<br><small>${lat.toFixed(4)}, ${lng.toFixed(4)}</small>`);
-      marker.bindTooltip(namaAman, { direction: 'top', offset: [0, -8] });
-    });
-  } catch (e) {
-    console.warn('Gagal memuat titik lokasi proyek:', e);
-  }
-
   // ==================== ELEVASI REAL-TIME + POPUP KLIK ====================
   let elevationTooltip = null;
   let lastFetch = 0;
@@ -1325,6 +1297,31 @@ async function initPetaMap() {
 
   map.on('focus', () => map.scrollWheelZoom.enable());
   map.on('blur', () => map.scrollWheelZoom.disable());
+
+  await loadLokasiMarkers(map);
+}
+
+/* ---------- Marker titik lokasi (dari admin, tabel project_locations) ---------- */
+async function loadLokasiMarkers(map) {
+  try {
+    const { data, error } = await sbClient
+      .from('project_locations')
+      .select('*');
+    if (error) throw error;
+    (data || []).forEach(loc => {
+      const marker = L.circleMarker([loc.lat, loc.lng], {
+        radius: 8,
+        color: '#a2402f',
+        weight: 2,
+        fillColor: '#c9a15a',
+        fillOpacity: 0.85
+      }).addTo(map);
+      const desc = loc.description ? `<br>${escapeHtmlIndex(loc.description)}` : '';
+      marker.bindPopup(`<b>${escapeHtmlIndex(loc.name)}</b>${desc}`);
+    });
+  } catch (err) {
+    console.warn('Gagal memuat titik lokasi:', err);
+  }
 }
     /* ---------- Load Fakta Lapangan (foto/video) dari Supabase ---------- */
     let currentSlide = 0;
