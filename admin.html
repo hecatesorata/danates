@@ -539,6 +539,8 @@
     });
 
     // ==================== DONASI ====================
+    let donationRows = []; // cache data terakhir, diakses via data-id (hindari embed JSON di HTML attribute)
+
     async function loadDonations() {
       const list = document.getElementById('donasiList');
       list.innerHTML = '<div class="empty-note">Memuat data donasi...</div>';
@@ -548,6 +550,7 @@
         return;
       }
       const rows = data || [];
+      donationRows = rows;
       const total = rows.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
       document.getElementById('statTotal').textContent = formatUSD(total);
       document.getElementById('statCount').textContent = rows.length;
@@ -580,13 +583,26 @@
             ${msg ? `<p class="row-desc">${escapeHtml(msg)}</p>` : ''}
           </div>
           <div class="row-actions">
-            <button class="btn ghost small" onclick='editDonation(${JSON.stringify(r).replace(/'/g, "&apos;")})'>Edit</button>
-            <button class="btn danger small" onclick="deleteDonation(${r.id})">Hapus</button>
+            <button class="btn ghost small" data-action="edit-donation" data-id="${r.id}">Edit</button>
+            <button class="btn danger small" data-action="delete-donation" data-id="${r.id}">Hapus</button>
           </div>
         </div>
       `;
       }).join('');
     }
+
+    // Event delegation: satu listener di container, baca data-id, ambil row dari cache donationRows.
+    // Ini menghindari inline onclick + JSON.stringify yang gampang jebol kalau donor_name/message/note
+    // mengandung tanda kutip, backslash, atau karakter aneh lain (rawan terjadi karena isinya teks bebas dari donatur).
+    document.getElementById('donasiList').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const row = donationRows.find(r => String(r.id) === String(id));
+      if (!row) return;
+      if (btn.dataset.action === 'edit-donation') editDonation(row);
+      if (btn.dataset.action === 'delete-donation') deleteDonation(row.id);
+    });
 
     document.getElementById('addDonationBtn').addEventListener('click', async () => {
       const id = document.getElementById('donId').value;
@@ -635,6 +651,8 @@
     }
 
     // ==================== INISIATIF (CAMPAIGNS) ====================
+    let campaignRows = [];
+
     async function loadCampaigns() {
       const list = document.getElementById('campaignList');
       list.innerHTML = '<div class="empty-note">Memuat inisiatif...</div>';
@@ -644,6 +662,7 @@
         return;
       }
       const rows = data || [];
+      campaignRows = rows;
       document.getElementById('campaignCountLabel').textContent = rows.length + ' inisiatif';
       if (rows.length === 0) {
         list.innerHTML = '<div class="empty-note">Belum ada inisiatif. Tambahkan lewat form di atas.</div>';
@@ -657,12 +676,22 @@
             <p class="row-desc">${escapeHtml(r.description)}</p>
           </div>
           <div class="row-actions">
-            <button class="btn ghost small" onclick='editCampaign(${JSON.stringify(r).replace(/'/g, "&apos;")})'>Edit</button>
-            <button class="btn danger small" onclick="deleteCampaign(${r.id})">Hapus</button>
+            <button class="btn ghost small" data-action="edit-campaign" data-id="${r.id}">Edit</button>
+            <button class="btn danger small" data-action="delete-campaign" data-id="${r.id}">Hapus</button>
           </div>
         </div>
       `).join('');
     }
+
+    document.getElementById('campaignList').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const row = campaignRows.find(r => String(r.id) === String(id));
+      if (!row) return;
+      if (btn.dataset.action === 'edit-campaign') editCampaign(row);
+      if (btn.dataset.action === 'delete-campaign') deleteCampaign(row.id);
+    });
 
     function editCampaign(row) {
       document.getElementById('campaignId').value = row.id;
@@ -722,6 +751,8 @@
     }
 
     // ==================== FAKTA LAPANGAN ====================
+    let faktaRows = [];
+
     async function loadFaktaMedia() {
       const list = document.getElementById('faktaList');
       list.innerHTML = '<div class="empty-note">Memuat media...</div>';
@@ -731,6 +762,7 @@
         return;
       }
       const rows = data || [];
+      faktaRows = rows;
       document.getElementById('faktaCountLabel').textContent = rows.length + ' file media';
       if (rows.length === 0) {
         list.innerHTML = '<div class="empty-note">Belum ada foto/video. Upload lewat tombol di atas.</div>';
@@ -746,11 +778,20 @@
             <p class="row-meta">${r.created_at ? new Date(r.created_at).toLocaleString('id-ID') : ''}</p>
           </div>
           <div class="row-actions">
-            <button class="btn danger small" onclick='deleteFaktaMedia(${JSON.stringify(r).replace(/'/g, "&apos;")})'>Hapus</button>
+            <button class="btn danger small" data-action="delete-fakta" data-id="${r.id}">Hapus</button>
           </div>
         </div>
       `).join('');
     }
+
+    document.getElementById('faktaList').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const row = faktaRows.find(r => String(r.id) === String(id));
+      if (!row) return;
+      if (btn.dataset.action === 'delete-fakta') deleteFaktaMedia(row);
+    });
 
     document.getElementById('faktaFileInput').addEventListener('change', async (e) => {
       const file = e.target.files[0];
