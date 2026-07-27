@@ -370,7 +370,8 @@
           <div class="stat-box"><div class="num" id="statAvg">$0.00</div><div class="lbl">Rata-rata</div></div>
         </div>
         <div class="card">
-          <h3>Tambah Catatan Donasi</h3>
+          <h3 id="donationFormTitle">Tambah Catatan Donasi</h3>
+          <input type="hidden" id="donId" />
           <div class="form-grid">
             <div>
               <label>Nominal (USD)</label>
@@ -385,7 +386,10 @@
               <input type="text" id="donNote" placeholder="Semoga bermanfaat" />
             </div>
           </div>
-          <button class="btn" style="margin-top:14px;" id="addDonationBtn">Simpan Donasi</button>
+          <div style="margin-top:14px; display:flex; gap:8px;">
+            <button class="btn" id="addDonationBtn">Simpan Donasi</button>
+            <button class="btn ghost" id="cancelDonationEditBtn" style="display:none;">Batal Edit</button>
+          </div>
         </div>
         <div class="panel-head">
           <div>
@@ -562,6 +566,7 @@
             ${r.note ? `<p class="row-desc">${escapeHtml(r.note)}</p>` : ''}
           </div>
           <div class="row-actions">
+            <button class="btn ghost small" onclick='editDonation(${JSON.stringify(r).replace(/'/g, "&apos;")})'>Edit</button>
             <button class="btn danger small" onclick="deleteDonation(${r.id})">Hapus</button>
           </div>
         </div>
@@ -569,18 +574,42 @@
     }
 
     document.getElementById('addDonationBtn').addEventListener('click', async () => {
+      const id = document.getElementById('donId').value;
       const amount = parseFloat(document.getElementById('donAmount').value);
       if (!amount || amount <= 0) { showToast('Isi nominal yang valid dulu'); return; }
       const donor_name = document.getElementById('donName').value.trim() || null;
       const note = document.getElementById('donNote').value.trim() || null;
-      const { error } = await sb.from('donations').insert([{ amount, donor_name, note }]);
+      let error;
+      if (id) {
+        ({ error } = await sb.from('donations').update({ amount, donor_name, note }).eq('id', id));
+      } else {
+        ({ error } = await sb.from('donations').insert([{ amount, donor_name, note }]));
+      }
       if (error) { showToast('Gagal simpan: ' + error.message); return; }
+      showToast(id ? 'Donasi diperbarui' : 'Donasi tersimpan');
+      resetDonationForm();
+      loadDonations();
+    });
+
+    function editDonation(row) {
+      document.getElementById('donId').value = row.id;
+      document.getElementById('donAmount').value = row.amount;
+      document.getElementById('donName').value = row.donor_name || '';
+      document.getElementById('donNote').value = row.note || '';
+      document.getElementById('donationFormTitle').textContent = 'Edit Catatan Donasi';
+      document.getElementById('cancelDonationEditBtn').style.display = 'inline-flex';
+      document.getElementById('panel-donasi').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetDonationForm() {
+      document.getElementById('donId').value = '';
       document.getElementById('donAmount').value = '';
       document.getElementById('donName').value = '';
       document.getElementById('donNote').value = '';
-      showToast('Donasi tersimpan');
-      loadDonations();
-    });
+      document.getElementById('donationFormTitle').textContent = 'Tambah Catatan Donasi';
+      document.getElementById('cancelDonationEditBtn').style.display = 'none';
+    }
+    document.getElementById('cancelDonationEditBtn').addEventListener('click', resetDonationForm);
 
     async function deleteDonation(id) {
       if (!confirm('Hapus catatan donasi ini?')) return;
