@@ -833,70 +833,8 @@
         </p>
       </div>
     </div>
-    <div class="campaign-grid">
-      <div class="campaign-card">
-        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
-        <img src="assets/campaign/sekolah.jpg" alt="Pembangunan gedung sekolah" loading="lazy" />
-        <div class="campaign-overlay">
-          <span class="campaign-index">01</span>
-          <h3 class="campaign-name">Ruang Kelas Baru</h3>
-          <p class="campaign-desc">Gedung sekolah dasar yang sebelumnya beratap seng bocor, kini dibangun ulang bersama warga.</p>
-        </div>
-      </div>
-      <div class="campaign-card">
-        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
-        <img src="assets/campaign/jalan.jpg" alt="Pengerasan jalan penghubung desa" loading="lazy" />
-        <div class="campaign-overlay">
-          <span class="campaign-index">02</span>
-          <h3 class="campaign-name">Jalan Penghubung</h3>
-          <p class="campaign-desc">Jalur yang dulu hanya bisa dilalui saat kemarau, sekarang diaspal untuk akses sepanjang tahun.</p>
-        </div>
-      </div>
-      <div class="campaign-card">
-        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
-        <img src="assets/campaign/jembatan.jpg" alt="Pembangunan jembatan penyeberangan sungai" loading="lazy" />
-        <div class="campaign-overlay">
-          <span class="campaign-index">03</span>
-          <h3 class="campaign-name">Jembatan Sungai</h3>
-          <p class="campaign-desc">Menyambungkan dua desa yang selama ini terpisah saat air pasang, mempercepat akses ke fasilitas kesehatan.</p>
-        </div>
-      </div>
-      <div class="campaign-card">
-        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
-        <img src="assets/campaign/rumahsakit.jpg" alt="Rumah Sakit Daerah yang sedang dibangun" loading="lazy" />
-        <div class="campaign-overlay">
-          <span class="campaign-index">04</span>
-          <h3 class="campaign-name">Rumah Sakit Daerah</h3>
-          <p class="campaign-desc">Fasilitas rujukan pertama di kecamatan ini, mengurangi jarak tempuh darurat yang tadinya berjam-jam.</p>
-        </div>
-      </div>
-      <div class="campaign-card">
-        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
-        <img src="assets/campaign/bantuan.jpg" alt="Distribusi bantuan kemanusiaan berupa sembako" loading="lazy" />
-        <div class="campaign-overlay">
-          <span class="campaign-index">05</span>
-          <h3 class="campaign-name">Bantuan Sembako</h3>
-          <p class="campaign-desc">Distribusi kebutuhan pokok rutin ke desa-desa yang jalur logistiknya masih sulit dijangkau.</p>
-        </div>
-      </div>
-      <div class="campaign-card">
-        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
-        <img src="assets/campaign/kesehatan.jpg" alt="Layanan pemeriksaan kesehatan warga" loading="lazy" />
-        <div class="campaign-overlay">
-          <span class="campaign-index">06</span>
-          <h3 class="campaign-name">Layanan Kesehatan Keliling</h3>
-          <p class="campaign-desc">Pemeriksaan gratis untuk ibu dan anak, mengisi kekosongan tenaga medis di wilayah terpencil.</p>
-        </div>
-      </div>
-      <div class="campaign-card">
-        <span class="campaign-badge"><span class="dot"></span>On Progress</span>
-        <img src="assets/campaign/distribusi.jpg" alt="Distribusi bantuan lewat jalur sungai" loading="lazy" />
-        <div class="campaign-overlay">
-          <span class="campaign-index">07</span>
-          <h3 class="campaign-name">Distribusi Jalur Sungai</h3>
-          <p class="campaign-desc">Sungai masih jadi satu-satunya akses ke sejumlah kampung — logistik dikirim langsung lewat perahu.</p>
-        </div>
-      </div>
+    <div class="campaign-grid" id="campaignGrid">
+      <div class="fakta-empty" style="grid-column:1/-1;">Memuat inisiatif...</div>
     </div>
   </section>
   <!-- ---------- SECTION PETA TOPOGRAFI ---------- -->
@@ -1059,6 +997,7 @@
     const SUPABASE_URL = "https://jnkhrqvlqtamdclvwacx.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impua2hycXZscXRhbWRjbHZ3YWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5ODQ0ODUsImV4cCI6MjA5OTU2MDQ4NX0.rNYh35Beg93OJIG-6aF-zRLDfwD2wZFX_wSRmS3v-II";
     const TARGET_GOAL = 20000000; // Target $20.000.000,00
+    const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     function formatUSD(number) {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -1359,39 +1298,37 @@ async function initPetaMap() {
   map.on('focus', () => map.scrollWheelZoom.enable());
   map.on('blur', () => map.scrollWheelZoom.disable());
 }
-    /* ---------- Load GitHub Assets for Fakta Slider & Lightbox ---------- */
+    /* ---------- Load Fakta Lapangan (foto/video) dari Supabase ---------- */
     let currentSlide = 0;
     let slidesCount = 0;
     async function loadFaktaMedia() {
       const container = document.getElementById('faktaContainer');
-      const owner = "hecatesorata";
-      const repo = "danates";
-      const path = "assets/fakta";
       try {
-        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
-        if (!res.ok) throw new Error("Gagal mengambil folder fakta dari GitHub");
-        const files = await res.json();
-        const mediaExtensions = /\.(jpg|jpeg|png|webp|gif|mp4|webm|ogg)$/i;
-        const validFiles = files.filter(file => file.type === 'file' && mediaExtensions.test(file.name));
+        const { data, error } = await sbClient
+          .from('fakta_media')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        const validFiles = data || [];
         if (validFiles.length === 0) {
-          container.innerHTML = `<div class="fakta-empty">Belum ada foto atau video di dalam folder assets/fakta.</div>`;
+          container.innerHTML = `<div class="fakta-empty">Belum ada foto atau video Fakta Lapangan.</div>`;
           return;
         }
         let htmlContent = '';
         validFiles.forEach((file, index) => {
-          const isVideo = /\.(mp4|webm|ogg)$/i.test(file.name);
+          const isVideo = file.media_type === 'video';
           const activeClass = index === 0 ? 'active' : '';
           if (isVideo) {
             htmlContent += `
-              <div class="fakta-slide ${activeClass}" onclick="openLightbox('video', '${file.download_url}')">
+              <div class="fakta-slide ${activeClass}" onclick="openLightbox('video', '${file.url}')">
                 <video muted playsinline>
-                  <source src="${file.download_url}" type="video/mp4">
+                  <source src="${file.url}" type="video/mp4">
                 </video>
               </div>`;
           } else {
             htmlContent += `
-              <div class="fakta-slide ${activeClass}" onclick="openLightbox('image', '${file.download_url}')">
-                <img src="${file.download_url}" alt="${file.name}" loading="lazy" />
+              <div class="fakta-slide ${activeClass}" onclick="openLightbox('image', '${file.url}')">
+                <img src="${file.url}" alt="Fakta Lapangan" loading="lazy" />
               </div>`;
           }
         });
@@ -1405,8 +1342,44 @@ async function initPetaMap() {
         slidesCount = validFiles.length;
       } catch (err) {
         console.error(err);
-        container.innerHTML = `<div class="fakta-empty">Gagal memuat media dari repositori GitHub.</div>`;
+        container.innerHTML = `<div class="fakta-empty">Gagal memuat media Fakta Lapangan.</div>`;
       }
+    }
+
+    /* ---------- Load Kartu Inisiatif dari Supabase ---------- */
+    async function loadCampaigns() {
+      const grid = document.getElementById('campaignGrid');
+      try {
+        const { data, error } = await sbClient
+          .from('campaigns')
+          .select('*')
+          .order('position', { ascending: true });
+        if (error) throw error;
+        const rows = data || [];
+        if (rows.length === 0) {
+          grid.innerHTML = `<div class="fakta-empty" style="grid-column:1/-1;">Belum ada inisiatif ditambahkan.</div>`;
+          return;
+        }
+        grid.innerHTML = rows.map(r => `
+          <div class="campaign-card">
+            <span class="campaign-badge"><span class="dot"></span>${escapeHtmlIndex(r.status || 'On Progress')}</span>
+            <img src="${escapeHtmlIndex(r.image_url)}" alt="${escapeHtmlIndex(r.name)}" loading="lazy" />
+            <div class="campaign-overlay">
+              <span class="campaign-index">${String(r.position).padStart(2, '0')}</span>
+              <h3 class="campaign-name">${escapeHtmlIndex(r.name)}</h3>
+              <p class="campaign-desc">${escapeHtmlIndex(r.description)}</p>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = `<div class="fakta-empty" style="grid-column:1/-1;">Gagal memuat inisiatif.</div>`;
+      }
+    }
+    function escapeHtmlIndex(str) {
+      const div = document.createElement('div');
+      div.textContent = str == null ? '' : String(str);
+      return div.innerHTML;
     }
     function changeSlide(direction) {
       const slides = document.querySelectorAll('.fakta-slide');
@@ -1449,6 +1422,7 @@ async function initPetaMap() {
     });
     window.addEventListener('load', () => {
       loadFaktaMedia();
+      loadCampaigns();
       initPetaMap();
     });
     const COUNTRY_LANG_MAP = {
