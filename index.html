@@ -1308,13 +1308,14 @@ async function loadLokasiMarkers(map) {
       .from('project_locations')
       .select('*');
     if (error) throw error;
+    console.log('📍 project_locations dari Supabase:', data);
     (data || []).forEach(loc => {
       const marker = L.circleMarker([loc.lat, loc.lng], {
-        radius: 8,
-        color: '#a2402f',
-        weight: 2,
-        fillColor: '#c9a15a',
-        fillOpacity: 0.85
+        radius: 12,
+        color: '#ffffff',
+        weight: 3,
+        fillColor: '#ff3b30',
+        fillOpacity: 0.95
       }).addTo(map);
       const desc = loc.description ? `<br>${escapeHtmlIndex(loc.description)}` : '';
       marker.bindPopup(`<b>${escapeHtmlIndex(loc.name)}</b>${desc}`);
