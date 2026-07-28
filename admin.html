@@ -661,8 +661,8 @@
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
-        if (btn.dataset.tab === 'lokasi' && lokasiMap) {
-          setTimeout(() => lokasiMap.invalidateSize(), 50);
+        if (btn.dataset.tab === 'lokasi') {
+          ensureLokasiMapReady();
         }
       });
     });
@@ -1061,6 +1061,19 @@
       });
     }
 
+    async function ensureLokasiMapReady() {
+      const firstInit = !lokasiMap;
+      await initLokasiPickerMap();
+      if (firstInit) renderLokasiMapMarkers(lokasiRows);
+      // Container baru punya ukuran final setelah panel-nya jadi display:block,
+      // jadi invalidateSize ditunda 2 frame biar reflow-nya kelar dulu.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (lokasiMap) lokasiMap.invalidateSize();
+        });
+      });
+    }
+
     function setLokasiPickerMarker(lat, lng) {
       if (!lokasiMap) return;
       const pos = [lat, lng];
@@ -1094,7 +1107,6 @@
     async function loadLokasi() {
       const list = document.getElementById('lokasiList');
       list.innerHTML = '<div class="empty-note">Memuat titik lokasi...</div>';
-      await initLokasiPickerMap();
       const { data, error } = await sb.from('project_locations').select('*').order('created_at', { ascending: false });
       if (error) {
         list.innerHTML = '<div class="empty-note">Gagal memuat: ' + escapeHtml(error.message) + '</div>';
@@ -1102,6 +1114,8 @@
       }
       const rows = data || [];
       lokasiRows = rows;
+      // Peta baru di-init pas tab "Lokasi" dibuka (lihat ensureLokasiMapReady),
+      // supaya Leaflet tidak salah hitung ukuran gara-gara container masih hidden.
       renderLokasiMapMarkers(rows);
       document.getElementById('lokasiCountLabel').textContent = rows.length + ' titik lokasi';
       if (rows.length === 0) {
