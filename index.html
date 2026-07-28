@@ -267,6 +267,43 @@
     background: var(--border);
     border: 1px solid var(--border);
   }
+  .murut-section { padding: 90px 0; background: var(--surface); }
+  .murut-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    margin-top: 40px;
+  }
+  .murut-card {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 24px;
+  }
+  .murut-card h3 {
+    font-family: var(--display);
+    color: var(--gold);
+    font-size: 17px;
+    margin: 0 0 10px;
+  }
+  .murut-card p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--muted);
+    margin: 0;
+  }
+  .murut-card p em { color: var(--text); font-style: italic; }
+  .murut-card p strong { color: var(--text); }
+  .murut-source {
+    margin-top: 28px;
+    font-size: 12.5px;
+    color: var(--muted-dim);
+  }
+  .murut-source a { color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold-dim); }
+  .murut-source a:hover { border-bottom-color: var(--gold); }
+  @media (max-width: 640px) {
+    .murut-section { padding: 60px 0; }
+  }
   .campaign-card {
     position: relative;
     background: var(--surface);
@@ -775,6 +812,7 @@
         <a href="#inisiatif">Inisiatif</a>
         <a href="#peta">Peta Topografi</a>
         <a href="#fakta">Fakta Lapangan</a>
+        <a href="#murut">Suku Murut</a>
         <a href="#dukung">Dukung</a>
       </nav>
     </div>
@@ -875,6 +913,57 @@
       <div class="fakta-slider-container" id="faktaContainer">
         <div class="fakta-empty" id="faktaLoading">Memeriksa arsip media di server...</div>
       </div>
+    </div>
+  </section>
+  <!-- ---------- SECTION PROFIL SUKU MURUT ---------- -->
+  <section class="murut-section" id="murut">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-eyebrow">Mengenal Penduduk Perbatasan</p>
+        <h2 class="section-title">Suku Murut</h2>
+        <p class="section-body">Salah satu rumpun Dayak yang mendiami kawasan perbukitan perbatasan Kalimantan Utara, Sabah, Sarawak, dan Brunei.</p>
+      </div>
+
+      <div class="murut-grid">
+        <div class="murut-card">
+          <h3>Sebaran &amp; Populasi</h3>
+          <p>Suku Murut tersebar lintas negara — di Sabah, Sarawak, Brunei, dan Kalimantan Utara. Di sisi Malaysia saja, populasinya tercatat sekitar 112.900 jiwa pada tahun 2020.</p>
+        </div>
+        <div class="murut-card">
+          <h3>Asal Nama</h3>
+          <p>Nama "Murut" diyakini berasal dari kata dalam bahasa Bajau, <em>belud</em>, yang berarti "pegunungan" — merujuk pada masyarakat yang tinggal di kawasan perbukitan.</p>
+        </div>
+        <div class="murut-card">
+          <h3>Bahasa</h3>
+          <p>Tergantung wilayah tempat tinggal, masyarakat Murut memakai bahasa Murutik, Melayu Sabah, Melayu Sarawak, Melayu Standar, Melayu Brunei, Bahasa Indonesia, atau Inggris.</p>
+        </div>
+        <div class="murut-card">
+          <h3>Agama</h3>
+          <p>Mayoritas kini memeluk Kristen, diikuti Islam, dengan sebagian kecil masih menganut kepercayaan leluhur Kaharingan.</p>
+        </div>
+        <div class="murut-card">
+          <h3>Rumpun &amp; Kelompok Bahasa</h3>
+          <p>Rumpun Murut terbagi jadi tiga kelompok bahasa besar: <strong>Murut</strong> (Okolod, Keningau, Tagal, Paluan, Selungai, Timugon, Agabag/Tinggalan), <strong>Utara</strong> (Bookan), dan <strong>Tidung</strong> (Suku Tidung, Kalabakan, Tagal/Sembakung, Serudung, Burusu).</p>
+        </div>
+        <div class="murut-card">
+          <h3>Dataran Rendah &amp; Perbukitan</h3>
+          <p>Secara sosial, orang Murut juga dibedakan jadi dua golongan besar: Murut dataran rendah (mis. Keningau, Tenom, lembah Padas bawah) dan Murut perbukitan (mis. Peluan, Dali, Rundum, Tagal, Sapulot, Lun Dayoh).</p>
+        </div>
+        <div class="murut-card">
+          <h3>Kepercayaan Tradisional</h3>
+          <p>Kepercayaan leluhur Murut tidak mengenal dewa tunggal, tapi meyakini adanya alam surga dan roh-roh penunggu tempat tertentu. Bukit-bukit tinggi dianggap sakral, dipercaya sebagai tempat bersemayamnya arwah leluhur.</p>
+        </div>
+        <div class="murut-card">
+          <h3>Jimat &amp; Pertanda Alam</h3>
+          <p>Benang yang dikalungkan di leher atau pergelangan tangan dipakai sebagai penangkal roh jahat. Kemunculan burung tertentu, pertemuan dengan hewan di jalan, hingga suara rusa dimaknai sebagai pertanda baik atau buruk.</p>
+        </div>
+        <div class="murut-card">
+          <h3>Ramalan &amp; Tafsir Mimpi</h3>
+          <p>Dalam ritual penyembelihan babi, bentuk hatinya dipakai sebagai media ramalan. Mimpi juga ditafsirkan sebagai pertanda — bertemu buaya atau terjatuh dianggap sial, sementara mengejar dan menangkap gadis cantik dipercaya sebagai pertanda baik.</p>
+        </div>
+      </div>
+
+      <p class="murut-source">Dirangkum dari <a href="https://id.wikipedia.org/wiki/Rumpun_Murut" target="_blank" rel="noopener">Wikipedia — Rumpun Murut</a>.</p>
     </div>
   </section>
   <!-- ---------- Lightbox Modal ---------- -->
