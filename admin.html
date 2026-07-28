@@ -360,6 +360,7 @@
         <button class="tab-btn" data-tab="inisiatif">Inisiatif</button>
         <button class="tab-btn" data-tab="fakta">Fakta Lapangan</button>
         <button class="tab-btn" data-tab="lokasi">Lokasi</button>
+        <button class="tab-btn" data-tab="akun">Akun</button>
       </div>
     </header>
 
@@ -514,6 +515,41 @@
         </div>
         <div id="lokasiList"></div>
       </section>
+
+      <section class="tab-panel" id="panel-akun">
+        <div class="card">
+          <h3>Ganti Password</h3>
+          <p class="hint" style="margin-bottom:10px;">Ganti password buat akun yang lagi login sekarang (<span id="akunEmailLabel"></span>).</p>
+          <div class="form-grid">
+            <div class="full">
+              <label>Password Baru</label>
+              <input type="password" id="newPassword" placeholder="Minimal 6 karakter" autocomplete="new-password" />
+            </div>
+            <div class="full">
+              <label>Ulangi Password Baru</label>
+              <input type="password" id="newPasswordConfirm" placeholder="Ulangi password baru" autocomplete="new-password" />
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn" id="changePasswordBtn">Ganti Password</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <h3>Tambah Admin Baru</h3>
+          <p class="hint" style="margin-bottom:10px;">Undang admin baru pakai email Gmail. Admin baru akan dapat email buat set password sendiri lewat link konfirmasi dari Supabase.</p>
+          <div class="form-grid">
+            <div class="full">
+              <label>Email Admin Baru (Gmail)</label>
+              <input type="email" id="newAdminEmail" placeholder="namaadmin@gmail.com" />
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn" id="addAdminBtn">Undang Admin</button>
+          </div>
+          <p class="hint" id="addAdminStatus" style="margin-top:10px;"></p>
+        </div>
+      </section>
     </div>
   </div>
 
@@ -644,6 +680,7 @@
       loginScreen.style.display = 'none';
       dash.classList.add('visible');
       userEmailLabel.textContent = session?.user?.email || '';
+      document.getElementById('akunEmailLabel').textContent = session?.user?.email || '';
       loadDonations();
       loadCampaigns();
       loadFaktaMedia();
@@ -1255,6 +1292,65 @@
         document.getElementById('lokasiList').innerHTML = '<div class="empty-note">Belum ada titik lokasi. Klik di peta atau isi form di atas.</div>';
       }
     }
+
+    // ==================== AKUN (GANTI PASSWORD & TAMBAH ADMIN) ====================
+    document.getElementById('changePasswordBtn').addEventListener('click', async () => {
+      const pass = document.getElementById('newPassword').value;
+      const confirmPass = document.getElementById('newPasswordConfirm').value;
+      const btn = document.getElementById('changePasswordBtn');
+      if (!pass || pass.length < 6) {
+        showToast('Password minimal 6 karakter');
+        return;
+      }
+      if (pass !== confirmPass) {
+        showToast('Konfirmasi password tidak cocok');
+        return;
+      }
+      btn.disabled = true;
+      const { error } = await sb.auth.updateUser({ password: pass });
+      btn.disabled = false;
+      if (error) { showToast('Gagal ganti password: ' + error.message); return; }
+      document.getElementById('newPassword').value = '';
+      document.getElementById('newPasswordConfirm').value = '';
+      showToast('Password berhasil diganti');
+    });
+
+    document.getElementById('addAdminBtn').addEventListener('click', async () => {
+      const email = document.getElementById('newAdminEmail').value.trim();
+      const btn = document.getElementById('addAdminBtn');
+      const statusEl = document.getElementById('addAdminStatus');
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast('Isi email yang valid');
+        return;
+      }
+      btn.disabled = true;
+      statusEl.textContent = 'Mengirim undangan...';
+      try {
+        const { data: sessionData } = await sb.auth.getSession();
+        const accessToken = sessionData?.session?.access_token;
+        if (!accessToken) throw new Error('Sesi login tidak ditemukan, coba login ulang');
+
+        const res = await fetch('/api/invite-admin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+          },
+          body: JSON.stringify({ email })
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Gagal mengundang admin');
+
+        statusEl.textContent = '✓ Undangan terkirim ke ' + email;
+        document.getElementById('newAdminEmail').value = '';
+        showToast('Undangan admin terkirim ke ' + email);
+      } catch (err) {
+        statusEl.textContent = '';
+        showToast('Gagal: ' + err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    });
   </script>
 </body>
 </html>
