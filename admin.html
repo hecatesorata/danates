@@ -405,6 +405,7 @@
         <div class="card">
           <h3 id="campaignFormTitle">Tambah Inisiatif</h3>
           <input type="hidden" id="campaignId" />
+          <input type="hidden" id="campImagePath" />
           <div class="form-grid">
             <div>
               <label>Urutan Tampil</label>
@@ -594,6 +595,28 @@
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || ('Upload gagal (status ' + res.status + ')'));
+      return data;
+    }
+
+    // Normalisasi storage_path lama: sebagian record fakta yang didaftarkan manual
+    // pakai prefix "github:" di depan path aslinya. Path asli GitHub selalu diawali "assets/".
+    function resolveGithubPath(rawPath) {
+      if (!rawPath) return null;
+      if (rawPath.startsWith('assets/')) return rawPath;
+      if (rawPath.startsWith('github:assets/')) return rawPath.slice('github:'.length);
+      return null; // bukan path GitHub yang valid (misal placeholder "github" polos, atau upload Supabase Storage lama)
+    }
+
+    async function deleteFileFromGithub(path) {
+      const realPath = resolveGithubPath(path);
+      if (!realPath) return; // tidak ada file GitHub yang perlu/bisa dihapus
+      const res = await fetch('/api/delete-from-github', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: realPath })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || ('Hapus file GitHub gagal (status ' + res.status + ')'));
       return data;
     }
 
@@ -810,6 +833,7 @@
       document.getElementById('campName').value = row.name;
       document.getElementById('campDesc').value = row.description;
       document.getElementById('campImage').value = row.image_url;
+      document.getElementById('campImagePath').value = row.image_path || '';
       updateCampImagePreview(row.image_url);
       document.getElementById('campaignFormTitle').textContent = 'Edit Inisiatif';
       document.getElementById('cancelCampaignEditBtn').style.display = 'inline-flex';
@@ -823,6 +847,7 @@
       document.getElementById('campName').value = '';
       document.getElementById('campDesc').value = '';
       document.getElementById('campImage').value = '';
+      document.getElementById('campImagePath').value = '';
       document.getElementById('campImageUploadStatus').textContent = '';
       updateCampImagePreview('');
       document.getElementById('campaignFormTitle').textContent = 'Tambah Inisiatif';
@@ -835,7 +860,10 @@
       if (url) { img.src = url; img.style.display = 'block'; }
       else { img.removeAttribute('src'); img.style.display = 'none'; }
     }
-    document.getElementById('campImage').addEventListener('input', (e) => updateCampImagePreview(e.target.value.trim()));
+    document.getElementById('campImage').addEventListener('input', (e) => {
+      updateCampImagePreview(e.target.value.trim());
+      document.getElementById('campImagePath').value = '';
+    });
 
     document.getElementById('campImageUploadBtn').addEventListener('click', () => {
       document.getElementById('campImageFileInput').click();
@@ -848,8 +876,9 @@
       btn.disabled = true;
       statusEl.textContent = 'Mengupload ke GitHub...';
       try {
-        const { url } = await uploadFileToGithub(file, 'assets/campaign');
+        const { url, path } = await uploadFileToGithub(file, 'assets/campaign');
         document.getElementById('campImage').value = url;
+        document.getElementById('campImagePath').value = path;
         updateCampImagePreview(url);
         statusEl.textContent = '✓ Terupload ke repo';
         showToast('Gambar berhasil diupload ke GitHub');
@@ -870,6 +899,7 @@
         name: document.getElementById('campName').value.trim(),
         description: document.getElementById('campDesc').value.trim(),
         image_url: document.getElementById('campImage').value.trim(),
+        image_path: document.getElementById('campImagePath').value.trim() || null,
       };
       if (!payload.name || !payload.description || !payload.image_url) {
         showToast('Nama, deskripsi, dan gambar wajib diisi');
@@ -888,11 +918,16 @@
     });
 
     async function deleteCampaign(id) {
-      if (!confirm('Hapus inisiatif ini? (File gambar di GitHub tidak ikut terhapus otomatis)')) return;
+      if (!confirm('Hapus inisiatif ini? File gambarnya di GitHub juga akan ikut dihapus.')) return;
+      const row = campaignRows.find(r => String(r.id) === String(id));
       const el = document.querySelector(`#campaignList .row-item[data-row-id="${id}"]`);
       const { error } = await sb.from('campaigns').delete().eq('id', id);
       if (error) { showToast('Gagal hapus: ' + error.message); return; }
-      showToast('Inisiatif dihapus');
+      if (row?.image_path) {
+        try { await deleteFileFromGithub(row.image_path); }
+        catch (err) { showToast('Inisiatif dihapus, tapi file GitHub gagal dihapus: ' + err.message); }
+      }
+      showToast('Inisiatif dan file gambarnya dihapus');
       campaignRows = campaignRows.filter(r => String(r.id) !== String(id));
       await animateRemoveRow(el);
       el?.remove();
@@ -952,11 +987,11 @@
       const isVideo = file.type.startsWith('video/');
       label.textContent = 'Mengupload ' + file.name + ' ke GitHub...';
       try {
-        const { url } = await uploadFileToGithub(file, 'assets/fakta');
+        const { url, path } = await uploadFileToGithub(file, 'assets/fakta');
         const { error: insErr } = await sb.from('fakta_media').insert([{
           media_type: isVideo ? 'video' : 'image',
           url,
-          storage_path: 'github'
+          storage_path: path
         }]);
         if (insErr) throw insErr;
         showToast('Media berhasil diupload & tercatat');
@@ -970,11 +1005,13 @@
     });
 
     async function deleteFaktaMedia(row) {
-      if (!confirm('Hapus media ini dari daftar? (File di GitHub tidak ikut terhapus otomatis)')) return;
+      if (!confirm('Hapus media ini? File-nya di GitHub juga akan ikut dihapus.')) return;
       const el = document.querySelector(`#faktaList .row-item[data-row-id="${row.id}"]`);
       const { error } = await sb.from('fakta_media').delete().eq('id', row.id);
       if (error) { showToast('Gagal hapus: ' + error.message); return; }
-      showToast('Media dihapus dari daftar');
+      try { await deleteFileFromGithub(row.storage_path); }
+      catch (err) { showToast('Data dihapus, tapi file GitHub gagal dihapus: ' + err.message); }
+      showToast('Media dan filenya dihapus');
       faktaRows = faktaRows.filter(r => String(r.id) !== String(row.id));
       await animateRemoveRow(el);
       el?.remove();
