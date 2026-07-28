@@ -405,6 +405,15 @@
     margin-bottom: 4px;
   }
   .leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
+  .leaflet-popup-content img {
+    width: 100%;
+    max-width: 220px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+    margin-bottom: 8px;
+  }
   .leaflet-control-attribution {
     background: rgba(24,19,16,0.75) !important;
     color: var(--muted-dim) !important;
@@ -1305,6 +1314,23 @@ async function initPetaMap() {
   await loadLokasiMarkers(map);
 }
 
+/* ---------- Ambil elevasi (mdpl) buat satu titik, dengan fallback estimasi ---------- */
+async function fetchElevationForLokasi(lat, lng) {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lng}`, { signal: controller.signal });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error('Respon API elevasi tidak OK');
+    const data = await res.json();
+    const elev = data.results?.[0]?.elevation;
+    if (elev == null) throw new Error('Elevasi kosong');
+    return { value: Math.round(elev), estimate: false };
+  } catch (err) {
+    return { value: Math.round(280 + Math.abs(lat - 3.8) * 650), estimate: true };
+  }
+}
+
 /* ---------- Marker titik lokasi (dari admin, tabel project_locations) ---------- */
 async function loadLokasiMarkers(map) {
   try {
@@ -1321,8 +1347,22 @@ async function loadLokasiMarkers(map) {
         fillColor: '#ff3b30',
         fillOpacity: 0.95
       }).addTo(map);
+
+      const img = loc.image_url ? `<img src="${escapeHtmlIndex(loc.image_url)}" alt="" onerror="this.style.display='none'" />` : '';
       const desc = loc.description ? `<br>${escapeHtmlIndex(loc.description)}` : '';
-      marker.bindPopup(`<b>${escapeHtmlIndex(loc.name)}</b>${desc}`);
+      const coordLine = `<small>${Number(loc.lat).toFixed(4)}, ${Number(loc.lng).toFixed(4)}</small>`;
+      const buildContent = (elevLine) => `${img}<b>${escapeHtmlIndex(loc.name)}</b>${desc}<br>${elevLine}<br>${coordLine}`;
+
+      marker.bindPopup(buildContent('<small>Memuat elevasi...</small>'), { maxWidth: 240 });
+
+      let elevLoaded = false;
+      marker.on('popupopen', async () => {
+        if (elevLoaded) return;
+        elevLoaded = true;
+        const elev = await fetchElevationForLokasi(loc.lat, loc.lng);
+        const elevLine = `<b>${elev.value} mdpl</b>${elev.estimate ? ' <small>(estimasi)</small>' : ''}`;
+        marker.setPopupContent(buildContent(elevLine));
+      });
     });
   } catch (err) {
     console.warn('Gagal memuat titik lokasi:', err);
