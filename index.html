@@ -407,7 +407,7 @@
   .leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
   .leaflet-popup-content img {
     width: 100%;
-    max-width: 320px;
+    max-width: 380px;
     height: 180px;
     object-fit: cover;
     border-radius: 6px;
@@ -1353,7 +1353,7 @@ async function loadLokasiMarkers(map) {
       const coordLine = `<small>${Number(loc.lat).toFixed(4)}, ${Number(loc.lng).toFixed(4)}</small>`;
       const buildContent = (elevLine) => `${img}<b>${escapeHtmlIndex(loc.name)}</b>${desc}<br>${elevLine}<br>${coordLine}`;
 
-      marker.bindPopup(buildContent('<small>Memuat elevasi...</small>'), { maxWidth: 320, minWidth: 260 });
+      marker.bindPopup(buildContent('<small>Memuat elevasi...</small>'), { maxWidth: 380, minWidth: 300 });
 
       let elevLoaded = false;
       marker.on('popupopen', async () => {
