@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,600;1,400&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <style>
   :root {
     --bg: #181310;
@@ -297,6 +298,35 @@
     text-align: center;
   }
   .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #lokasiPickerMap {
+    width: 100%;
+    height: 340px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+    margin-bottom: 14px;
+  }
+  .leaflet-popup-content-wrapper {
+    background: var(--surface-raised);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--body);
+  }
+  .leaflet-popup-tip { background: var(--surface-raised); border: 1px solid var(--border); }
+  .leaflet-popup-content { margin: 10px 12px; font-size: 12.5px; }
+  .leaflet-popup-content img {
+    width: 100%;
+    max-height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+  .leaflet-popup-content b { font-family: var(--display); color: var(--gold); display: block; margin-bottom: 3px; }
+  .leaflet-control-attribution { background: rgba(24,19,16,0.75) !important; color: var(--muted-dim) !important; font-size: 9.5px !important; }
+  .leaflet-control-attribution a { color: var(--muted) !important; }
+  .leaflet-control-zoom a { background: var(--surface-raised) !important; color: var(--text) !important; border-color: var(--border) !important; }
 </style>
 </head>
 <body>
@@ -440,6 +470,8 @@
         <div class="card">
           <h3 id="lokasiFormTitle">Tambah Titik Lokasi</h3>
           <input type="hidden" id="lokasiId" />
+          <p class="hint" style="margin-bottom:10px;">Klik langsung di peta untuk pilih titiknya — latitude/longitude otomatis terisi.</p>
+          <div id="lokasiPickerMap"></div>
           <div class="form-grid">
             <div>
               <label>Latitude</label>
@@ -457,8 +489,17 @@
               <label>Deskripsi (opsional)</label>
               <textarea id="lokasiDesc" placeholder="Keterangan singkat titik ini..."></textarea>
             </div>
+            <div class="full">
+              <label>Gambar (opsional)</label>
+              <div class="upload-inline">
+                <button type="button" class="btn ghost small" id="lokasiImageUploadBtn">📎 Upload ke GitHub</button>
+                <span class="upload-status" id="lokasiImageUploadStatus"></span>
+              </div>
+              <input type="file" id="lokasiImageFileInput" accept="image/*" style="display:none;" />
+              <input type="text" id="lokasiImage" placeholder="URL gambar (otomatis terisi setelah upload)" style="margin-top:8px;" />
+              <img class="img-preview" id="lokasiImagePreview" alt="Preview" />
+            </div>
           </div>
-          <p class="hint">Tip: buka Google Maps, klik-tahan lokasi yang dimaksud, lalu salin angka latitude &amp; longitude yang muncul. Titik ini otomatis muncul sebagai marker di peta topografi halaman utama.</p>
           <div style="margin-top:14px; display:flex; gap:8px;">
             <button class="btn" id="saveLokasiBtn">Simpan Lokasi</button>
             <button class="btn ghost" id="cancelLokasiEditBtn" style="display:none;">Batal Edit</button>
@@ -477,6 +518,7 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = "https://jnkhrqvlqtamdclvwacx.supabase.co";
@@ -596,6 +638,9 @@
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+        if (btn.dataset.tab === 'lokasi' && lokasiMap) {
+          setTimeout(() => lokasiMap.invalidateSize(), 50);
+        }
       });
     });
 
@@ -941,10 +986,58 @@
 
     // ==================== LOKASI (PROJECT LOCATIONS) ====================
     let lokasiRows = [];
+    let lokasiMap = null;
+    let lokasiPickerMarker = null;
+    let lokasiExistingMarkers = [];
+
+    function initLokasiPickerMap() {
+      if (lokasiMap || typeof L === 'undefined') return;
+      lokasiMap = L.map('lokasiPickerMap', { scrollWheelZoom: true }).setView([3.85, 116.55], 8);
+      L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenTopoMap',
+        maxZoom: 17
+      }).addTo(lokasiMap);
+      lokasiMap.on('click', (e) => {
+        setLokasiPickerMarker(e.latlng.lat, e.latlng.lng);
+        document.getElementById('lokasiLat').value = e.latlng.lat.toFixed(6);
+        document.getElementById('lokasiLng').value = e.latlng.lng.toFixed(6);
+      });
+    }
+
+    function setLokasiPickerMarker(lat, lng) {
+      if (!lokasiMap) return;
+      const pos = [lat, lng];
+      if (lokasiPickerMarker) {
+        lokasiPickerMarker.setLatLng(pos);
+      } else {
+        lokasiPickerMarker = L.marker(pos, { draggable: true }).addTo(lokasiMap);
+        lokasiPickerMarker.on('dragend', () => {
+          const p = lokasiPickerMarker.getLatLng();
+          document.getElementById('lokasiLat').value = p.lat.toFixed(6);
+          document.getElementById('lokasiLng').value = p.lng.toFixed(6);
+        });
+      }
+      lokasiMap.panTo(pos);
+    }
+
+    function renderLokasiMapMarkers(rows) {
+      if (!lokasiMap) return;
+      lokasiExistingMarkers.forEach(m => lokasiMap.removeLayer(m));
+      lokasiExistingMarkers = rows.map(r => {
+        const marker = L.circleMarker([r.lat, r.lng], {
+          radius: 7, color: '#a2402f', weight: 2, fillColor: '#c9a15a', fillOpacity: 0.85
+        }).addTo(lokasiMap);
+        const img = r.image_url ? `<img src="${escapeHtml(r.image_url)}" alt="" />` : '';
+        const desc = r.description ? `<br>${escapeHtml(r.description)}` : '';
+        marker.bindPopup(`${img}<b>${escapeHtml(r.name)}</b>${desc}`);
+        return marker;
+      });
+    }
 
     async function loadLokasi() {
       const list = document.getElementById('lokasiList');
       list.innerHTML = '<div class="empty-note">Memuat titik lokasi...</div>';
+      initLokasiPickerMap();
       const { data, error } = await sb.from('project_locations').select('*').order('created_at', { ascending: false });
       if (error) {
         list.innerHTML = '<div class="empty-note">Gagal memuat: ' + escapeHtml(error.message) + '</div>';
@@ -952,13 +1045,15 @@
       }
       const rows = data || [];
       lokasiRows = rows;
+      renderLokasiMapMarkers(rows);
       document.getElementById('lokasiCountLabel').textContent = rows.length + ' titik lokasi';
       if (rows.length === 0) {
-        list.innerHTML = '<div class="empty-note">Belum ada titik lokasi. Tambahkan lewat form di atas.</div>';
+        list.innerHTML = '<div class="empty-note">Belum ada titik lokasi. Klik di peta atau isi form di atas.</div>';
         return;
       }
       list.innerHTML = rows.map(r => `
         <div class="row-item" data-row-id="${r.id}">
+          ${r.image_url ? `<img src="${escapeHtml(r.image_url)}" alt="" onerror="this.style.opacity=0" />` : ''}
           <div class="row-body">
             <p class="row-title">${escapeHtml(r.name)}</p>
             <p class="row-meta">${Number(r.lat).toFixed(5)}, ${Number(r.lng).toFixed(5)}</p>
@@ -982,12 +1077,48 @@
       if (btn.dataset.action === 'delete-lokasi') deleteLokasi(row.id);
     });
 
+    function updateLokasiImagePreview(url) {
+      const img = document.getElementById('lokasiImagePreview');
+      if (url) { img.src = url; img.style.display = 'block'; }
+      else { img.removeAttribute('src'); img.style.display = 'none'; }
+    }
+    document.getElementById('lokasiImage').addEventListener('input', (e) => updateLokasiImagePreview(e.target.value.trim()));
+
+    document.getElementById('lokasiImageUploadBtn').addEventListener('click', () => {
+      document.getElementById('lokasiImageFileInput').click();
+    });
+    document.getElementById('lokasiImageFileInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById('lokasiImageUploadStatus');
+      const btn = document.getElementById('lokasiImageUploadBtn');
+      btn.disabled = true;
+      statusEl.textContent = 'Mengupload ke GitHub...';
+      try {
+        const { url } = await uploadFileToGithub(file, 'assets/lokasi');
+        document.getElementById('lokasiImage').value = url;
+        updateLokasiImagePreview(url);
+        statusEl.textContent = '✓ Terupload ke repo';
+        showToast('Gambar berhasil diupload ke GitHub');
+      } catch (err) {
+        statusEl.textContent = '';
+        showToast('Gagal upload: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        e.target.value = '';
+      }
+    });
+
     function editLokasi(row) {
       document.getElementById('lokasiId').value = row.id;
       document.getElementById('lokasiLat').value = row.lat;
       document.getElementById('lokasiLng').value = row.lng;
       document.getElementById('lokasiName').value = row.name;
       document.getElementById('lokasiDesc').value = row.description || '';
+      document.getElementById('lokasiImage').value = row.image_url || '';
+      updateLokasiImagePreview(row.image_url || '');
+      setLokasiPickerMarker(row.lat, row.lng);
+      if (lokasiMap) lokasiMap.setView([row.lat, row.lng], 12);
       document.getElementById('lokasiFormTitle').textContent = 'Edit Titik Lokasi';
       document.getElementById('cancelLokasiEditBtn').style.display = 'inline-flex';
       document.getElementById('panel-lokasi').scrollIntoView({ behavior: 'smooth' });
@@ -999,6 +1130,13 @@
       document.getElementById('lokasiLng').value = '';
       document.getElementById('lokasiName').value = '';
       document.getElementById('lokasiDesc').value = '';
+      document.getElementById('lokasiImage').value = '';
+      document.getElementById('lokasiImageUploadStatus').textContent = '';
+      updateLokasiImagePreview('');
+      if (lokasiPickerMarker && lokasiMap) {
+        lokasiMap.removeLayer(lokasiPickerMarker);
+        lokasiPickerMarker = null;
+      }
       document.getElementById('lokasiFormTitle').textContent = 'Tambah Titik Lokasi';
       document.getElementById('cancelLokasiEditBtn').style.display = 'none';
     }
@@ -1010,8 +1148,9 @@
       const lng = parseFloat(document.getElementById('lokasiLng').value);
       const name = document.getElementById('lokasiName').value.trim();
       const description = document.getElementById('lokasiDesc').value.trim() || null;
+      const image_url = document.getElementById('lokasiImage').value.trim() || null;
       if (!name || isNaN(lat) || isNaN(lng)) {
-        showToast('Nama, latitude, dan longitude wajib diisi');
+        showToast('Nama, latitude, dan longitude wajib diisi (klik di peta atau isi manual)');
         return;
       }
       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
@@ -1020,9 +1159,9 @@
       }
       let error;
       if (id) {
-        ({ error } = await sb.from('project_locations').update({ lat, lng, name, description }).eq('id', id));
+        ({ error } = await sb.from('project_locations').update({ lat, lng, name, description, image_url }).eq('id', id));
       } else {
-        ({ error } = await sb.from('project_locations').insert([{ lat, lng, name, description }]));
+        ({ error } = await sb.from('project_locations').insert([{ lat, lng, name, description, image_url }]));
       }
       if (error) { showToast('Gagal simpan: ' + error.message); return; }
       showToast(id ? 'Lokasi diperbarui' : 'Lokasi ditambahkan');
@@ -1037,11 +1176,12 @@
       if (error) { showToast('Gagal hapus: ' + error.message); return; }
       showToast('Lokasi dihapus');
       lokasiRows = lokasiRows.filter(r => String(r.id) !== String(id));
+      renderLokasiMapMarkers(lokasiRows);
       await animateRemoveRow(el);
       el?.remove();
       document.getElementById('lokasiCountLabel').textContent = lokasiRows.length + ' titik lokasi';
       if (lokasiRows.length === 0) {
-        document.getElementById('lokasiList').innerHTML = '<div class="empty-note">Belum ada titik lokasi. Tambahkan lewat form di atas.</div>';
+        document.getElementById('lokasiList').innerHTML = '<div class="empty-note">Belum ada titik lokasi. Klik di peta atau isi form di atas.</div>';
       }
     }
   </script>
