@@ -346,6 +346,21 @@
     </div>
   </div>
 
+  <div class="login-screen" id="setPasswordScreen" style="display:none;">
+    <div class="login-card">
+      <h1>Aktifkan Akun Admin</h1>
+      <p class="sub">Kamu diundang jadi admin. Buat password buat akun ini dulu.</p>
+      <form id="setPasswordForm">
+        <label for="setPasswordInput">Password Baru</label>
+        <input type="password" id="setPasswordInput" required minlength="6" autocomplete="new-password" />
+        <label for="setPasswordConfirm">Ulangi Password</label>
+        <input type="password" id="setPasswordConfirm" required minlength="6" autocomplete="new-password" />
+        <button class="btn full" type="submit">Aktifkan &amp; Masuk</button>
+        <div class="error-msg" id="setPasswordError"></div>
+      </form>
+    </div>
+  </div>
+
   <div class="dash" id="dash">
     <header class="admin-header">
       <div class="admin-header-inner">
@@ -537,15 +552,19 @@
 
         <div class="card" style="margin-top:20px;">
           <h3>Tambah Admin Baru</h3>
-          <p class="hint" style="margin-bottom:10px;">Undang admin baru pakai email Gmail. Admin baru akan dapat email buat set password sendiri lewat link konfirmasi dari Supabase.</p>
+          <p class="hint" style="margin-bottom:10px;">Bikin akun admin baru langsung pakai email &amp; password (langsung bisa dipakai login, gak perlu konfirmasi email).</p>
           <div class="form-grid">
             <div class="full">
               <label>Email Admin Baru (Gmail)</label>
               <input type="email" id="newAdminEmail" placeholder="namaadmin@gmail.com" />
             </div>
+            <div class="full">
+              <label>Password Admin Baru</label>
+              <input type="password" id="newAdminPassword" placeholder="Minimal 6 karakter" autocomplete="new-password" />
+            </div>
           </div>
           <div style="margin-top:14px;">
-            <button class="btn" id="addAdminBtn">Undang Admin</button>
+            <button class="btn" id="addAdminBtn">Buat Admin</button>
           </div>
           <p class="hint" id="addAdminStatus" style="margin-top:10px;"></p>
         </div>
@@ -689,8 +708,56 @@
 
     (async function initSession() {
       const { data } = await sb.auth.getSession();
-      if (data.session) onLoggedIn(data.session);
+      if (data.session) {
+        if (isInviteOrRecovery()) {
+          showSetPasswordScreen();
+        } else {
+          onLoggedIn(data.session);
+        }
+      }
     })();
+
+    function getHashParams() {
+      const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : '';
+      return new URLSearchParams(hash);
+    }
+    function isInviteOrRecovery() {
+      const p = getHashParams();
+      return p.has('access_token') && (p.get('type') === 'invite' || p.get('type') === 'recovery');
+    }
+    function showSetPasswordScreen() {
+      loginScreen.style.display = 'none';
+      dash.classList.remove('visible');
+      document.getElementById('setPasswordScreen').style.display = 'flex';
+    }
+    document.getElementById('setPasswordForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pass = document.getElementById('setPasswordInput').value;
+      const confirmPass = document.getElementById('setPasswordConfirm').value;
+      const errEl = document.getElementById('setPasswordError');
+      errEl.classList.remove('visible');
+      if (!pass || pass.length < 6) {
+        errEl.textContent = 'Password minimal 6 karakter';
+        errEl.classList.add('visible');
+        return;
+      }
+      if (pass !== confirmPass) {
+        errEl.textContent = 'Konfirmasi password tidak cocok';
+        errEl.classList.add('visible');
+        return;
+      }
+      const { error } = await sb.auth.updateUser({ password: pass });
+      if (error) {
+        errEl.textContent = 'Gagal: ' + error.message;
+        errEl.classList.add('visible');
+        return;
+      }
+      // Bersihin token dari URL biar gak ke-trigger lagi kalau reload
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+      document.getElementById('setPasswordScreen').style.display = 'none';
+      const { data: sessionData } = await sb.auth.getSession();
+      onLoggedIn(sessionData.session);
+    });
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1317,33 +1384,39 @@
 
     document.getElementById('addAdminBtn').addEventListener('click', async () => {
       const email = document.getElementById('newAdminEmail').value.trim();
+      const password = document.getElementById('newAdminPassword').value;
       const btn = document.getElementById('addAdminBtn');
       const statusEl = document.getElementById('addAdminStatus');
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         showToast('Isi email yang valid');
         return;
       }
+      if (!password || password.length < 6) {
+        showToast('Password minimal 6 karakter');
+        return;
+      }
       btn.disabled = true;
-      statusEl.textContent = 'Mengirim undangan...';
+      statusEl.textContent = 'Membuat akun admin...';
       try {
         const { data: sessionData } = await sb.auth.getSession();
         const accessToken = sessionData?.session?.access_token;
         if (!accessToken) throw new Error('Sesi login tidak ditemukan, coba login ulang');
 
-        const res = await fetch('/api/invite-admin', {
+        const res = await fetch('/api/create-admin', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`
           },
-          body: JSON.stringify({ email })
+          body: JSON.stringify({ email, password })
         });
         const result = await res.json();
-        if (!res.ok) throw new Error(result.error || 'Gagal mengundang admin');
+        if (!res.ok) throw new Error(result.error || 'Gagal membuat admin');
 
-        statusEl.textContent = '✓ Undangan terkirim ke ' + email;
+        statusEl.textContent = '✓ Admin ' + email + ' berhasil dibuat, langsung bisa login.';
         document.getElementById('newAdminEmail').value = '';
-        showToast('Undangan admin terkirim ke ' + email);
+        document.getElementById('newAdminPassword').value = '';
+        showToast('Admin baru berhasil dibuat: ' + email);
       } catch (err) {
         statusEl.textContent = '';
         showToast('Gagal: ' + err.message);
