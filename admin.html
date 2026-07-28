@@ -1027,13 +1027,33 @@
     let lokasiPickerMarker = null;
     let lokasiExistingMarkers = [];
 
-    function initLokasiPickerMap() {
+    async function initLokasiPickerMap() {
       if (lokasiMap || typeof L === 'undefined') return;
       lokasiMap = L.map('lokasiPickerMap', { scrollWheelZoom: true }).setView([3.85, 116.55], 8);
       L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenTopoMap',
         maxZoom: 17
       }).addTo(lokasiMap);
+
+      try {
+        const geoRes = await fetch('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/geo.json');
+        if (geoRes.ok) {
+          const geoData = await geoRes.json();
+          L.geoJSON(geoData, {
+            style: {
+              color: '#ffd700',
+              weight: 4,
+              opacity: 0.95,
+              fillColor: '#c9a15a',
+              fillOpacity: 0.07,
+              dashArray: '3 6'
+            }
+          }).addTo(lokasiMap);
+        }
+      } catch (e) {
+        console.warn('Gagal load garis batas di peta admin:', e);
+      }
+
       lokasiMap.on('click', (e) => {
         setLokasiPickerMarker(e.latlng.lat, e.latlng.lng);
         document.getElementById('lokasiLat').value = e.latlng.lat.toFixed(6);
@@ -1074,7 +1094,7 @@
     async function loadLokasi() {
       const list = document.getElementById('lokasiList');
       list.innerHTML = '<div class="empty-note">Memuat titik lokasi...</div>';
-      initLokasiPickerMap();
+      await initLokasiPickerMap();
       const { data, error } = await sb.from('project_locations').select('*').order('created_at', { ascending: false });
       if (error) {
         list.innerHTML = '<div class="empty-note">Gagal memuat: ' + escapeHtml(error.message) + '</div>';
