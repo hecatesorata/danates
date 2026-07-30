@@ -267,6 +267,71 @@
     background: var(--border);
     border: 1px solid var(--border);
   }
+  .mandau-section { padding: 90px 0; }
+  .mandau-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+    margin-top: 40px;
+  }
+  .mandau-card {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .mandau-img-wrap {
+    aspect-ratio: 4 / 3;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+  .mandau-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .mandau-img-wrap.mandau-img-empty img { display: none; }
+  .mandau-img-wrap.mandau-img-empty::after {
+    content: "Foto belum diunggah";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted-dim);
+    background: repeating-linear-gradient(45deg, var(--surface), var(--surface) 10px, var(--surface-raised) 10px, var(--surface-raised) 20px);
+  }
+  .mandau-card h3 {
+    font-family: var(--display);
+    color: var(--gold);
+    font-size: 16px;
+    margin: 16px 20px 8px;
+  }
+  .mandau-card p {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0 20px 18px;
+  }
+  .mandau-note {
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--muted-dim);
+    text-align: center;
+  }
+  .mandau-note code {
+    font-family: var(--mono);
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--gold);
+  }
   .murut-section { padding: 90px 0; background: var(--surface); }
   .murut-grid {
     display: grid;
@@ -813,7 +878,7 @@
         <a href="#peta">Peta Topografi</a>
         <a href="#fakta">Fakta Lapangan</a>
         <a href="#murut">Suku Murut</a>
-        <a href="#dukung">Dukung</a>
+        <a href="#mandau">Mandau</a>
       </nav>
     </div>
   </header>
@@ -845,7 +910,7 @@
       </p>
       <div class="hero-actions">
         <a class="btn ghost" href="#inisiatif">Lihat inisiatif berjalan</a>
-        <a class="btn indodax" href="#dukung">Ikut mendukung</a>
+        <a class="btn indodax" href="#fakta">Lihat dokumentasi lapangan</a>
       </div>
     </div>
   </section>
@@ -966,6 +1031,61 @@
       <p class="murut-source">Dirangkum dari <a href="https://id.wikipedia.org/wiki/Rumpun_Murut" target="_blank" rel="noopener">Wikipedia — Rumpun Murut</a>.</p>
     </div>
   </section>
+  <!-- ---------- SECTION RAGAM MANDAU SUKU DAYAK ---------- -->
+  <section class="mandau-section" id="mandau">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-eyebrow">Warisan Budaya</p>
+        <h2 class="section-title">Ragam Mandau Suku Dayak</h2>
+        <p class="section-body">Mandau (parang ilang) adalah senjata tradisional khas suku Dayak. Bentuk bilah, ukiran gagang, dan hiasan sarungnya berbeda-beda tergantung sub-suku pembuatnya.</p>
+      </div>
+
+      <div class="mandau-grid">
+        <div class="mandau-card">
+          <div class="mandau-img-wrap">
+            <img src="assets/mandau/iban.jpg" alt="Mandau Suku Iban" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
+          </div>
+          <h3>Dayak Iban</h3>
+          <p>Ciri khasnya bilah agak melengkung dengan ukiran motif akar/sulur (aso) di gagang tulang, dan sarung kayu berhias bulu binatang.</p>
+        </div>
+        <div class="mandau-card">
+          <div class="mandau-img-wrap">
+            <img src="assets/mandau/kenyah.jpg" alt="Mandau Suku Kenyah" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
+          </div>
+          <h3>Dayak Kenyah</h3>
+          <p>Dikenal lewat ukiran figuratif yang lebih rumit pada gagang tanduk rusa, sering menggambarkan sosok penjaga atau makhluk mitologis.</p>
+        </div>
+        <div class="mandau-card">
+          <div class="mandau-img-wrap">
+            <img src="assets/mandau/kayan.jpg" alt="Mandau Suku Kayan" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
+          </div>
+          <h3>Dayak Kayan</h3>
+          <p>Bilahnya cenderung lebih lebar dan berat, dipakai juga sebagai alat kerja sehari-hari selain sebagai senjata dan lambang status.</p>
+        </div>
+        <div class="mandau-card">
+          <div class="mandau-img-wrap">
+            <img src="assets/mandau/ngaju.jpg" alt="Mandau Suku Ngaju" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
+          </div>
+          <h3>Dayak Ngaju</h3>
+          <p>Populer di Kalimantan Tengah, gagangnya sering diukir motif burung enggang, hewan yang dianggap suci dalam kepercayaan Kaharingan.</p>
+        </div>
+        <div class="mandau-card">
+          <div class="mandau-img-wrap">
+            <img src="assets/mandau/bahau.jpg" alt="Mandau Suku Bahau" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
+          </div>
+          <h3>Dayak Bahau</h3>
+          <p>Sarungnya khas dililit rotan rapat dengan hiasan manik-manik warna-warni di bagian ujung dan pegangan.</p>
+        </div>
+        <div class="mandau-card">
+          <div class="mandau-img-wrap">
+            <img src="assets/mandau/murut.jpg" alt="Mandau Suku Murut" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
+          </div>
+          <h3>Murut</h3>
+          <p>Versi mandau dari rumpun Murut di kawasan perbukitan perbatasan, bilah lebih ramping, biasa dipakai untuk berburu dan berladang.</p>
+        </div>
+      </div>
+    </div>
+  </section>
   <!-- ---------- Lightbox Modal ---------- -->
   <div class="lightbox-modal" id="lightboxModal">
     <div class="lightbox-content" id="lightboxContent">
@@ -975,75 +1095,6 @@
   <section class="emblem-rule wrap">
     <img src="assets/logo.png" alt="" />
   </section>
-  <section class="donate" id="dukung">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-eyebrow">Dukung Langsung</p>
-        <h2 class="section-title">Setiap kontribusi tercatat, tersalur ke lapangan</h2>
-        <p class="section-body">Pilih salah satu kanal di bawah. Progres pengumpulan dana diperbarui langsung dari server.</p>
-      </div>
-      <div class="donate-card">
-        <div class="donate-buttons">
-          <!-- Tombol Indodax / Crypto (membuka modal QR) -->
-          <button class="btn indodax" type="button" onclick="openIndodaxModal()">
-            <span class="sigil">$</span> Dukung lewat Crypto / Indodax
-          </button>
-          <!-- Tombol PayPal.Me (link langsung) -->
-          <a class="btn" href="https://paypal.me/AustinSuryani" target="_blank" rel="noopener" style="background:var(--paypal); border:1px solid #005a99; justify-content:center;">
-            <span class="sigil">$</span> Dukung lewat PayPal.Me
-          </a>
-          <!-- Container Tombol PayPal SDK -->
-          <div id="paypal-button-container" style="margin-top: 5px; width: 100%;"></div>
-        </div>
-        <div class="progress-label-row">
-          <span>PROGRES PENGGALANGAN</span>
-          <span id="pctText">0%</span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div class="amounts">
-          <span class="collected" id="collectedText">$0.00</span>
-          <span class="goal">dari <span id="goalText">$20,000,000.00</span></span>
-        </div>
-        <p class="status-line" id="statusMessage">
-          <span>menghubungkan ke server<span class="cursor"></span></span>
-        </p>
-      </div>
-    </div>
-  </section>
-  <!-- ---------- Modal Popup Deposit Indodax (USDT TRC-20) ---------- -->
-  <div id="indodaxModal" style="display:none; position:fixed; inset:0; background:rgba(15, 11, 9, 0.92); backdrop-filter:blur(6px); z-index:9999; justify-content:center; align-items:center; padding:20px;">
-    <div style="background:var(--surface-raised); border:1px solid var(--border); padding:28px; border-radius:8px; max-width:380px; width:100%; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-      <h3 style="font-family:var(--display); color:var(--gold); margin:0 0 8px; font-size:20px;">Donasi via Crypto (USDT TRC-20)</h3>
-      <p style="font-size:12.5px; color:var(--muted); margin:0 0 16px; line-height:1.4;">
-        Scan QR di bawah pakai scanner aplikasi wallet kamu untuk langsung membuka menu kirim:
-      </p>
-      <!-- QR Code Deep Link (Langsung Buka Menu Transfer TRC20 USDT) -->
-      <div style="background:#fff; padding:12px; border-radius:8px; display:inline-block; margin-bottom:14px;">
-        <img id="cryptoQrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=tron%3ATUoiJ8qwPY6sKCqNbEL7dAgdKdQKUTenH7%3Ftoken%3DUSDT" alt="Direct Transfer USDT TRC20" style="width:180px; height:180px; display:block;" />
-      </div>
-      <!-- Tampilan Alamat Wallet -->
-      <div style="background:var(--bg); border:1px solid var(--border); padding:8px 12px; border-radius:4px; font-family:var(--mono); font-size:10.5px; color:var(--muted); word-break:break-all; margin-bottom:14px;" id="walletAddressText">
-        TUoiJ8qwPY6sKCqNbEL7dAgdKdQKUTenH7
-      </div>
-      <!-- Tombol Langsung Buka Halaman Kirim USDT Indodax -->
-      <a href="https://indodax.com/finance/USDT/trc20#kirim" target="_blank" style="display:block; background:var(--gold); border:none; color:var(--bg); padding:11px 18px; border-radius:4px; font-weight:600; font-family:var(--mono); font-size:12px; cursor:pointer; text-decoration:none; margin-bottom:8px;">
-        🚀 Kirim via Indodax
-      </a>
-      <p style="font-size:10.5px; color:var(--muted-dim); margin:0 0 12px; line-height:1.4;">
-        Tombol di atas buka Indodax lewat browser — kalau kamu pakai wallet lain, salin alamat manual di bawah.
-      </p>
-      <!-- Tombol Salin Alamat (fallback) -->
-      <button onclick="copyWalletAddr()" style="background:transparent; border:1px solid var(--gold); color:var(--gold); padding:9px 18px; border-radius:4px; font-weight:600; font-family:var(--mono); font-size:12px; cursor:pointer; width:100%; margin-bottom:8px;">
-        📋 Salin Alamat Wallet
-      </button>
-      <!-- Tombol Tutup -->
-      <button onclick="closeIndodaxModal()" style="background:transparent; border:1px solid var(--border); color:var(--muted); padding:8px 18px; border-radius:4px; font-family:var(--mono); font-size:12px; cursor:pointer; width:100%;">
-        Tutup
-      </button>
-    </div>
-  </div>
   <!-- ---------- Floating Chat Widget (WhatsApp / Email) ---------- -->
   <div class="chat-fab-wrap">
     <div class="chat-menu" id="chatMenu">
@@ -1068,126 +1119,21 @@
   <footer class="site">
     <img class="emblem" src="assets/logo.png" alt="" />
     <p>PENJAGA BATAS — LAPORAN PEMBANGUNAN WILAYAH PERBATASAN</p>
-    <p>Dana disalurkan lewat Indodax &amp; PayPal · Dikelola transparan</p>
+    <p>Dana disalurkan transparan &middot; Dikelola sepenuhnya untuk lapangan</p>
   </footer>
   <!-- ---------- CDN & Dependencies ---------- -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/money.js/0.2.0/money.min.js" integrity="sha512-K17dj/jNbqdLrDhK+j8FJY7iIQ1slk7uULXqzqX9O3Q6a1Yf+A6Wn6DzU3Xv1c6O4bEik6X7xyC5lH1gjrShKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- ---------- JAVASCRIPT LOGIC ---------- -->
   <script>
-    if (typeof fx !== 'undefined') {
-      fx.base = "IDR";
-      fx.rates = {
-        "IDR": 1,
-        "USD": 0.000064,
-        "MYR": 0.00028,
-        "SGD": 0.000086
-      };
-    }
-    const collectedText = document.getElementById("collectedText");
-    const goalText = document.getElementById("goalText");
-    const progressFill = document.getElementById("progressFill");
-    const pctText = document.getElementById("pctText");
-    const statusMessage = document.getElementById("statusMessage");
     // Konfigurasi Supabase
     const SUPABASE_URL = "https://jnkhrqvlqtamdclvwacx.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impua2hycXZscXRhbWRjbHZ3YWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5ODQ0ODUsImV4cCI6MjA5OTU2MDQ4NX0.rNYh35Beg93OJIG-6aF-zRLDfwD2wZFX_wSRmS3v-II";
-    const TARGET_GOAL = 20000000; // Target $20.000.000,00
     const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    function formatUSD(number) {
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).format(number);
-    }
-    function updateProgress(collectedAmount, goalAmount) {
-      const percent = Math.min((collectedAmount / goalAmount) * 100, 100);
-      collectedText.textContent = formatUSD(collectedAmount);
-      goalText.textContent = formatUSD(goalAmount);
-      progressFill.style.width = percent + "%";
-      pctText.textContent = `${percent.toFixed(2)}%`;
-    }
-    function setStatus(message) {
-      statusMessage.innerHTML = `<span>${message}<span class="cursor"></span></span>`;
-    }
-    // Mengambil langsung data nominal dari Supabase
-    async function loadProgress() {
-      try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/donations?select=amount`, {
-          method: "GET",
-          headers: {
-            "apikey": SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-          }
-        });
-        if (!response.ok) throw new Error('Gagal mengambil data dari Supabase');
-        const data = await response.json();
-        // Menghitung total seluruh donasi
-        const totalAmount = data.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
-        // Update tampilan progres
-        updateProgress(totalAmount, TARGET_GOAL);
-        const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-        setStatus(`sinkron terakhir ${time}`);
-      } catch (error) {
-        setStatus('gagal memuat data dari database');
-        console.error(error);
-      }
-    }
-    // Panggil saat dimuat dan sinkronkan tiap 10 detik
-    loadProgress();
-    setInterval(loadProgress, 10000);
+    // Progress bar donasi dinonaktifkan bareng section "Dukung Langsung".
 
-    // ---------- Render Tombol PayPal SDK (locale mengikuti bahasa terdeteksi) ----------
-    const PAYPAL_LOCALE_MAP = {
-      en: 'en_US', ms: 'en_MY', th: 'th_TH', vi: 'en_US', ja: 'ja_JP', ko: 'ko_KR',
-      'zh-CN': 'zh_CN', 'zh-TW': 'zh_TW', ar: 'ar_EG', tr: 'tr_TR', de: 'de_DE',
-      fr: 'fr_FR', nl: 'nl_NL', es: 'es_ES', pt: 'pt_PT', it: 'it_IT', ru: 'ru_RU',
-      pl: 'pl_PL', hi: 'en_US', bn: 'en_US', ur: 'en_US', id: 'id_ID',
-    };
-
-    function renderPaypalButton() {
-      if (!window.paypal) return;
-      paypal.Buttons({
-        style: {
-          layout: 'vertical',
-          color: 'gold',
-          shape: 'rect',
-          label: 'paypal'
-        },
-        createOrder: function(data, actions) {
-          return actions.order.create({
-            purchase_units: [{
-              description: "Donasi Penjaga Batas Kaltara",
-              amount: {
-                value: '10.00' // Nominal default ($10 USD)
-              }
-            }]
-          });
-        },
-        onApprove: function(data, actions) {
-          return actions.order.capture().then(function(details) {
-            setStatus('Terima kasih! Donasi berhasil diterima.');
-            setTimeout(loadProgress, 2000);
-          });
-        },
-        onError: function(err) {
-          console.error('PayPal Checkout Error:', err);
-          setStatus('Terjadi kesalahan saat memproses pembayaran PayPal.');
-        }
-      }).render('#paypal-button-container');
-    }
-
-    function loadPaypalSDK(locale) {
-      const script = document.createElement('script');
-      script.src = `https://www.paypal.com/sdk/js?client-id=ARu9inIMZmM8EYDrjFLBYETOTugzSW1g73cR6emzXarEplsYvUfBKw-eSG5H8uKnohlYf_PRAu5wQL6d&currency=USD&locale=${locale}`;
-      script.onload = renderPaypalButton;
-      document.body.appendChild(script);
-    }
-
+    // PayPal & Crypto/Indodax donation channels dinonaktifkan sementara.
     const perbatasanGeoJSON = {
       "type": "FeatureCollection",
       "features": [
@@ -1684,47 +1630,22 @@ async function loadLokasiMarkers(map) {
     }
 
     async function detectCountryAndTranslate() {
-      let paypalLocale = 'id_ID'; // default kalau di Indonesia / deteksi gagal
       try {
         const res = await fetch('/api/geo');
         if (res.ok) {
           const { country } = await res.json();
           if (country && country !== 'ID') {
             const langCode = COUNTRY_LANG_MAP[country] || 'en';
-            paypalLocale = PAYPAL_LOCALE_MAP[langCode] || 'en_US';
             applyTranslation(langCode);
           }
         }
       } catch (error) {
         console.warn('Deteksi negara gagal, halaman tetap Bahasa Indonesia', error);
-      } finally {
-        loadPaypalSDK(paypalLocale); // selalu jalan, apapun hasil deteksinya
       }
     }
 
     document.getElementById('revertLangBtn').addEventListener('click', revertToIndonesian);
     window.addEventListener('load', detectCountryAndTranslate);
-    /* ---------- Kontrol Modal Indodax / Crypto & Salin Alamat ---------- */
-    function openIndodaxModal() {
-      document.getElementById('indodaxModal').style.display = 'flex';
-    }
-    function closeIndodaxModal() {
-      document.getElementById('indodaxModal').style.display = 'none';
-    }
-    function copyWalletAddr() {
-      const addr = document.getElementById('walletAddressText').innerText.trim();
-      navigator.clipboard.writeText(addr).then(() => {
-        alert('Alamat Wallet USDT (TRC-20) berhasil disalin!');
-      }).catch(err => {
-        console.error('Gagal menyalin:', err);
-      });
-    }
-    window.addEventListener('click', function(e) {
-      const modal = document.getElementById('indodaxModal');
-      if (e.target === modal) {
-        closeIndodaxModal();
-      }
-    });
     /* ---------- Kontrol Floating Chat Widget ---------- */
     (function () {
       const fabBtn = document.getElementById('chatFabBtn');
