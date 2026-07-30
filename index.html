@@ -1040,49 +1040,8 @@
         <p class="section-body">Mandau (parang ilang) adalah senjata tradisional khas suku Dayak. Bentuk bilah, ukiran gagang, dan hiasan sarungnya berbeda-beda tergantung sub-suku pembuatnya.</p>
       </div>
 
-      <div class="mandau-grid">
-        <div class="mandau-card">
-          <div class="mandau-img-wrap">
-            <img src="assets/mandau/iban.jpg" alt="Mandau Suku Iban" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
-          </div>
-          <h3>Dayak Iban</h3>
-          <p>Ciri khasnya bilah agak melengkung dengan ukiran motif akar/sulur (aso) di gagang tulang, dan sarung kayu berhias bulu binatang.</p>
-        </div>
-        <div class="mandau-card">
-          <div class="mandau-img-wrap">
-            <img src="assets/mandau/kenyah.jpg" alt="Mandau Suku Kenyah" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
-          </div>
-          <h3>Dayak Kenyah</h3>
-          <p>Dikenal lewat ukiran figuratif yang lebih rumit pada gagang tanduk rusa, sering menggambarkan sosok penjaga atau makhluk mitologis.</p>
-        </div>
-        <div class="mandau-card">
-          <div class="mandau-img-wrap">
-            <img src="assets/mandau/kayan.jpg" alt="Mandau Suku Kayan" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
-          </div>
-          <h3>Dayak Kayan</h3>
-          <p>Bilahnya cenderung lebih lebar dan berat, dipakai juga sebagai alat kerja sehari-hari selain sebagai senjata dan lambang status.</p>
-        </div>
-        <div class="mandau-card">
-          <div class="mandau-img-wrap">
-            <img src="assets/mandau/ngaju.jpg" alt="Mandau Suku Ngaju" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
-          </div>
-          <h3>Dayak Ngaju</h3>
-          <p>Populer di Kalimantan Tengah, gagangnya sering diukir motif burung enggang, hewan yang dianggap suci dalam kepercayaan Kaharingan.</p>
-        </div>
-        <div class="mandau-card">
-          <div class="mandau-img-wrap">
-            <img src="assets/mandau/bahau.jpg" alt="Mandau Suku Bahau" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
-          </div>
-          <h3>Dayak Bahau</h3>
-          <p>Sarungnya khas dililit rotan rapat dengan hiasan manik-manik warna-warni di bagian ujung dan pegangan.</p>
-        </div>
-        <div class="mandau-card">
-          <div class="mandau-img-wrap">
-            <img src="assets/mandau/murut.jpg" alt="Mandau Suku Murut" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />
-          </div>
-          <h3>Murut</h3>
-          <p>Versi mandau dari rumpun Murut di kawasan perbukitan perbatasan, bilah lebih ramping, biasa dipakai untuk berburu dan berladang.</p>
-        </div>
+      <div class="mandau-grid" id="mandauGrid">
+        <div class="fakta-empty" style="grid-column:1/-1;">Memuat data mandau...</div>
       </div>
     </div>
   </section>
@@ -1481,6 +1440,34 @@ async function loadLokasiMarkers(map) {
         grid.innerHTML = `<div class="fakta-empty" style="grid-column:1/-1;">Gagal memuat inisiatif.</div>`;
       }
     }
+    /* ---------- Load Ragam Mandau dari Supabase ---------- */
+    async function loadMandau() {
+      const grid = document.getElementById('mandauGrid');
+      try {
+        const { data, error } = await sbClient
+          .from('mandau_items')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        const rows = data || [];
+        if (rows.length === 0) {
+          grid.innerHTML = `<div class="fakta-empty" style="grid-column:1/-1;">Belum ada mandau ditambahkan.</div>`;
+          return;
+        }
+        grid.innerHTML = rows.map(r => `
+          <div class="mandau-card">
+            <div class="mandau-img-wrap${r.image_url ? '' : ' mandau-img-empty'}">
+              ${r.image_url ? `<img src="${escapeHtmlIndex(r.image_url)}" alt="${escapeHtmlIndex(r.name)}" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />` : ''}
+            </div>
+            <h3>${escapeHtmlIndex(r.name)}</h3>
+            ${r.description ? `<p>${escapeHtmlIndex(r.description)}</p>` : ''}
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = `<div class="fakta-empty" style="grid-column:1/-1;">Gagal memuat data mandau.</div>`;
+      }
+    }
     function escapeHtmlIndex(str) {
       const div = document.createElement('div');
       div.textContent = str == null ? '' : String(str);
@@ -1528,6 +1515,7 @@ async function loadLokasiMarkers(map) {
     window.addEventListener('load', () => {
       loadFaktaMedia();
       loadCampaigns();
+      loadMandau();
       initPetaMap();
     });
     const COUNTRY_LANG_MAP = {
