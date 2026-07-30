@@ -6,7 +6,7 @@
 const OWNER = "hecatesorata";
 const REPO = "danates";
 const BRANCH = "main";
-const ALLOWED_FOLDERS = ["assets/fakta", "assets/campaign", "assets/lokasi"];
+const ALLOWED_FOLDERS = ["assets/fakta", "assets/campaign", "assets/lokasi", "assets/mandau"];
 
 export async function onRequestPost(context) {
   const { request, env } = context;
