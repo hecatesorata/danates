@@ -371,7 +371,7 @@
         <button class="btn ghost small" id="logoutBtn">Keluar</button>
       </div>
       <div class="tabs">
-        <button class="tab-btn active" data-tab="donasi">Donasi</button>
+        <button class="tab-btn active" data-tab="mandau">Mandau</button>
         <button class="tab-btn" data-tab="inisiatif">Inisiatif</button>
         <button class="tab-btn" data-tab="fakta">Fakta Lapangan</button>
         <button class="tab-btn" data-tab="lokasi">Lokasi</button>
@@ -380,41 +380,48 @@
     </header>
 
     <div class="wrap">
-      <section class="tab-panel active" id="panel-donasi">
-        <div class="stat-strip">
-          <div class="stat-box"><div class="num" id="statTotal">$0.00</div><div class="lbl">Total Terkumpul</div></div>
-          <div class="stat-box"><div class="num" id="statCount">0</div><div class="lbl">Jumlah Transaksi</div></div>
-          <div class="stat-box"><div class="num" id="statAvg">$0.00</div><div class="lbl">Rata-rata</div></div>
-        </div>
+      <section class="tab-panel active" id="panel-mandau">
         <div class="card">
-          <h3 id="donationFormTitle">Tambah Catatan Donasi Manual</h3>
-          <input type="hidden" id="donId" />
+          <h3 id="mandauFormTitle">Tambah Mandau</h3>
+          <input type="hidden" id="mandauId" />
+          <input type="hidden" id="mandauImagePath" />
           <div class="form-grid">
             <div>
-              <label>Nominal (USD)</label>
-              <input type="number" step="0.01" id="donAmount" placeholder="10.00" />
+              <label>Nama Mandau</label>
+              <input type="text" id="mandauName" placeholder="Mandau Ukir Naga" />
             </div>
             <div>
-              <label>Nama Donatur (opsional)</label>
-              <input type="text" id="donName" placeholder="Hamba Allah" />
+              <label>Harga (Rp, opsional)</label>
+              <input type="number" step="1000" id="mandauPrice" placeholder="500000" />
             </div>
             <div class="full">
-              <label>Catatan (opsional)</label>
-              <input type="text" id="donNote" placeholder="Semoga bermanfaat" />
+              <label>Deskripsi</label>
+              <textarea id="mandauDesc" placeholder="Ceritakan bahan, ukiran, dan asal-usul mandau ini..."></textarea>
+            </div>
+            <div class="full">
+              <label>Gambar</label>
+              <div class="upload-inline">
+                <button type="button" class="btn ghost small" id="mandauImageUploadBtn">📎 Upload ke GitHub</button>
+                <span class="upload-status" id="mandauImageUploadStatus"></span>
+              </div>
+              <input type="file" id="mandauImageFileInput" accept="image/*" style="display:none;" />
+              <input type="text" id="mandauImage" placeholder="assets/mandau/mandau1.jpg atau URL penuh" style="margin-top:8px;" />
+              <p class="hint">Klik "Upload ke GitHub" untuk pilih gambar dari HP/PC — otomatis terupload ke repo &amp; kolom di atas terisi sendiri. Atau isi manual kalau gambarnya sudah ada.</p>
+              <img class="img-preview" id="mandauImagePreview" alt="Preview" />
             </div>
           </div>
           <div style="margin-top:14px; display:flex; gap:8px;">
-            <button class="btn" id="addDonationBtn">Simpan Donasi</button>
-            <button class="btn ghost" id="cancelDonationEditBtn" style="display:none;">Batal Edit</button>
+            <button class="btn" id="saveMandauBtn">Simpan Mandau</button>
+            <button class="btn ghost" id="cancelMandauEditBtn" style="display:none;">Batal Edit</button>
           </div>
         </div>
         <div class="panel-head">
           <div>
-            <h2>Riwayat Donasi</h2>
-            <p id="donasiCountLabel">Memuat...</p>
+            <h2>Daftar Mandau</h2>
+            <p id="mandauCountLabel">Memuat...</p>
           </div>
         </div>
-        <div id="donasiList"></div>
+        <div id="mandauList"></div>
       </section>
 
       <section class="tab-panel" id="panel-inisiatif">
@@ -593,8 +600,8 @@
       toast.classList.add('visible');
       setTimeout(() => toast.classList.remove('visible'), 3200);
     }
-    function formatUSD(n) {
-      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n || 0);
+    function formatIDR(n) {
+      return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n || 0);
     }
     function escapeHtml(str) {
       const div = document.createElement('div');
@@ -700,7 +707,7 @@
       dash.classList.add('visible');
       userEmailLabel.textContent = session?.user?.email || '';
       document.getElementById('akunEmailLabel').textContent = session?.user?.email || '';
-      loadDonations();
+      loadMandau();
       loadCampaigns();
       loadFaktaMedia();
       loadLokasi();
@@ -771,119 +778,155 @@
       });
     });
 
-    // ==================== DONASI ====================
-    let donationRows = [];
+    // ==================== MANDAU ====================
+    let mandauRows = [];
 
-    function renderDonationStats(rows) {
-      const total = rows.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
-      document.getElementById('statTotal').textContent = formatUSD(total);
-      document.getElementById('statCount').textContent = rows.length;
-      document.getElementById('statAvg').textContent = formatUSD(rows.length ? total / rows.length : 0);
-      document.getElementById('donasiCountLabel').textContent = rows.length + ' catatan donasi';
-    }
-
-    async function loadDonations() {
-      const list = document.getElementById('donasiList');
-      list.innerHTML = '<div class="empty-note">Memuat data donasi...</div>';
-      const { data, error } = await sb.from('donations').select('*').order('created_at', { ascending: false });
+    async function loadMandau() {
+      const list = document.getElementById('mandauList');
+      list.innerHTML = '<div class="empty-note">Memuat data mandau...</div>';
+      const { data, error } = await sb.from('mandau_items').select('*').order('created_at', { ascending: false });
       if (error) {
         list.innerHTML = '<div class="empty-note">Gagal memuat: ' + escapeHtml(error.message) + '</div>';
         return;
       }
       const rows = data || [];
-      donationRows = rows;
-      renderDonationStats(rows);
+      mandauRows = rows;
+      document.getElementById('mandauCountLabel').textContent = rows.length + ' mandau';
       if (rows.length === 0) {
-        list.innerHTML = '<div class="empty-note">Belum ada catatan donasi.</div>';
+        list.innerHTML = '<div class="empty-note">Belum ada mandau. Tambahkan lewat form di atas.</div>';
         return;
       }
-      list.innerHTML = rows.map(r => {
-        const name = r.donor_name || r.donor || 'Hamba Allah';
-        const msg = r.note || r.message || '';
-        const sourceLabel = r.source || 'manual';
-        const original = (r.amount_original && r.currency_original && String(r.currency_original).toUpperCase() !== 'USD')
-          ? `${String(r.currency_original).toUpperCase()} ${Number(r.amount_original).toLocaleString('id-ID')}`
-          : '';
-        return `
+      list.innerHTML = rows.map(r => `
         <div class="row-item" data-row-id="${r.id}">
+          ${r.image_url ? `<img src="${escapeHtml(r.image_url)}" alt="" onerror="this.style.opacity=0" />` : ''}
           <div class="row-body">
-            <p class="row-title">${formatUSD(r.amount)} — ${escapeHtml(name)} <span class="badge">${escapeHtml(sourceLabel)}</span></p>
-            <p class="row-meta">
-              ${r.created_at ? new Date(r.created_at).toLocaleString('id-ID') : ''}
-              ${original ? ' · asli: ' + escapeHtml(original) : ''}
-              ${r.transaction_id ? ' · trx: ' + escapeHtml(r.transaction_id) : ''}
-            </p>
-            ${msg ? `<p class="row-desc">${escapeHtml(msg)}</p>` : ''}
+            <p class="row-title">${escapeHtml(r.name)} ${r.price ? '<span class="badge">' + escapeHtml(formatIDR(r.price)) + '</span>' : ''}</p>
+            ${r.description ? `<p class="row-desc">${escapeHtml(r.description)}</p>` : ''}
           </div>
           <div class="row-actions">
-            <button class="btn ghost small" data-action="edit-donation" data-id="${r.id}">Edit</button>
-            <button class="btn danger small" data-action="delete-donation" data-id="${r.id}">Hapus</button>
+            <button class="btn ghost small" data-action="edit-mandau" data-id="${r.id}">Edit</button>
+            <button class="btn danger small" data-action="delete-mandau" data-id="${r.id}">Hapus</button>
           </div>
         </div>
-      `;
-      }).join('');
+      `).join('');
     }
 
-    document.getElementById('donasiList').addEventListener('click', (e) => {
+    document.getElementById('mandauList').addEventListener('click', (e) => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
       const id = btn.dataset.id;
-      const row = donationRows.find(r => String(r.id) === String(id));
+      const row = mandauRows.find(r => String(r.id) === String(id));
       if (!row) return;
-      if (btn.dataset.action === 'edit-donation') editDonation(row);
-      if (btn.dataset.action === 'delete-donation') deleteDonation(row.id);
+      if (btn.dataset.action === 'edit-mandau') editMandau(row);
+      if (btn.dataset.action === 'delete-mandau') deleteMandau(row.id);
     });
 
-    document.getElementById('addDonationBtn').addEventListener('click', async () => {
-      const id = document.getElementById('donId').value;
-      const amount = parseFloat(document.getElementById('donAmount').value);
-      if (!amount || amount <= 0) { showToast('Isi nominal yang valid dulu'); return; }
-      const donor_name = document.getElementById('donName').value.trim() || null;
-      const note = document.getElementById('donNote').value.trim() || null;
+    function editMandau(row) {
+      document.getElementById('mandauId').value = row.id;
+      document.getElementById('mandauName').value = row.name;
+      document.getElementById('mandauPrice').value = row.price || '';
+      document.getElementById('mandauDesc').value = row.description || '';
+      document.getElementById('mandauImage').value = row.image_url || '';
+      document.getElementById('mandauImagePath').value = row.image_path || '';
+      updateMandauImagePreview(row.image_url || '');
+      document.getElementById('mandauFormTitle').textContent = 'Edit Mandau';
+      document.getElementById('cancelMandauEditBtn').style.display = 'inline-flex';
+      document.getElementById('panel-mandau').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetMandauForm() {
+      document.getElementById('mandauId').value = '';
+      document.getElementById('mandauName').value = '';
+      document.getElementById('mandauPrice').value = '';
+      document.getElementById('mandauDesc').value = '';
+      document.getElementById('mandauImage').value = '';
+      document.getElementById('mandauImagePath').value = '';
+      document.getElementById('mandauImageUploadStatus').textContent = '';
+      updateMandauImagePreview('');
+      document.getElementById('mandauFormTitle').textContent = 'Tambah Mandau';
+      document.getElementById('cancelMandauEditBtn').style.display = 'none';
+    }
+    document.getElementById('cancelMandauEditBtn').addEventListener('click', resetMandauForm);
+
+    function updateMandauImagePreview(url) {
+      const img = document.getElementById('mandauImagePreview');
+      if (url) { img.src = url; img.style.display = 'block'; }
+      else { img.removeAttribute('src'); img.style.display = 'none'; }
+    }
+    document.getElementById('mandauImage').addEventListener('input', (e) => {
+      updateMandauImagePreview(e.target.value.trim());
+      document.getElementById('mandauImagePath').value = '';
+    });
+
+    document.getElementById('mandauImageUploadBtn').addEventListener('click', () => {
+      document.getElementById('mandauImageFileInput').click();
+    });
+    document.getElementById('mandauImageFileInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById('mandauImageUploadStatus');
+      const btn = document.getElementById('mandauImageUploadBtn');
+      btn.disabled = true;
+      statusEl.textContent = 'Mengupload ke GitHub...';
+      try {
+        const { url, path } = await uploadFileToGithub(file, 'assets/mandau');
+        document.getElementById('mandauImage').value = url;
+        document.getElementById('mandauImagePath').value = path;
+        updateMandauImagePreview(url);
+        statusEl.textContent = '✓ Terupload ke repo';
+        showToast('Gambar berhasil diupload ke GitHub');
+      } catch (err) {
+        statusEl.textContent = '';
+        showToast('Gagal upload: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        e.target.value = '';
+      }
+    });
+
+    document.getElementById('saveMandauBtn').addEventListener('click', async () => {
+      const id = document.getElementById('mandauId').value;
+      const priceRaw = document.getElementById('mandauPrice').value;
+      const payload = {
+        name: document.getElementById('mandauName').value.trim(),
+        price: priceRaw ? parseInt(priceRaw) : null,
+        description: document.getElementById('mandauDesc').value.trim() || null,
+        image_url: document.getElementById('mandauImage').value.trim() || null,
+        image_path: document.getElementById('mandauImagePath').value.trim() || null,
+      };
+      if (!payload.name) {
+        showToast('Nama mandau wajib diisi');
+        return;
+      }
       let error;
       if (id) {
-        ({ error } = await sb.from('donations').update({ amount, donor_name, note }).eq('id', id));
+        ({ error } = await sb.from('mandau_items').update(payload).eq('id', id));
       } else {
-        ({ error } = await sb.from('donations').insert([{ amount, donor_name, note, source: 'manual' }]));
+        ({ error } = await sb.from('mandau_items').insert([payload]));
       }
       if (error) { showToast('Gagal simpan: ' + error.message); return; }
-      showToast(id ? 'Donasi diperbarui' : 'Donasi tersimpan');
-      resetDonationForm();
-      loadDonations();
+      showToast(id ? 'Mandau diperbarui' : 'Mandau ditambahkan');
+      resetMandauForm();
+      loadMandau();
     });
 
-    function editDonation(row) {
-      document.getElementById('donId').value = row.id;
-      document.getElementById('donAmount').value = row.amount;
-      document.getElementById('donName').value = row.donor_name || row.donor || '';
-      document.getElementById('donNote').value = row.note || row.message || '';
-      document.getElementById('donationFormTitle').textContent = 'Edit Catatan Donasi';
-      document.getElementById('cancelDonationEditBtn').style.display = 'inline-flex';
-      document.getElementById('panel-donasi').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function resetDonationForm() {
-      document.getElementById('donId').value = '';
-      document.getElementById('donAmount').value = '';
-      document.getElementById('donName').value = '';
-      document.getElementById('donNote').value = '';
-      document.getElementById('donationFormTitle').textContent = 'Tambah Catatan Donasi Manual';
-      document.getElementById('cancelDonationEditBtn').style.display = 'none';
-    }
-    document.getElementById('cancelDonationEditBtn').addEventListener('click', resetDonationForm);
-
-    async function deleteDonation(id) {
-      if (!confirm('Hapus catatan donasi ini?')) return;
-      const el = document.querySelector(`#donasiList .row-item[data-row-id="${id}"]`);
-      const { error } = await sb.from('donations').delete().eq('id', id);
+    async function deleteMandau(id) {
+      if (!confirm('Hapus mandau ini? File gambarnya di GitHub juga akan ikut dihapus.')) return;
+      const row = mandauRows.find(r => String(r.id) === String(id));
+      const el = document.querySelector(`#mandauList .row-item[data-row-id="${id}"]`);
+      const { error } = await sb.from('mandau_items').delete().eq('id', id);
       if (error) { showToast('Gagal hapus: ' + error.message); return; }
-      showToast('Donasi dihapus');
-      donationRows = donationRows.filter(r => String(r.id) !== String(id));
+      if (row?.image_path) {
+        try { await deleteFileFromGithub(row.image_path); }
+        catch (err) { showToast('Mandau dihapus, tapi file GitHub gagal dihapus: ' + err.message); }
+      }
+      showToast('Mandau dan file gambarnya dihapus');
+      mandauRows = mandauRows.filter(r => String(r.id) !== String(id));
       await animateRemoveRow(el);
       el?.remove();
-      renderDonationStats(donationRows);
-      if (donationRows.length === 0) {
-        document.getElementById('donasiList').innerHTML = '<div class="empty-note">Belum ada catatan donasi.</div>';
+      document.getElementById('mandauCountLabel').textContent = mandauRows.length + ' mandau';
+      if (mandauRows.length === 0) {
+        document.getElementById('mandauList').innerHTML = '<div class="empty-note">Belum ada mandau. Tambahkan lewat form di atas.</div>';
       }
     }
 
