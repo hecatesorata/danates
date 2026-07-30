@@ -1456,7 +1456,7 @@ async function loadLokasiMarkers(map) {
         }
         grid.innerHTML = rows.map(r => `
           <div class="mandau-card">
-            <div class="mandau-img-wrap${r.image_url ? '' : ' mandau-img-empty'}">
+            <div class="mandau-img-wrap${r.image_url ? '' : ' mandau-img-empty'}"${r.image_url ? ` onclick="openLightbox('image', '${escapeHtmlIndex(r.image_url)}')" style="cursor:pointer;"` : ''}>
               ${r.image_url ? `<img src="${escapeHtmlIndex(r.image_url)}" alt="${escapeHtmlIndex(r.name)}" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />` : ''}
             </div>
             <h3>${escapeHtmlIndex(r.name)}</h3>
