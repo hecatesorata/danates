@@ -386,13 +386,9 @@
           <input type="hidden" id="mandauId" />
           <input type="hidden" id="mandauImagePath" />
           <div class="form-grid">
-            <div>
+            <div class="full">
               <label>Nama Mandau</label>
               <input type="text" id="mandauName" placeholder="Mandau Ukir Naga" />
-            </div>
-            <div>
-              <label>Harga (Rp, opsional)</label>
-              <input type="number" step="1000" id="mandauPrice" placeholder="500000" />
             </div>
             <div class="full">
               <label>Deskripsi</label>
@@ -600,9 +596,6 @@
       toast.classList.add('visible');
       setTimeout(() => toast.classList.remove('visible'), 3200);
     }
-    function formatIDR(n) {
-      return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n || 0);
-    }
     function escapeHtml(str) {
       const div = document.createElement('div');
       div.textContent = str == null ? '' : String(str);
@@ -800,7 +793,7 @@
         <div class="row-item" data-row-id="${r.id}">
           ${r.image_url ? `<img src="${escapeHtml(r.image_url)}" alt="" onerror="this.style.opacity=0" />` : ''}
           <div class="row-body">
-            <p class="row-title">${escapeHtml(r.name)} ${r.price ? '<span class="badge">' + escapeHtml(formatIDR(r.price)) + '</span>' : ''}</p>
+            <p class="row-title">${escapeHtml(r.name)}</p>
             ${r.description ? `<p class="row-desc">${escapeHtml(r.description)}</p>` : ''}
           </div>
           <div class="row-actions">
@@ -824,7 +817,6 @@
     function editMandau(row) {
       document.getElementById('mandauId').value = row.id;
       document.getElementById('mandauName').value = row.name;
-      document.getElementById('mandauPrice').value = row.price || '';
       document.getElementById('mandauDesc').value = row.description || '';
       document.getElementById('mandauImage').value = row.image_url || '';
       document.getElementById('mandauImagePath').value = row.image_path || '';
@@ -837,7 +829,6 @@
     function resetMandauForm() {
       document.getElementById('mandauId').value = '';
       document.getElementById('mandauName').value = '';
-      document.getElementById('mandauPrice').value = '';
       document.getElementById('mandauDesc').value = '';
       document.getElementById('mandauImage').value = '';
       document.getElementById('mandauImagePath').value = '';
@@ -886,10 +877,8 @@
 
     document.getElementById('saveMandauBtn').addEventListener('click', async () => {
       const id = document.getElementById('mandauId').value;
-      const priceRaw = document.getElementById('mandauPrice').value;
       const payload = {
         name: document.getElementById('mandauName').value.trim(),
-        price: priceRaw ? parseInt(priceRaw) : null,
         description: document.getElementById('mandauDesc').value.trim() || null,
         image_url: document.getElementById('mandauImage').value.trim() || null,
         image_path: document.getElementById('mandauImagePath').value.trim() || null,
