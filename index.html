@@ -67,6 +67,8 @@
   .field .box{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;padding:11px 12px;font-size:13.5px;color:var(--text);background:var(--panel);transition:border-color .15s;}
   .field .box:hover{border-color:var(--navy);}
   .field .box svg{flex:0 0 auto;color:var(--navy);}
+  .field .box select,.field .box input{border:none;background:transparent;font:inherit;color:var(--text);width:100%;padding:0;outline:none;-webkit-appearance:none;appearance:none;}
+  .field .box select{cursor:pointer;}
   .btn-primary{background:linear-gradient(120deg,var(--navy),var(--navy-2));color:var(--white);border:none;border-radius:9px;padding:13px 22px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 8px 18px rgba(15,38,71,0.28);transition:transform .15s;}
   .btn-primary:hover{transform:translateY(-2px);}
   .search-notes{grid-column:1/-1;display:flex;gap:22px;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--muted);}
@@ -93,8 +95,7 @@
   @media (max-width:560px){ .fleet-grid{grid-template-columns:1fr;} }
   .fleet-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--white);box-shadow:0 6px 18px rgba(15,38,71,0.06);transition:transform .18s,box-shadow .18s;}
   .fleet-card:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(15,38,71,0.12);}
-  .fleet-photo{height:150px;position:relative;overflow:hidden;background:radial-gradient(120% 100% at 50% 15%,#f4f8fb 0%,#bfe0f2 55%,#eef6fb 100%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:14px;}
-  .fleet-photo::before{content:"";position:absolute;left:8%;right:8%;bottom:26px;height:14px;border-radius:50%;background:radial-gradient(ellipse,rgba(15,38,71,0.28),transparent 70%);}
+  .fleet-photo{height:150px;position:relative;overflow:hidden;background-size:cover;background-position:center;}
   .fleet-body{padding:16px 18px;}
   .fleet-body h4{font-family:var(--display);font-size:15.5px;margin:0 0 8px;color:var(--navy);}
   .fleet-specs{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:0;}
@@ -208,44 +209,71 @@
 </section>
 
 <div class="wrap">
-  <div class="search-card">
+  <form class="search-card" id="searchForm">
     <div class="field">
-      <label>Dari</label>
+      <label for="fDari">Dari</label>
       <div class="box">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
-        Balikpapan
+        <select id="fDari">
+          <option>Balikpapan</option>
+        </select>
       </div>
     </div>
     <div class="field">
-      <label>Ke</label>
+      <label for="fKe">Ke</label>
       <div class="box">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
-        Serawak / Brunei
+        <select id="fKe">
+          <option>Serawak / Brunei</option>
+          <option>Serawak (Kuching)</option>
+          <option>Brunei (Bandar Seri Begawan)</option>
+          <option>Dalam Kota Balikpapan</option>
+        </select>
       </div>
     </div>
     <div class="field">
-      <label>Tanggal</label>
+      <label for="fTanggal">Tanggal</label>
       <div class="box">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6"/></svg>
-        Pilih tanggal
+        <input type="date" id="fTanggal" />
       </div>
     </div>
     <div class="field">
-      <label>Durasi</label>
+      <label for="fDurasi">Durasi</label>
       <div class="box">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6"/></svg>
-        1 Hari (12 Jam)
+        <select id="fDurasi">
+          <option>1 Hari (12 Jam)</option>
+          <option>2 Hari</option>
+          <option>3 Hari</option>
+          <option>Lebih dari 3 Hari (Custom)</option>
+        </select>
       </div>
     </div>
-    <button class="btn-primary">Cek Ketersediaan</button>
+    <button type="submit" class="btn-primary">Cek Ketersediaan</button>
     <div class="search-notes">
       <span>✓ Termasuk BBM</span>
       <span>✓ Driver Berpengalaman</span>
       <span>✓ Mobil Bersih &amp; Nyaman</span>
       <span>✓ Asuransi Penumpang</span>
     </div>
-  </div>
+  </form>
 </div>
+
+<script>
+  document.getElementById('searchForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var dari = document.getElementById('fDari').value;
+    var ke = document.getElementById('fKe').value;
+    var tanggal = document.getElementById('fTanggal').value || 'belum dipilih';
+    var durasi = document.getElementById('fDurasi').value;
+    var pesan = 'Halo BorneoDrive, saya mau cek ketersediaan mobil.%0ADari: ' + encodeURIComponent(dari) +
+      '%0AKe: ' + encodeURIComponent(ke) +
+      '%0ATanggal: ' + encodeURIComponent(tanggal) +
+      '%0ADurasi: ' + encodeURIComponent(durasi);
+    window.open('https://wa.me/6281251794955?text=' + pesan, '_blank');
+  });
+</script>
 
 <div class="wrap">
   <div class="trust-bar">
@@ -265,9 +293,7 @@
     </div>
     <div class="fleet-grid">
       <div class="fleet-card">
-        <div class="fleet-photo">
-          <svg width="120" height="70" viewBox="0 0 400 200"><path d="M40 140 Q45 95 90 88 L120 60 Q135 50 160 50 L250 50 Q270 50 285 65 L310 88 Q355 92 360 140 Z" fill="#dfe7ee" stroke="#0f2647" stroke-width="2.5"/><rect x="40" y="132" width="320" height="10" fill="#0f2647"/><circle cx="120" cy="150" r="24" fill="#1c2b3a"/><circle cx="290" cy="150" r="24" fill="#1c2b3a"/><rect x="55" y="112" width="14" height="7" rx="2" fill="#caa14c"/></svg>
-        </div>
+        <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Toyota_Kijang_Innova_(Side),_Jakarta,_Indonesia.jpg?width=500');"></div>
         <div class="fleet-body">
           <h4>Toyota Innova Reborn</h4>
           <div class="fleet-specs"><span>👤 6 Penumpang</span><span>🧳 4 Koper</span></div>
@@ -275,9 +301,7 @@
         <div class="fleet-price">Rp1.000.000 / hari</div>
       </div>
       <div class="fleet-card">
-        <div class="fleet-photo">
-          <svg width="120" height="70" viewBox="0 0 400 200"><path d="M40 140 Q45 100 85 92 L115 62 Q130 52 155 52 L245 52 Q262 52 278 68 L305 92 Q355 96 360 140 Z" fill="#e6f0e9" stroke="#0f2647" stroke-width="2.5"/><rect x="40" y="132" width="320" height="10" fill="#0f2647"/><circle cx="120" cy="150" r="24" fill="#1c2b3a"/><circle cx="290" cy="150" r="24" fill="#1c2b3a"/><rect x="55" y="112" width="14" height="7" rx="2" fill="#4b8f6b"/></svg>
-        </div>
+        <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Toyota_Avanza_side.jpg?width=500');"></div>
         <div class="fleet-body">
           <h4>Toyota Avanza</h4>
           <div class="fleet-specs"><span>👤 6 Penumpang</span><span>🧳 4 Koper</span></div>
@@ -285,9 +309,7 @@
         <div class="fleet-price">Rp1.000.000 / hari</div>
       </div>
       <div class="fleet-card">
-        <div class="fleet-photo">
-          <svg width="130" height="70" viewBox="0 0 420 200"><rect x="35" y="70" width="330" height="70" rx="10" fill="#dfe7ee" stroke="#0f2647" stroke-width="2.5"/><rect x="35" y="132" width="330" height="10" fill="#0f2647"/><circle cx="110" cy="150" r="24" fill="#1c2b3a"/><circle cx="300" cy="150" r="24" fill="#1c2b3a"/><line x1="180" y1="70" x2="180" y2="132" stroke="#0f2647" stroke-width="1.5"/><line x1="250" y1="70" x2="250" y2="132" stroke="#0f2647" stroke-width="1.5"/></svg>
-        </div>
+        <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Toyota_HiAce_Side_View.jpg?width=500');"></div>
         <div class="fleet-body">
           <h4>Toyota Hiace</h4>
           <div class="fleet-specs"><span>👤 12 Penumpang</span><span>🧳 8 Koper</span></div>
@@ -295,9 +317,7 @@
         <div class="fleet-price">Rp1.000.000 / hari</div>
       </div>
       <div class="fleet-card">
-        <div class="fleet-photo">
-          <svg width="125" height="70" viewBox="0 0 400 200"><rect x="40" y="75" width="320" height="65" rx="14" fill="#dfe7ee" stroke="#0f2647" stroke-width="2.5"/><rect x="40" y="132" width="320" height="10" fill="#0f2647"/><circle cx="115" cy="150" r="24" fill="#1c2b3a"/><circle cx="285" cy="150" r="24" fill="#1c2b3a"/><line x1="170" y1="75" x2="170" y2="132" stroke="#0f2647" stroke-width="1.5"/><line x1="235" y1="75" x2="235" y2="132" stroke="#0f2647" stroke-width="1.5"/></svg>
-        </div>
+        <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/0Hyundai_Starex_(TQ).jpg?width=500');"></div>
         <div class="fleet-body">
           <h4>Hyundai Starex</h4>
           <div class="fleet-specs"><span>👤 10 Penumpang</span><span>🧳 7 Koper</span></div>
@@ -473,6 +493,7 @@
       </div>
       <div class="cta-list">
         <span>✓ Respon cepat</span>
+        <span>✓ Penjemputan di bandara / hotel</span>
         <span>✓ Pembayaran mudah &amp; aman</span>
       </div>
       <a href="https://wa.me/6281251794955" class="btn-whatsapp">
@@ -486,7 +507,7 @@
 <footer>
   <div class="wrap">
     BorneoDrive — Sewa Mobil Serawak &amp; Brunei
-    <span class="credits">.</span>
+    
   </div>
 </footer>
 
