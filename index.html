@@ -3,1657 +3,496 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Penjaga Batas — Membangun Kalimantan Utara Berdaulat</title>
+<title>BorneoDrive — Sewa Mobil Serawak &amp; Brunei</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Leaflet Elevation Plugin -->
-<link rel="stylesheet" href="https://unpkg.com/@raruto/leaflet-elevation@2.3.3/dist/leaflet-elevation.min.css" />
-<script src="https://unpkg.com/@raruto/leaflet-elevation@2.3.3/dist/leaflet-elevation.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #181310;
-    --surface: #211a15;
-    --surface-raised: #291f18;
-    --border: #3a2e23;
-    --text: #f2e9dc;
-    --muted: #a4937d;
-    --muted-dim: #6f6153;
-    --gold: #c9a15a;
-    --gold-dim: rgba(201, 161, 90, 0.14);
-    --red: #a2402f;
-    --red-dim: rgba(162, 64, 47, 0.16);
-    --indodax: #1f3a60;
-    --paypal: #0070ba;
-    --whatsapp: #25D366;
-    --display: 'Spectral', Georgia, serif;
-    --body: 'Karla', system-ui, sans-serif;
-    --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  :root{
+    --navy:#0f2647;
+    --navy-2:#16345c;
+    --gold:#caa14c;
+    --green:#25d366;
+    --text:#1c2b3a;
+    --muted:#64748b;
+    --line:#e4eaf1;
+    --panel:#f6f9fc;
+    --white:#ffffff;
+    --display:'Manrope', system-ui, sans-serif;
+    --body:'Inter', system-ui, sans-serif;
   }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--body);
-    line-height: 1.5;
-  }
-  img { max-width: 100%; display: block; }
-  a { color: inherit; }
-  .wrap {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-  /* ---------- Emblem ---------- */
-  .emblem {
-    width: 34px;
-    height: auto;
-    opacity: 0.92;
-  }
-  .emblem-rule {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    margin: 0;
-    color: var(--muted-dim);
-  }
-  .emblem-rule::before,
-  .emblem-rule::after {
-    content: "";
-    height: 1px;
-    flex: 1;
-    background: linear-gradient(90deg, transparent, var(--border), transparent);
-  }
-  .emblem-rule img { width: 22px; opacity: 0.55; }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:var(--body);color:var(--text);background:var(--white);line-height:1.5;}
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+  @media (max-width:700px){ .wrap{padding:0 18px;} }
+  :focus-visible{outline:2px solid var(--navy);outline-offset:2px;}
+
   /* ---------- Header ---------- */
-  header.site {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: rgba(24, 19, 16, 0.86);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--border);
-  }
-  .site-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 24px;
-  }
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--display);
-    font-weight: 600;
-    font-size: 16px;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-  }
-  .brand img { width: 26px; }
-  .brand small {
-    display: block;
-    font-family: var(--mono);
-    font-size: 9.5px;
-    font-weight: 400;
-    letter-spacing: 0.14em;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
-  nav.site-nav {
-    display: flex;
-    gap: 22px;
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.04em;
-  }
-  nav.site-nav a {
-    text-decoration: none;
-    color: var(--muted);
-    transition: color 0.15s ease;
-  }
-  nav.site-nav a:hover { color: var(--gold); }
-  @media (max-width: 640px) { nav.site-nav { display: none; } }
-  /* ---------- Hero ---------- */
-  .hero {
-    position: relative;
-    min-height: 88vh;
-    display: flex;
-    align-items: flex-end;
-    background:
-      linear-gradient(180deg, rgba(20,15,12,0.35) 0%, rgba(15,11,9,0.55) 55%, var(--bg) 96%),
-      url('assets/campaign/jalan.jpg') center 62% / cover no-repeat;
-  }
-  .hero-inner {
-    width: 100%;
-    padding: 120px 24px 56px;
-    max-width: 1080px;
-    margin: 0 auto;
-  }
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--mono);
-    font-size: 11.5px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--gold);
-    border: 1px solid rgba(201, 161, 90, 0.35);
-    background: var(--gold-dim);
-    padding: 6px 12px;
-    border-radius: 999px;
-    margin-bottom: 22px;
-  }
-  h1.hero-title {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: clamp(32px, 5.4vw, 52px);
-    line-height: 1.14;
-    margin: 0 0 26px;
-    max-width: 20ch;
-    text-wrap: balance;
-  }
-  h1.hero-title em {
-    font-style: italic;
-    color: var(--gold);
-  }
-  p.hero-lede {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: clamp(16px, 2vw, 19px);
-    line-height: 1.65;
-    color: #ecdfc9;
-    max-width: 62ch;
-    margin: 0 0 18px;
-  }
-  p.hero-lede:last-of-type { margin-bottom: 32px; }
-  .hero-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    padding: 13px 20px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14.5px;
-    font-family: var(--body);
-    border: 1px solid transparent;
-    transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease;
-    color: #fff;
-  }
-  .btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
-  .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
-  .btn .sigil { font-family: var(--mono); opacity: 0.8; font-size: 13px; }
-  .btn.ghost {
-    background: transparent;
-    border-color: rgba(242, 233, 220, 0.35);
-    color: var(--text);
-  }
-  .btn.indodax { background: var(--indodax); border: 1px solid #2d5488; }
-  /* ---------- Ledger strip ---------- */
-  .ledger {
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-  }
-  .ledger-inner {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .ledger-item {
-    padding: 30px 20px;
-    text-align: center;
-    border-left: 1px solid var(--border);
-  }
-  .ledger-item:first-child { border-left: none; }
-  .ledger-num {
-    font-family: var(--mono);
-    font-size: clamp(22px, 3.4vw, 30px);
-    color: var(--gold);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-  }
-  .ledger-label {
-    font-size: 11.5px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-top: 6px;
-  }
-  @media (max-width: 700px) {
-    .ledger-inner { grid-template-columns: repeat(2, 1fr); }
-    .ledger-item:nth-child(3) { border-left: none; }
-  }
-  /* ---------- Section shared ---------- */
-  section { padding: 84px 0; }
-  .section-head {
-    max-width: 62ch;
-    margin: 0 auto 46px;
-    text-align: center;
-  }
-  .section-eyebrow {
-    font-family: var(--mono);
-    font-size: 11.5px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin: 0 0 12px;
-  }
-  h2.section-title {
-    font-family: var(--display);
-    font-weight: 600;
-    font-size: clamp(26px, 4vw, 36px);
-    margin: 0 0 14px;
-  }
-  p.section-body {
-    color: var(--muted);
-    font-size: 15.5px;
-    margin: 0;
-  }
-  /* ---------- Campaign grid ---------- */
-  .campaign-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-    background: var(--border);
-    border: 1px solid var(--border);
-  }
-  .mandau-section { padding: 90px 0; }
-  .mandau-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 18px;
-    margin-top: 40px;
-  }
-  .mandau-card {
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .mandau-img-wrap {
-    aspect-ratio: 4 / 3;
-    background: var(--surface);
-    position: relative;
-    overflow: hidden;
-  }
-  .mandau-img-wrap img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .mandau-img-wrap.mandau-img-empty img { display: none; }
-  .mandau-img-wrap.mandau-img-empty::after {
-    content: "Foto belum diunggah";
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 12px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted-dim);
-    background: repeating-linear-gradient(45deg, var(--surface), var(--surface) 10px, var(--surface-raised) 10px, var(--surface-raised) 20px);
-  }
-  .mandau-card h3 {
-    font-family: var(--display);
-    color: var(--gold);
-    font-size: 16px;
-    margin: 16px 20px 8px;
-  }
-  .mandau-card p {
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: var(--muted);
-    margin: 0 20px 18px;
-  }
-  .mandau-note {
-    margin-top: 24px;
-    font-size: 12px;
-    color: var(--muted-dim);
-    text-align: center;
-  }
-  .mandau-note code {
-    font-family: var(--mono);
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    padding: 1px 6px;
-    border-radius: 3px;
-    color: var(--gold);
-  }
-  .murut-section { padding: 90px 0; background: var(--surface); }
-  .murut-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 18px;
-    margin-top: 40px;
-  }
-  .murut-card {
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 22px 24px;
-  }
-  .murut-card h3 {
-    font-family: var(--display);
-    color: var(--gold);
-    font-size: 17px;
-    margin: 0 0 10px;
-  }
-  .murut-card p {
-    font-size: 14px;
-    line-height: 1.65;
-    color: var(--muted);
-    margin: 0;
-  }
-  .murut-card p em { color: var(--text); font-style: italic; }
-  .murut-card p strong { color: var(--text); }
-  .murut-source {
-    margin-top: 28px;
-    font-size: 12.5px;
-    color: var(--muted-dim);
-  }
-  .murut-source a { color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold-dim); }
-  .murut-source a:hover { border-bottom-color: var(--gold); }
-  @media (max-width: 640px) {
-    .murut-section { padding: 60px 0; }
-  }
-  .campaign-card {
-    position: relative;
-    background: var(--surface);
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-  }
-  .campaign-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: saturate(0.92) contrast(1.02);
-    transition: transform 0.5s ease, filter 0.5s ease;
-  }
-  .campaign-card:hover img { transform: scale(1.06); filter: saturate(1.05) contrast(1.04); }
-  .campaign-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 40%, rgba(15,11,9,0.92) 100%);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 16px;
-  }
-  .campaign-index {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--gold);
-    letter-spacing: 0.08em;
-  }
-  .campaign-name {
-    font-family: var(--display);
-    font-weight: 600;
-    font-size: 17px;
-    margin: 2px 0 4px;
-  }
-  .campaign-desc {
-    font-size: 12.5px;
-    color: #d8cbb8;
-    line-height: 1.45;
-  }
-  .campaign-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--mono);
-    font-size: 9.5px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--bg);
-    background: var(--gold);
-    padding: 5px 10px 5px 8px;
-    border-radius: 999px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-  }
-  .campaign-badge .dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--bg);
-    animation: badge-pulse 1.4s ease-in-out infinite;
-  }
-  @keyframes badge-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-  @media (max-width: 760px) {
-    .campaign-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 460px) {
-    .campaign-grid { grid-template-columns: 1fr; }
-  }
-  /* ---------- Peta Section ---------- */
-  .peta-section {
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-  .peta-frame {
-    max-width: 1032px;
-    margin: 0 auto;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-  }
-  #petaMap {
-    width: 100%;
-    height: 480px;
-    background: var(--surface-raised);
-  }
-  @media (max-width: 640px) {
-    #petaMap { height: 360px; }
-  }
-  .peta-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 18px;
-    justify-content: center;
-    margin-top: 20px;
-    font-family: var(--mono);
-    font-size: 11.5px;
-    color: var(--muted);
-  }
-  .peta-legend span {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .peta-legend .swatch {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--gold);
-    display: inline-block;
-  }
-  /* Leaflet theme overrides for Topo/Terrain */
-  .leaflet-popup-content-wrapper {
-    background: var(--surface-raised);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-family: var(--body);
-  }
-  .leaflet-popup-tip { background: var(--surface-raised); border: 1px solid var(--border); }
-  .leaflet-popup-content { margin: 12px 14px; font-size: 13px; line-height: 1.5; }
-  .leaflet-popup-content b {
-    font-family: var(--display);
-    color: var(--gold);
-    font-size: 14.5px;
-    display: block;
-    margin-bottom: 4px;
-  }
-  .leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
-  .leaflet-popup-content img {
-    width: 100%;
-    max-width: 380px;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 6px;
-    display: block;
-    margin-bottom: 8px;
-  }
-  .leaflet-control-attribution {
-    background: rgba(24,19,16,0.75) !important;
-    color: var(--muted-dim) !important;
-    font-size: 10px !important;
-  }
-  .leaflet-control-attribution a { color: var(--muted) !important; }
-  .leaflet-control-zoom a {
-    background: var(--surface-raised) !important;
-    color: var(--text) !important;
-    border-color: var(--border) !important;
-  }
-  .leaflet-control-zoom a:hover { background: var(--gold) !important; color: var(--bg) !important; }
-  .leaflet-tooltip {
-    background: var(--surface-raised) !important;
-    color: var(--text) !important;
-    border: 1px solid var(--border) !important;
-    font-family: var(--mono) !important;
-    font-size: 11px !important;
-    padding: 6px 10px !important;
-  }
-.elevation-tooltip {
-  background: rgba(24, 19, 16, 0.95) !important;
-  color: #f2e9dc !important;
-  border: 1px solid #c9a15a !important;
-  border-radius: 4px !important;
-  font-family: var(--mono) !important;
-  font-size: 13px !important;
-  padding: 6px 10px !important;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.6);
-  pointer-events: none;
-}
-.elevation-tooltip::before {
-  border-top-color: #c9a15a !important;
-}
-  .leaflet-tooltip-top:before { border-top-color: var(--border) !important; }
-  /* ---------- Fakta Section & Slider ---------- */
-  .fakta-section {
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-  .fakta-slider-container {
-    max-width: 800px;
-    margin: 0 auto;
-    position: relative;
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .fakta-slide {
-    display: none;
-    width: 100%;
-    max-height: 500px;
-    background: #000;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-  }
-  .fakta-slide.active {
-    display: flex;
-  }
-  .fakta-slide img, .fakta-slide video {
-    width: 100%;
-    height: auto;
-    max-height: 500px;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto;
-  }
-  .fakta-nav-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(24, 19, 16, 0.7);
-    color: var(--text);
-    border: 1px solid var(--border);
-    padding: 12px 16px;
-    cursor: pointer;
-    font-family: var(--mono);
-    font-size: 16px;
-    border-radius: 4px;
-    transition: background 0.2s;
-    z-index: 10;
-  }
-  .fakta-nav-btn:hover { background: var(--gold); color: var(--bg); }
-  .fakta-prev { left: 16px; }
-  .fakta-next { right: 16px; }
-  .fakta-empty {
-    text-align: center;
-    padding: 60px 20px;
-    font-family: var(--mono);
-    color: var(--muted);
-    font-size: 14px;
-  }
-  /* ---------- Lightbox Modal ---------- */
-  .lightbox-modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    inset: 0;
-    background: rgba(15, 11, 9, 0.92);
-    backdrop-filter: blur(6px);
-    justify-content: center;
-    align-items: center;
-    padding: 24px;
-  }
-  .lightbox-modal.active {
-    display: flex;
-  }
-  .lightbox-content {
-    position: relative;
-    max-width: 90vw;
-    max-height: 90vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .lightbox-content img, .lightbox-content video {
-    max-width: 90vw;
-    max-height: 90vh;
-    object-fit: contain;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-  }
-  .lightbox-close {
-    position: absolute;
-    top: -40px;
-    right: 0;
-    background: transparent;
-    border: none;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 24px;
-    cursor: pointer;
-    padding: 4px 10px;
-  }
-  .lightbox-close:hover { color: var(--gold); }
-  /* ---------- Donation section ---------- */
-  .donate {
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-  .donate-card {
-    max-width: 640px;
-    margin: 0 auto;
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 36px 32px;
-  }
-  .donate-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 30px;
-  }
-  .donate-buttons .btn { justify-content: center; width: 100%; }
-  .progress-label-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-family: var(--mono);
-    font-size: 12.5px;
-    color: var(--muted);
-    margin-bottom: 10px;
-  }
-  .progress-track {
-    height: 10px;
-    background: rgba(242, 233, 220, 0.08);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    overflow: hidden;
-    margin-bottom: 14px;
-  }
-  .progress-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--red), var(--gold));
-    transition: width 0.6s ease;
-  }
-  .amounts {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin: 0 0 4px;
-  }
-  .amounts .collected {
-    font-family: var(--mono);
-    font-size: 20px;
-    color: var(--gold);
-    font-weight: 500;
-  }
-  .amounts .goal {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--muted);
-  }
-  .status-line {
-    font-family: var(--mono);
-    font-size: 11.5px;
-    color: var(--muted-dim);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .cursor {
-    display: inline-block;
-    width: 6px;
-    height: 12px;
-    background: var(--gold);
-    animation: blink 1s steps(1) infinite;
-    vertical-align: text-bottom;
-  }
-  @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
-  /* ---------- Footer ---------- */
-  footer.site {
-    padding: 56px 24px 40px;
-    text-align: center;
-  }
-  footer.site .emblem { width: 30px; margin: 0 auto 16px; opacity: 0.5; }
-  footer.site p {
-    font-family: var(--mono);
-    font-size: 11.5px;
-    color: var(--muted-dim);
-    letter-spacing: 0.03em;
-    margin: 4px 0;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    .cursor { animation: none; opacity: 1; }
-    .campaign-card:hover img { transform: none; }
-    .btn { transition: none; }
-    .campaign-badge .dot { animation: none; }
-  }
-  @media (max-width: 420px) {
-    .donate-card { padding: 28px 20px; }
-  }
-  /* ---------- Auto-translate ---------- */
-  .goog-te-banner-frame.skiptranslate { display: none !important; }
-  body { top: 0px !important; }
-  #google_translate_element { display: none; }
-  .lang-notice {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-family: var(--mono);
-    font-size: 11.5px;
-    letter-spacing: 0.03em;
-    color: var(--bg);
-    background: var(--gold);
-    padding: 9px 16px;
-    text-align: center;
-  }
-  .lang-notice.visible { display: flex; }
-  .lang-notice button {
-    font-family: var(--mono);
-    font-size: 11.5px;
-    background: transparent;
-    border: 1px solid rgba(24, 19, 16, 0.5);
-    color: var(--bg);
-    border-radius: 3px;
-    padding: 3px 9px;
-    cursor: pointer;
-  }
-  .lang-notice button:hover { background: rgba(24, 19, 16, 0.1); }
-  /* ---------- Floating Chat Widget ---------- */
-  .chat-fab-wrap {
-    position: fixed;
-    right: 22px;
-    bottom: 22px;
-    z-index: 500;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 12px;
-  }
-  .chat-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    opacity: 0;
-    transform: translateY(8px) scale(0.98);
-    pointer-events: none;
-    transition: opacity 0.18s ease, transform 0.18s ease;
-  }
-  .chat-menu.open {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: auto;
-  }
-  .chat-menu-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    color: var(--text);
-    text-decoration: none;
-    padding: 11px 16px;
-    border-radius: 999px;
-    font-family: var(--body);
-    font-weight: 600;
-    font-size: 13.5px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-    white-space: nowrap;
-    transition: transform 0.15s ease, filter 0.15s ease;
-  }
-  .chat-menu-item:hover { transform: translateX(-2px); filter: brightness(1.1); }
-  .chat-menu-item .chat-icon {
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-  }
-  .chat-menu-item.wa .chat-icon { background: var(--whatsapp); }
-  .chat-menu-item.mail .chat-icon { background: var(--gold); }
-  .chat-menu-item .chat-icon svg { width: 13px; height: 13px; }
-  .chat-fab {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    background: var(--gold);
-    color: var(--bg);
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.45);
-    transition: transform 0.2s ease, filter 0.2s ease;
-  }
-  .chat-fab:hover { filter: brightness(1.08); }
-  .chat-fab svg { width: 24px; height: 24px; transition: transform 0.2s ease, opacity 0.15s ease; }
-  .chat-fab .icon-close { position: absolute; opacity: 0; transform: rotate(-45deg); }
-  .chat-fab.open .icon-chat { opacity: 0; transform: rotate(45deg); }
-  .chat-fab.open .icon-close { opacity: 1; transform: rotate(0deg); }
-  .chat-fab { position: relative; }
-  @media (max-width: 420px) {
-    .chat-fab-wrap { right: 16px; bottom: 16px; }
-    .chat-fab { width: 52px; height: 52px; }
-  }
+  header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,0.97);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;padding:16px 0;}
+  .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);}
+  .logo-text b{display:block;font-size:18px;font-weight:800;color:var(--navy);line-height:1;}
+  .logo-text span{display:block;font-size:9px;letter-spacing:0.09em;color:var(--muted);margin-top:3px;}
+  nav{display:flex;gap:28px;}
+  nav a{font-size:14px;font-weight:500;color:var(--text);position:relative;padding-bottom:3px;}
+  nav a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--gold);transition:width .2s;}
+  nav a:hover{color:var(--navy);}
+  nav a:hover::after{width:100%;}
+  @media (max-width:900px){ nav{display:none;} }
+  .btn-call{display:flex;align-items:center;gap:8px;background:var(--navy);color:var(--white);padding:10px 18px;border-radius:30px;font-size:13.5px;font-weight:600;}
+
+  /* ---------- Hero (real photo) ---------- */
+  .hero{position:relative;overflow:hidden;min-height:560px;display:flex;align-items:flex-end;}
+  .hero-bg{position:absolute;inset:0;background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Sultan_Omar_Ali_Saifuddien_Mosque_(17971529663).jpg?width=1600');background-size:cover;background-position:center 60%;}
+  .hero-scrim{position:absolute;inset:0;background:linear-gradient(100deg,rgba(9,22,43,0.88) 0%,rgba(9,22,43,0.72) 38%,rgba(9,22,43,0.28) 68%,rgba(9,22,43,0.15) 100%);}
+  .hero-inner{position:relative;z-index:2;padding:70px 0 48px;}
+  .badge{display:inline-block;background:var(--gold);color:var(--navy);font-size:11.5px;font-weight:700;letter-spacing:0.06em;padding:7px 14px;border-radius:20px;margin-bottom:20px;}
+  h1.hero-title{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.6vw,46px);line-height:1.12;color:var(--white);max-width:620px;margin:0 0 16px;}
+  .hero-desc{font-size:15px;color:#dce6f0;max-width:460px;margin:0 0 4px;}
+  .hero-price{font-size:15px;color:var(--white);margin:6px 0 26px;}
+  .hero-price b{color:var(--gold);}
+  .hero-features{display:flex;gap:30px;flex-wrap:wrap;max-width:600px;}
+  .feat{display:flex;flex-direction:column;gap:6px;min-width:110px;}
+  .feat-icon{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;color:var(--white);}
+  .feat b{font-size:13px;color:var(--white);}
+  .feat span{font-size:11.5px;color:#c6d3e2;}
+
+  /* ---------- Search widget ---------- */
+  .search-card{position:relative;z-index:5;background:var(--white);border-radius:16px;box-shadow:0 24px 50px rgba(15,38,71,0.18);border:1px solid var(--line);padding:26px 28px;margin:0 auto 60px;margin-top:-46px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:18px;align-items:end;}
+  @media (max-width:900px){ .search-card{grid-template-columns:1fr 1fr;} }
+  .field label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:7px;letter-spacing:0.02em;}
+  .field .box{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;padding:11px 12px;font-size:13.5px;color:var(--text);background:var(--panel);transition:border-color .15s;}
+  .field .box:hover{border-color:var(--navy);}
+  .field .box svg{flex:0 0 auto;color:var(--navy);}
+  .btn-primary{background:linear-gradient(120deg,var(--navy),var(--navy-2));color:var(--white);border:none;border-radius:9px;padding:13px 22px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 8px 18px rgba(15,38,71,0.28);transition:transform .15s;}
+  .btn-primary:hover{transform:translateY(-2px);}
+  .search-notes{grid-column:1/-1;display:flex;gap:22px;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--muted);}
+  .search-notes span{display:flex;align-items:center;gap:6px;}
+
+  .trust-bar{display:flex;justify-content:center;gap:44px;flex-wrap:wrap;margin:-30px 0 50px;text-align:center;}
+  .trust-bar div b{display:block;font-family:var(--display);font-size:22px;color:var(--navy);}
+  .trust-bar div span{font-size:11px;color:var(--muted);letter-spacing:0.04em;}
+
+  .fab-whatsapp{position:fixed;right:22px;bottom:22px;z-index:50;background:var(--green);color:#fff;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(37,211,102,0.4);transition:transform .15s;}
+  .fab-whatsapp:hover{transform:scale(1.08);}
+
+  /* ---------- Sections ---------- */
+  .section{padding:26px 0 64px;}
+  .section.alt{background:var(--panel);}
+  .section-head{margin-bottom:30px;}
+  .section-num{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.14em;text-transform:uppercase;margin:0 0 8px;}
+  .section-head h2{font-family:var(--display);font-size:clamp(22px,2.8vw,28px);color:var(--navy);margin:0 0 8px;}
+  .section-head p{color:var(--muted);font-size:14px;margin:0;}
+
+  /* ---------- Fleet ---------- */
+  .fleet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  @media (max-width:900px){ .fleet-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .fleet-grid{grid-template-columns:1fr;} }
+  .fleet-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--white);box-shadow:0 6px 18px rgba(15,38,71,0.06);transition:transform .18s,box-shadow .18s;}
+  .fleet-card:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(15,38,71,0.12);}
+  .fleet-photo{height:150px;position:relative;overflow:hidden;background:radial-gradient(120% 100% at 50% 15%,#f4f8fb 0%,#bfe0f2 55%,#eef6fb 100%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:14px;}
+  .fleet-photo::before{content:"";position:absolute;left:8%;right:8%;bottom:26px;height:14px;border-radius:50%;background:radial-gradient(ellipse,rgba(15,38,71,0.28),transparent 70%);}
+  .fleet-body{padding:16px 18px;}
+  .fleet-body h4{font-family:var(--display);font-size:15.5px;margin:0 0 8px;color:var(--navy);}
+  .fleet-specs{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:0;}
+  .fleet-specs span{display:flex;align-items:center;gap:5px;}
+  .fleet-price{background:linear-gradient(120deg,var(--navy),var(--navy-2));color:var(--white);text-align:center;padding:11px;font-size:13.5px;font-weight:700;letter-spacing:0.01em;}
+  .fleet-foot{text-align:center;font-size:12px;color:var(--muted);margin-top:16px;}
+
+  /* ---------- Destinations (real photos) ---------- */
+  .dest-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+  @media (max-width:960px){ .dest-grid{grid-template-columns:1fr 1fr 1fr;} }
+  @media (max-width:640px){ .dest-grid{grid-template-columns:1fr 1fr;} }
+  .dest-card{border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 6px 18px rgba(15,38,71,0.06);transition:transform .18s,box-shadow .18s;}
+  .dest-card:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(15,38,71,0.14);}
+  .dest-photo{height:150px;position:relative;overflow:hidden;background-size:cover;background-position:center;}
+  .dest-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.5) 100%);}
+  .dest-photo span.tag{position:absolute;bottom:8px;left:8px;background:rgba(15,38,71,0.8);color:#fff;font-size:9.5px;letter-spacing:0.05em;padding:3px 8px;border-radius:10px;z-index:2;}
+  .dest-info{padding:11px 13px;background:var(--white);}
+  .dest-info b{display:block;font-size:13.5px;color:var(--navy);}
+  .dest-info span{font-size:11.5px;color:var(--muted);}
+
+  /* ---------- Why us ---------- */
+  .why-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+  @media (max-width:960px){ .why-grid{grid-template-columns:1fr 1fr 1fr;} }
+  @media (max-width:640px){ .why-grid{grid-template-columns:1fr 1fr;} }
+  .why-card{border:1px solid var(--line);border-radius:12px;padding:18px 16px;background:var(--white);box-shadow:0 6px 16px rgba(15,38,71,0.05);transition:transform .18s,box-shadow .18s;}
+  .why-card:hover{transform:translateY(-3px);box-shadow:0 14px 26px rgba(15,38,71,0.1);}
+  .why-icon-wrap{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--navy-2));display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .why-icon{width:20px;height:20px;color:var(--white);}
+  .why-card b{display:block;font-size:13px;color:var(--navy);margin-bottom:3px;}
+  .why-card span{font-size:11.5px;color:var(--muted);}
+
+  /* ---------- Harga ---------- */
+  .price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  @media (max-width:900px){ .price-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .price-grid{grid-template-columns:1fr;} }
+  .price-card{border:1px solid var(--line);border-radius:14px;background:var(--white);overflow:hidden;box-shadow:0 6px 18px rgba(15,38,71,0.06);transition:transform .18s,box-shadow .18s;}
+  .price-card:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(15,38,71,0.12);}
+  .price-card.featured{border:1.5px solid var(--gold);}
+  .price-top{padding:20px 20px 6px;}
+  .price-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.06em;color:var(--gold);text-transform:uppercase;margin-bottom:8px;}
+  .price-top h4{font-family:var(--display);font-size:16px;color:var(--navy);margin:0 0 4px;}
+  .price-top span{font-size:12px;color:var(--muted);}
+  .price-amount{padding:14px 20px;font-family:var(--display);font-size:22px;font-weight:800;color:var(--navy);border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);}
+  .price-amount small{display:block;font-size:11px;font-weight:500;color:var(--muted);font-family:var(--body);}
+  .price-list{list-style:none;margin:0;padding:14px 20px 20px;display:flex;flex-direction:column;gap:8px;}
+  .price-list li{font-size:12.5px;color:var(--text);display:flex;align-items:center;gap:8px;}
+  .price-list li::before{content:"✓";color:var(--green);font-weight:700;}
+
+  /* ---------- FAQ ---------- */
+  .faq-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
+  .faq-item{border:1px solid var(--line);border-radius:12px;background:var(--white);padding:0 18px;}
+  .faq-item summary{cursor:pointer;padding:16px 0;font-weight:600;color:var(--navy);font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .faq-item summary::-webkit-details-marker{display:none;}
+  .faq-item summary::after{content:"+";font-size:18px;color:var(--gold);flex:0 0 auto;}
+  .faq-item[open] summary{border-bottom:1px solid var(--line);}
+  .faq-item[open] summary::after{content:"–";}
+  .faq-item p{font-size:13px;color:var(--muted);padding:12px 0 16px;margin:0;}
+
+  /* ---------- CTA ---------- */
+  .cta{background:linear-gradient(120deg,var(--navy),var(--navy-2));border-radius:16px;color:var(--white);padding:36px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px;}
+  .cta h3{font-family:var(--display);font-size:22px;margin:0 0 6px;}
+  .cta p{margin:0;color:#c8d4e4;font-size:13.5px;}
+  .cta-list{display:flex;flex-direction:column;gap:6px;font-size:13px;}
+  .cta-list span{display:flex;align-items:center;gap:8px;}
+  .btn-whatsapp{background:var(--green);color:#fff;padding:14px 22px;border-radius:10px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:13.5px;}
+  .btn-whatsapp small{display:block;font-weight:500;font-size:11px;opacity:0.9;}
+
+  footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;font-size:12px;color:var(--muted);}
+  footer .credits{display:block;margin-top:6px;font-size:10.5px;color:#9aa7b5;}
 </style>
 </head>
 <body>
-  <header class="site">
-    <div class="site-inner">
-      <a class="brand" href="#top">
-        <img src="assets/logo.png" alt="Lambang Penjaga Batas" />
-        <span>Penjaga Batas<small>Wilayah Perbatasan Indonesia</small></span>
+
+<header>
+  <div class="wrap header-inner">
+    <a href="#" class="logo">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M3 13l1.6-4.8A2 2 0 0 1 6.5 7h11a2 2 0 0 1 1.9 1.2L21 13v5a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5Z" stroke="#0f2647" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7.5" cy="15.5" r="1.4" fill="#0f2647"/><circle cx="16.5" cy="15.5" r="1.4" fill="#0f2647"/></svg>
+      <span class="logo-text"><b>BorneoDrive</b><span>SERAWAK &amp; BRUNEI CAR RENTAL</span></span>
+    </a>
+    <nav>
+      <a href="#beranda">Beranda</a>
+      <a href="#tentang">Tentang Kami</a>
+      <a href="#armada">Layanan</a>
+      <a href="#destinasi">Destinasi</a>
+      <a href="#harga">Harga</a>
+      <a href="#faq">FAQ</a>
+      <a href="#kontak">Kontak</a>
+    </nav>
+    <a href="#kontak" class="btn-call">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1.1.5 1.1 1.1V20c0 .6-.5 1-1.1 1C10.6 21 3 13.4 3 4.1 3 3.5 3.5 3 4.1 3H7c.6 0 1.1.5 1.1 1.1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1L6.6 10.8Z" fill="#fff"/></svg>
+      +62 812-5179-4955
+    </a>
+  </div>
+</header>
+
+<section class="hero" id="beranda">
+  <div class="hero-bg"></div>
+  <div class="hero-scrim"></div>
+  <div class="wrap hero-inner">
+    <p class="badge">JASA SEWA MOBIL + DRIVER</p>
+    <h1 class="hero-title">Jelajahi Serawak &amp; Brunei dengan Nyaman</h1>
+    <p class="hero-desc">Sewa mobil dengan driver berpengalaman, siap antar dari Balikpapan menembus perbatasan hingga Serawak dan Brunei.</p>
+    <p class="hero-price">Harga hanya <b>Rp1.000.000 / hari</b> (12 jam).</p>
+    <div class="hero-features">
+      <div class="feat"><div class="feat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.4 8.4-7 10-3.6-1.6-7-5-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.6"/></svg></div><b>Aman &amp; Nyaman</b><span>Driver berpengalaman</span></div>
+      <div class="feat"><div class="feat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><b>Tepat Waktu</b><span>On time guarantee</span></div>
+      <div class="feat"><div class="feat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 16l1.4-4.8A2 2 0 0 1 7.3 10h9.4a2 2 0 0 1 1.9 1.2L20 16v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-.5H7V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3Z" stroke="currentColor" stroke-width="1.5"/></svg></div><b>Harga All-In</b><span>Tanpa biaya tersembunyi</span></div>
+      <div class="feat"><div class="feat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 18v-2a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v2M14 18v-2a4 4 0 0 1 3-3.9M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm11 1a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2Z" stroke="currentColor" stroke-width="1.5"/></svg></div><b>Layanan 24/7</b><span>Siap membantu Anda</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="search-card">
+    <div class="field">
+      <label>Dari</label>
+      <div class="box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
+        Balikpapan
+      </div>
+    </div>
+    <div class="field">
+      <label>Ke</label>
+      <div class="box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
+        Serawak / Brunei
+      </div>
+    </div>
+    <div class="field">
+      <label>Tanggal</label>
+      <div class="box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6"/></svg>
+        Pilih tanggal
+      </div>
+    </div>
+    <div class="field">
+      <label>Durasi</label>
+      <div class="box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6"/></svg>
+        1 Hari (12 Jam)
+      </div>
+    </div>
+    <button class="btn-primary">Cek Ketersediaan</button>
+    <div class="search-notes">
+      <span>✓ Termasuk BBM</span>
+      <span>✓ Driver Berpengalaman</span>
+      <span>✓ Mobil Bersih &amp; Nyaman</span>
+      <span>✓ Asuransi Penumpang</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="trust-bar">
+    <div><b>3</b><span>NEGARA DILINTASI</span></div>
+    <div><b>7</b><span>KOTA PERSINGGAHAN</span></div>
+    <div><b>4</b><span>PILIHAN ARMADA</span></div>
+    <div><b>24/7</b><span>SIAP MELAYANI</span></div>
+  </div>
+</div>
+
+<section class="section" id="armada">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="section-num">Layanan</p>
+      <h2>Pilihan Armada Kami</h2>
+      <p>Mobil bersih, nyaman dan terawat untuk perjalanan Anda dari Balikpapan hingga Serawak &amp; Brunei.</p>
+    </div>
+    <div class="fleet-grid">
+      <div class="fleet-card">
+        <div class="fleet-photo">
+          <svg width="120" height="70" viewBox="0 0 400 200"><path d="M40 140 Q45 95 90 88 L120 60 Q135 50 160 50 L250 50 Q270 50 285 65 L310 88 Q355 92 360 140 Z" fill="#dfe7ee" stroke="#0f2647" stroke-width="2.5"/><rect x="40" y="132" width="320" height="10" fill="#0f2647"/><circle cx="120" cy="150" r="24" fill="#1c2b3a"/><circle cx="290" cy="150" r="24" fill="#1c2b3a"/><rect x="55" y="112" width="14" height="7" rx="2" fill="#caa14c"/></svg>
+        </div>
+        <div class="fleet-body">
+          <h4>Toyota Innova Reborn</h4>
+          <div class="fleet-specs"><span>👤 6 Penumpang</span><span>🧳 4 Koper</span></div>
+        </div>
+        <div class="fleet-price">Rp1.000.000 / hari</div>
+      </div>
+      <div class="fleet-card">
+        <div class="fleet-photo">
+          <svg width="120" height="70" viewBox="0 0 400 200"><path d="M40 140 Q45 100 85 92 L115 62 Q130 52 155 52 L245 52 Q262 52 278 68 L305 92 Q355 96 360 140 Z" fill="#e6f0e9" stroke="#0f2647" stroke-width="2.5"/><rect x="40" y="132" width="320" height="10" fill="#0f2647"/><circle cx="120" cy="150" r="24" fill="#1c2b3a"/><circle cx="290" cy="150" r="24" fill="#1c2b3a"/><rect x="55" y="112" width="14" height="7" rx="2" fill="#4b8f6b"/></svg>
+        </div>
+        <div class="fleet-body">
+          <h4>Toyota Avanza</h4>
+          <div class="fleet-specs"><span>👤 6 Penumpang</span><span>🧳 4 Koper</span></div>
+        </div>
+        <div class="fleet-price">Rp1.000.000 / hari</div>
+      </div>
+      <div class="fleet-card">
+        <div class="fleet-photo">
+          <svg width="130" height="70" viewBox="0 0 420 200"><rect x="35" y="70" width="330" height="70" rx="10" fill="#dfe7ee" stroke="#0f2647" stroke-width="2.5"/><rect x="35" y="132" width="330" height="10" fill="#0f2647"/><circle cx="110" cy="150" r="24" fill="#1c2b3a"/><circle cx="300" cy="150" r="24" fill="#1c2b3a"/><line x1="180" y1="70" x2="180" y2="132" stroke="#0f2647" stroke-width="1.5"/><line x1="250" y1="70" x2="250" y2="132" stroke="#0f2647" stroke-width="1.5"/></svg>
+        </div>
+        <div class="fleet-body">
+          <h4>Toyota Hiace</h4>
+          <div class="fleet-specs"><span>👤 12 Penumpang</span><span>🧳 8 Koper</span></div>
+        </div>
+        <div class="fleet-price">Rp1.000.000 / hari</div>
+      </div>
+      <div class="fleet-card">
+        <div class="fleet-photo">
+          <svg width="125" height="70" viewBox="0 0 400 200"><rect x="40" y="75" width="320" height="65" rx="14" fill="#dfe7ee" stroke="#0f2647" stroke-width="2.5"/><rect x="40" y="132" width="320" height="10" fill="#0f2647"/><circle cx="115" cy="150" r="24" fill="#1c2b3a"/><circle cx="285" cy="150" r="24" fill="#1c2b3a"/><line x1="170" y1="75" x2="170" y2="132" stroke="#0f2647" stroke-width="1.5"/><line x1="235" y1="75" x2="235" y2="132" stroke="#0f2647" stroke-width="1.5"/></svg>
+        </div>
+        <div class="fleet-body">
+          <h4>Hyundai Starex</h4>
+          <div class="fleet-specs"><span>👤 10 Penumpang</span><span>🧳 7 Koper</span></div>
+        </div>
+        <div class="fleet-price">Rp1.000.000 / hari</div>
+      </div>
+    </div>
+    <p class="fleet-foot">ⓘ Harga berlaku untuk penggunaan sepanjang rute Balikpapan – Serawak – Brunei (per hari / 12 jam).</p>
+  </div>
+</section>
+
+<section class="section alt" id="destinasi">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="section-num">Destinasi</p>
+      <h2>Destinasi Populer</h2>
+      <p>Tempat menarik yang bisa Anda kunjungi sepanjang rute Balikpapan – Serawak – Brunei.</p>
+    </div>
+    <div class="dest-grid">
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Masjid_Agung_At-Taqwa_Balikpapan.jpg?width=500');">
+          <span class="tag">Balikpapan</span>
+        </div>
+        <div class="dest-info"><b>Masjid Agung At-Taqwa</b><span>Balikpapan, Kaltim</span></div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Bako_National_Park,_Sarawak_(29211509247).jpg?width=500');">
+          <span class="tag">Sarawak</span>
+        </div>
+        <div class="dest-info"><b>Bako National Park</b><span>Kuching, Serawak</span></div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Kuching_Sarawak_Dewan-Undangan-Negeri-Sarawak-01.jpg?width=500');">
+          <span class="tag">Sarawak</span>
+        </div>
+        <div class="dest-info"><b>Kuching Waterfront</b><span>Kuching, Serawak</span></div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Kampong_Ayer_BSB1.JPG?width=500');">
+          <span class="tag">Brunei</span>
+        </div>
+        <div class="dest-info"><b>Kampong Ayer</b><span>Bandar Seri Begawan</span></div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Sultan_Omar_Ali_Saifuddien_Mosque_(8619949791).jpg?width=500');">
+          <span class="tag">Brunei</span>
+        </div>
+        <div class="dest-info"><b>Masjid Omar Ali Saifuddien</b><span>Bandar Seri Begawan</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="tentang">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="section-num">Kepercayaan</p>
+      <h2>Kenapa Memilih Kami?</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card"><div class="why-icon-wrap"><svg class="why-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.6"/></svg></div><b>Driver Profesional</b><span>Berpengalaman &amp; ramah</span></div>
+      <div class="why-card"><div class="why-icon-wrap"><svg class="why-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.4 8.4-7 10-3.6-1.6-7-5-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.6"/></svg></div><b>Aman &amp; Terpercaya</b><span>Perjalanan aman &amp; nyaman</span></div>
+      <div class="why-card"><div class="why-icon-wrap"><svg class="why-icon" viewBox="0 0 24 24" fill="none"><path d="M20 12l-8-8H5a2 2 0 0 0-2 2v7l8 8a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8Z" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/></svg></div><b>Harga Transparan</b><span>Rp1.000.000/hari all-in</span></div>
+      <div class="why-card"><div class="why-icon-wrap"><svg class="why-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6"/></svg></div><b>Fleksibel</b><span>Bisa custom itinerary</span></div>
+      <div class="why-card"><div class="why-icon-wrap"><svg class="why-icon" viewBox="0 0 24 24" fill="none"><path d="M4 18v-2a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v2M14 18v-2a4 4 0 0 1 3-3.9M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm11 1a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2Z" stroke="currentColor" stroke-width="1.5"/></svg></div><b>Layanan 24/7</b><span>Siap membantu kapan saja</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="harga">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="section-num">Harga</p>
+      <h2>Daftar Harga Sewa</h2>
+      <p>Sudah termasuk BBM, driver berpengalaman, dan asuransi penumpang — tanpa biaya tersembunyi.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-top">
+          <p class="price-tag">Rute Dalam Kota</p>
+          <h4>Balikpapan (12 Jam)</h4>
+          <span>Cocok untuk keperluan harian di dalam kota</span>
+        </div>
+        <div class="price-amount">Rp1.000.000<small>/ hari</small></div>
+        <ul class="price-list">
+          <li>Termasuk BBM &amp; driver</li>
+          <li>Mobil bersih &amp; nyaman</li>
+          <li>Asuransi penumpang</li>
+        </ul>
+      </div>
+      <div class="price-card featured">
+        <div class="price-top">
+          <p class="price-tag">Paling Diminati</p>
+          <h4>Balikpapan – Serawak</h4>
+          <span>Lintas batas menuju Kuching &amp; sekitarnya</span>
+        </div>
+        <div class="price-amount">Rp1.000.000<small>/ hari (12 jam)</small></div>
+        <ul class="price-list">
+          <li>Termasuk BBM &amp; driver</li>
+          <li>Dokumen lintas batas dibantu</li>
+          <li>Asuransi penumpang</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <div class="price-top">
+          <p class="price-tag">Lintas Negara</p>
+          <h4>Balikpapan – Brunei</h4>
+          <span>Perjalanan hingga Bandar Seri Begawan</span>
+        </div>
+        <div class="price-amount">Rp1.000.000<small>/ hari (12 jam)</small></div>
+        <ul class="price-list">
+          <li>Termasuk BBM &amp; driver</li>
+          <li>Dokumen lintas batas dibantu</li>
+          <li>Asuransi penumpang</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <div class="price-top">
+          <p class="price-tag">Custom</p>
+          <h4>Multi Hari / Itinerary</h4>
+          <span>Rombongan, wisata, atau perjalanan bisnis</span>
+        </div>
+        <div class="price-amount">Hubungi Kami<small>Harga & rute custom</small></div>
+        <ul class="price-list">
+          <li>Susun rute sesuai kebutuhan</li>
+          <li>Diskon untuk sewa jangka panjang</li>
+          <li>Konsultasi gratis via WhatsApp</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fleet-foot">ⓘ Harga dapat menyesuaikan jarak tempuh dan durasi di luar 12 jam. Hubungi kami untuk penawaran pasti.</p>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="section-num">FAQ</p>
+      <h2>Pertanyaan yang Sering Diajukan</h2>
+      <p>Belum ketemu jawabannya? Langsung tanya lewat WhatsApp saja.</p>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>Apakah harga Rp1.000.000/hari sudah termasuk BBM?</summary>
+        <p>Sudah. Harga tersebut all-in, mencakup BBM, driver berpengalaman, dan asuransi penumpang selama perjalanan.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Bagaimana proses lintas batas ke Serawak dan Brunei?</summary>
+        <p>Tim kami membantu menyiapkan dokumen perjalanan yang diperlukan. Pastikan paspor Anda masih berlaku minimal 6 bulan sebelum keberangkatan.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Berapa lama durasi sewa dalam satu hari?</summary>
+        <p>Satu hari sewa dihitung 12 jam. Jika membutuhkan waktu lebih lama atau rute multi-hari, silakan hubungi kami untuk penyesuaian harga.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Apakah bisa memilih jenis mobil?</summary>
+        <p>Bisa. Tersedia pilihan Toyota Innova Reborn, Toyota Avanza, Toyota Hiace, dan Hyundai Starex sesuai jumlah penumpang dan bawaan Anda.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Bagaimana cara reservasi?</summary>
+        <p>Hubungi kami melalui WhatsApp untuk konfirmasi tanggal, rute, dan armada, kemudian lakukan pembayaran sesuai instruksi yang diberikan.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="kontak">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <h3>Siap menjelajahi Serawak &amp; Brunei?</h3>
+        <p>Hubungi kami sekarang untuk reservasi.</p>
+      </div>
+      <div class="cta-list">
+        <span>✓ Respon cepat</span>
+        <span>✓ Pembayaran mudah &amp; aman</span>
+      </div>
+      <a href="https://wa.me/6281251794955" class="btn-whatsapp">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>
+        <span>WhatsApp Sekarang<small>+62 812-5179-4955</small></span>
       </a>
-      <nav class="site-nav">
-        <a href="#inisiatif">Inisiatif</a>
-        <a href="#peta">Peta Topografi</a>
-        <a href="#fakta">Fakta Lapangan</a>
-        <a href="#murut">Suku Murut</a>
-        <a href="#mandau">Mandau</a>
-      </nav>
-    </div>
-  </header>
-  <div class="lang-notice" id="langNotice">
-    <span id="langNoticeText">Halaman ini diterjemahkan otomatis.</span>
-    <button id="revertLangBtn" type="button">Kembali ke Bahasa Indonesia</button>
-  </div>
-  <div id="top"></div>
-  <section class="hero" style="padding:0;">
-    <div class="hero-inner">
-      <span class="hero-eyebrow">Laporan Topografi · Perbatasan Kalimantan Utara</span>
-      <h1 class="hero-title">Membangun jalan pulang untuk kampung <em>yang tertinggal ke jantung Borneo Kalimantan Utara</em></h1>
-      <p class="hero-lede">
-        Di atas tanah Benuanta yang megah, mengalir darah dan doa para leluhur yang telah
-        menjaga alam ini dengan ketulusan jiwa. Hari ini, di perbatasan negeri yang
-        berwibawa, kami berdiri untuk meneruskan amanah suci tersebut.
-      </p>
-      <p class="hero-lede">
-        Dengan jiwa yang merdeka dan mandiri, tanpa terikat sekat golongan atau kepentingan
-        pihak mana pun, kami mendedikasikan karya nyata ini murni untuk rakyat Kaltara. Kami
-        bangun sekolah-sekolah sebagai pelita peradaban, kami bentang akses jalan pembuka
-        isolasi, kami dirikan rumah sakit sebagai benteng kemanusiaan, dan kami ulurkan
-        bantuan nyata tanpa pamrih.
-      </p>
-      <p class="hero-lede">
-        Biarlah setiap keringat yang menetes mengalir dalam independensi yang utuh.
-        Menjadikan setiap pembangunan sebagai kerja yang berkah, amanah, dan berdaulat
-        di atas kaki sendiri.
-      </p>
-      <div class="hero-actions">
-        <a class="btn ghost" href="#inisiatif">Lihat inisiatif berjalan</a>
-        <a class="btn indodax" href="#fakta">Lihat dokumentasi lapangan</a>
-      </div>
-    </div>
-  </section>
-  <div class="ledger">
-    <div class="wrap ledger-inner">
-      <div class="ledger-item">
-        <div class="ledger-num">7</div>
-        <div class="ledger-label">Titik pembangunan</div>
-      </div>
-      <div class="ledger-item">
-        <div class="ledger-num">447</div>
-        <div class="ledger-label">Desa terjangkau</div>
-      </div>
-      <div class="ledger-item">
-        <div class="ledger-num">457</div>
-        <div class="ledger-label">RS daerah dibangun</div>
-      </div>
-      <div class="ledger-item">
-        <div class="ledger-num">100%</div>
-        <div class="ledger-label">Dana ke lapangan</div>
-      </div>
     </div>
   </div>
-  <section id="inisiatif">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-eyebrow">Sedang Berjalan</p>
-        <h2 class="section-title">Tujuh inisiatif di garis depan</h2>
-        <p class="section-body">
-           Dari ruang kelas baru sampai jalur distribusi sungai — ini titik-titik yang
-          sedang dikerjakan tim di lapangan, didanai dari dukungan yang masuk lewat halaman ini.
-        </p>
-      </div>
-    </div>
-    <div class="campaign-grid" id="campaignGrid">
-      <div class="fakta-empty" style="grid-column:1/-1;">Memuat inisiatif...</div>
-    </div>
-  </section>
-  <!-- ---------- SECTION PETA TOPOGRAFI ---------- -->
-  <section class="peta-section" id="peta">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-eyebrow">Kontur &amp; Relief Medan</p>
-        <h2 class="section-title">Peta Topografi Wilayah Perbatasan</h2>
-        <p class="section-body">Visualisasi kontur ketinggian, punggung bukit, dan relief terjal di sepanjang kawasan perbatasan Kalimantan Utara.</p>
-      </div>
-      <div class="peta-frame">
-        <div id="petaMap"></div>
-      </div>
-      <div class="peta-legend">
-        <span><span class="swatch" style="background:#c9a15a"></span>Kontur Tinggi</span>
-        <span><span class="swatch" style="background:#a2402f"></span>Garis Batas RI–Malaysia</span>
-        <span>🔴 Titik Proyek Pembangunan</span>
-      </div>
-    </div>
-  </section>
-  <!-- ---------- SECTION FAKTA & SLIDER ---------- -->
-  <section class="fakta-section" id="fakta">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-eyebrow">Dokumentasi Nyata</p>
-        <h2 class="section-title">Fakta Lapangan</h2>
-        <p class="section-body">Menampilkan foto dan video tempat kejadian.</p>
-      </div>
-      <div class="fakta-slider-container" id="faktaContainer">
-        <div class="fakta-empty" id="faktaLoading">Memeriksa arsip media di server...</div>
-      </div>
-    </div>
-  </section>
-  <!-- ---------- SECTION PROFIL SUKU MURUT ---------- -->
-  <section class="murut-section" id="murut">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-eyebrow">Mengenal Penduduk Perbatasan</p>
-        <h2 class="section-title">Suku Murut</h2>
-        <p class="section-body">Salah satu rumpun Dayak yang mendiami kawasan perbukitan perbatasan Kalimantan Utara, Sabah, Sarawak, dan Brunei.</p>
-      </div>
+</section>
 
-      <div class="murut-grid">
-        <div class="murut-card">
-          <h3>Sebaran &amp; Populasi</h3>
-          <p>Suku Murut tersebar lintas negara — di Sabah, Sarawak, Brunei, dan Kalimantan Utara. Di sisi Malaysia saja, populasinya tercatat sekitar 112.900 jiwa pada tahun 2020.</p>
-        </div>
-        <div class="murut-card">
-          <h3>Asal Nama</h3>
-          <p>Nama "Murut" diyakini berasal dari kata dalam bahasa Bajau, <em>belud</em>, yang berarti "pegunungan" — merujuk pada masyarakat yang tinggal di kawasan perbukitan.</p>
-        </div>
-        <div class="murut-card">
-          <h3>Bahasa</h3>
-          <p>Tergantung wilayah tempat tinggal, masyarakat Murut memakai bahasa Murutik, Melayu Sabah, Melayu Sarawak, Melayu Standar, Melayu Brunei, Bahasa Indonesia, atau Inggris.</p>
-        </div>
-        <div class="murut-card">
-          <h3>Agama</h3>
-          <p>Mayoritas kini memeluk Kristen, diikuti Islam, dengan sebagian kecil masih menganut kepercayaan leluhur Kaharingan.</p>
-        </div>
-        <div class="murut-card">
-          <h3>Rumpun &amp; Kelompok Bahasa</h3>
-          <p>Rumpun Murut terbagi jadi tiga kelompok bahasa besar: <strong>Murut</strong> (Okolod, Keningau, Tagal, Paluan, Selungai, Timugon, Agabag/Tinggalan), <strong>Utara</strong> (Bookan), dan <strong>Tidung</strong> (Suku Tidung, Kalabakan, Tagal/Sembakung, Serudung, Burusu).</p>
-        </div>
-        <div class="murut-card">
-          <h3>Dataran Rendah &amp; Perbukitan</h3>
-          <p>Secara sosial, orang Murut juga dibedakan jadi dua golongan besar: Murut dataran rendah (mis. Keningau, Tenom, lembah Padas bawah) dan Murut perbukitan (mis. Peluan, Dali, Rundum, Tagal, Sapulot, Lun Dayoh).</p>
-        </div>
-        <div class="murut-card">
-          <h3>Kepercayaan Tradisional</h3>
-          <p>Kepercayaan leluhur Murut tidak mengenal dewa tunggal, tapi meyakini adanya alam surga dan roh-roh penunggu tempat tertentu. Bukit-bukit tinggi dianggap sakral, dipercaya sebagai tempat bersemayamnya arwah leluhur.</p>
-        </div>
-        <div class="murut-card">
-          <h3>Jimat &amp; Pertanda Alam</h3>
-          <p>Benang yang dikalungkan di leher atau pergelangan tangan dipakai sebagai penangkal roh jahat. Kemunculan burung tertentu, pertemuan dengan hewan di jalan, hingga suara rusa dimaknai sebagai pertanda baik atau buruk.</p>
-        </div>
-        <div class="murut-card">
-          <h3>Ramalan &amp; Tafsir Mimpi</h3>
-          <p>Dalam ritual penyembelihan babi, bentuk hatinya dipakai sebagai media ramalan. Mimpi juga ditafsirkan sebagai pertanda — bertemu buaya atau terjatuh dianggap sial, sementara mengejar dan menangkap gadis cantik dipercaya sebagai pertanda baik.</p>
-        </div>
-      </div>
-
-      <p class="murut-source">Dirangkum dari <a href="https://id.wikipedia.org/wiki/Rumpun_Murut" target="_blank" rel="noopener">Wikipedia — Rumpun Murut</a>.</p>
-    </div>
-  </section>
-  <!-- ---------- SECTION RAGAM MANDAU SUKU DAYAK ---------- -->
-  <section class="mandau-section" id="mandau">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-eyebrow">Warisan Budaya</p>
-        <h2 class="section-title">Ragam Mandau Suku Dayak</h2>
-        <p class="section-body">Mandau (parang ilang) adalah senjata tradisional khas suku Dayak. Bentuk bilah, ukiran gagang, dan hiasan sarungnya berbeda-beda tergantung sub-suku pembuatnya.</p>
-      </div>
-
-      <div class="mandau-grid" id="mandauGrid">
-        <div class="fakta-empty" style="grid-column:1/-1;">Memuat data mandau...</div>
-      </div>
-    </div>
-  </section>
-  <!-- ---------- Lightbox Modal ---------- -->
-  <div class="lightbox-modal" id="lightboxModal">
-    <div class="lightbox-content" id="lightboxContent">
-      <button class="lightbox-close" id="lightboxClose">&times;</button>
-    </div>
+<footer>
+  <div class="wrap">
+    BorneoDrive — Sewa Mobil Serawak &amp; Brunei
+    <span class="credits">.</span>
   </div>
-  <section class="emblem-rule wrap">
-    <img src="assets/logo.png" alt="" />
-  </section>
-  <!-- ---------- Floating Chat Widget (WhatsApp / Email) ---------- -->
-  <div class="chat-fab-wrap">
-    <div class="chat-menu" id="chatMenu">
-      <a class="chat-menu-item wa" id="waLink" href="https://wa.me/6281251794955?text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20Penjaga%20Batas" target="_blank" rel="noopener">
-        <span class="chat-icon">
-          <svg viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.02c-.24.68-1.42 1.32-1.95 1.4-.5.08-1.13.11-1.82-.12-.42-.14-.96-.32-1.65-.62-2.9-1.25-4.79-4.16-4.94-4.35-.14-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.02-2.41.27-.29.58-.36.78-.36h.56c.18 0 .42-.03.65.5.24.55.81 1.9.88 2.04.07.14.12.3.02.49-.1.19-.15.3-.29.46-.14.16-.3.36-.43.48-.14.14-.29.29-.13.57.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.14.46.12.63-.07.17-.19.72-.84.91-1.13.19-.29.38-.24.65-.14.27.1 1.68.79 1.97.93.29.14.48.21.55.33.07.12.07.68-.17 1.35z"/></svg>
-        </span>
-        WhatsApp
-      </a>
-      <a class="chat-menu-item mail" id="mailLink" href="mailto:bintangcahyahen@gmail.com?subject=Pertanyaan%20Penjaga%20Batas" target="_blank" rel="noopener">
-        <span class="chat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16v16H4z" stroke="none"/><path d="M3 5.5h18v13H3z"/><path d="M3 6l9 7 9-7"/></svg>
-        </span>
-        Email
-      </a>
-    </div>
-    <button class="chat-fab" id="chatFabBtn" type="button" aria-label="Buka menu chat">
-      <svg class="icon-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18M6 6l12 12"/></svg>
-    </button>
-  </div>
-  <footer class="site">
-    <img class="emblem" src="assets/logo.png" alt="" />
-    <p>PENJAGA BATAS — LAPORAN PEMBANGUNAN WILAYAH PERBATASAN</p>
-    <p>Dana disalurkan transparan &middot; Dikelola sepenuhnya untuk lapangan</p>
-  </footer>
-  <!-- ---------- CDN & Dependencies ---------- -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- ---------- JAVASCRIPT LOGIC ---------- -->
-  <script>
-    // Konfigurasi Supabase
-    const SUPABASE_URL = "https://jnkhrqvlqtamdclvwacx.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impua2hycXZscXRhbWRjbHZ3YWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5ODQ0ODUsImV4cCI6MjA5OTU2MDQ4NX0.rNYh35Beg93OJIG-6aF-zRLDfwD2wZFX_wSRmS3v-II";
-    const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    // Progress bar donasi dinonaktifkan bareng section "Dukung Langsung".
+</footer>
 
-    // PayPal & Crypto/Indodax donation channels dinonaktifkan sementara.
-    const perbatasanGeoJSON = {
-      "type": "FeatureCollection",
-      "features": [
-        {
-          "type": "Feature",
-          "properties": {
-            "name": "Kawasan Perbatasan Kalimantan Utara — RI · Malaysia"
-          },
-          "geometry": {
-            "type": "Polygon",
-            "coordinates": [[
-              [115.40, 4.90],
-              [115.50, 4.30],
-              [115.55, 3.98],
-              [115.75, 3.75],
-              [116.20, 3.60],
-              [116.65, 3.55],
-              [117.10, 3.85],
-              [117.60, 4.17],
-              [117.90, 4.20],
-              [117.75, 3.85],
-              [117.45, 3.75],
-              [116.95, 3.45],
-              [116.55, 3.15],
-              [116.05, 3.15],
-              [115.65, 3.35],
-              [115.50, 3.55],
-              [115.45, 3.90],
-              [115.35, 4.50],
-              [115.40, 4.90]
-            ]]
-          }
-        },
-        {
-          "type": "Feature",
-          "properties": {
-            "name": "Garis Batas RI–Malaysia"
-          },
-          "geometry": {
-            "type": "LineString",
-            "coordinates": [
-              [115.40, 4.90],
-              [115.50, 4.30],
-              [115.55, 3.98],
-              [115.75, 3.75],
-              [116.20, 3.60],
-              [116.65, 3.55],
-              [117.10, 3.85],
-              [117.60, 4.17],
-              [117.90, 4.20]
-            ]
-          }
-        }
-      ]
-    };
-async function initPetaMap() {
-  const mapEl = document.getElementById('petaMap');
-  if (!mapEl || typeof L === 'undefined') return;
+<a href="https://wa.me/6281251794955" class="fab-whatsapp" aria-label="Chat WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>
+</a>
 
-  const map = L.map('petaMap', { 
-    scrollWheelZoom: false,
-    zoomControl: true 
-  }).setView([3.85, 116.55], 8);
-
-  // Base Topography Layer
-  const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-    attribution: 'Kartografi: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
-    maxZoom: 17
-  }).addTo(map);
-
-  // Hillshade
-  const hillshadeLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', {
-    opacity: 0.32,
-    attribution: 'Esri'
-  }).addTo(map);
-
-  // Load border
-  try {
-    const geoRes = await fetch('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/geo.json');
-    if (geoRes.ok) {
-      const geoData = await geoRes.json();
-      L.geoJSON(geoData, {
-        style: {
-          color: '#ffd700',
-          weight: 4,
-          opacity: 0.95,
-          fillColor: '#c9a15a',
-          fillOpacity: 0.07,
-          dashArray: '3 6'
-        }
-      }).addTo(map);
-      console.log("✅ Border dari GitHub berhasil dimuat");
-    }
-  } catch (e) {
-    console.warn("Gagal load geo.json, gunakan fallback");
-    L.geoJSON(perbatasanGeoJSON, {
-      style: { color: '#c9a15a', weight: 3, opacity: 0.8, fillOpacity: 0.05 }
-    }).addTo(map);
-  }
-
-  // ==================== ELEVASI REAL-TIME + POPUP KLIK ====================
-  let elevationTooltip = null;
-  let lastFetch = 0;
-
-  // Hover = kursor MDPL real-time
-  map.on('mousemove', async function(e) {
-    const now = Date.now();
-    if (now - lastFetch < 800) return;
-    lastFetch = now;
-
-    if (!elevationTooltip) {
-      elevationTooltip = L.tooltip({
-        permanent: false,
-        direction: 'top',
-        className: 'elevation-tooltip',
-        offset: [0, -12]
-      }).setLatLng(e.latlng).addTo(map);
-    }
-
-    const { lat, lng } = e.latlng;
-
-    try {
-      const res = await fetchWithTimeout(`https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lng}`, 3000);
-      const data = await res.json();
-      const elev = data.results?.[0]?.elevation ? Math.round(data.results[0].elevation) : 280;
-
-      elevationTooltip
-        .setLatLng(e.latlng)
-        .setContent(`<b>${elev} mdpl</b><br><small>${lat.toFixed(4)}, ${lng.toFixed(4)}</small>`);
-    } catch (err) {
-      const fallbackElev = Math.round(280 + Math.abs(lat - 3.8) * 650);
-      elevationTooltip.setLatLng(e.latlng).setContent(`<b>${fallbackElev} mdpl</b><br><small>${lat.toFixed(4)}, ${lng.toFixed(4)} (estimasi)</small>`);
-    }
-  });
-
-  map.on('mouseout', function() {
-    if (elevationTooltip) {
-      elevationTooltip.remove();
-      elevationTooltip = null;
-    }
-  });
-
-  // Cari nama lokasi terdekat lewat reverse geocoding (Nominatim/OSM)
-  // Fetch dengan batas waktu, supaya kalau server lambat/nggak jawab, tidak menggantung lama
-  async function fetchWithTimeout(url, timeoutMs = 5000) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    try {
-      return await fetch(url, { signal: controller.signal });
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-
-  async function getNearestPlaceName(lat, lng) {
-    try {
-      const res = await fetchWithTimeout(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=12&addressdetails=1`, 5000);
-      if (!res.ok) return null;
-      const data = await res.json();
-      const a = data.address || {};
-      return a.village || a.town || a.city || a.municipality || a.county || a.state_district || a.state || null;
-    } catch (err) {
-      console.warn('Gagal mengambil nama lokasi:', err);
-      return null;
-    }
-  }
-
-  // Klik di peta = popup elevasi + nama lokasi terdekat
-  map.on('click', async function(e) {
-    const { lat, lng } = e.latlng;
-    const coordLine = `<small>${lat.toFixed(4)}, ${lng.toFixed(4)}</small>`;
-    const popup = L.popup()
-      .setLatLng(e.latlng)
-      .setContent(`<b>Memuat data lokasi...</b><br>${coordLine}`)
-      .openOn(map);
-
-    let elev = null;
-    let isEstimate = false;
-    try {
-      const res = await fetchWithTimeout(`https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lng}`, 5000);
-      if (!res.ok) throw new Error('Respon API elevasi tidak OK');
-      const data = await res.json();
-      elev = data.results?.[0]?.elevation ? Math.round(data.results[0].elevation) : null;
-    } catch (err) {
-      console.warn('Gagal mengambil elevasi, pakai estimasi:', err);
-    }
-    if (elev === null) {
-      // Fallback estimasi, sama seperti yang dipakai di tooltip hover
-      elev = Math.round(280 + Math.abs(lat - 3.8) * 650);
-      isEstimate = true;
-    }
-
-    const placeName = await getNearestPlaceName(lat, lng);
-    const placeLine = placeName ? `<br>📍 ${placeName}` : '';
-    const estimateNote = isEstimate ? ' <small>(estimasi)</small>' : '';
-
-    popup.setContent(`<b>${elev} mdpl</b>${estimateNote}${placeLine}<br>${coordLine}`);
-  });
-
-  // Layer Control
-  try {
-    L.control.layers(null, {
-      "OpenTopoMap": topoLayer,
-      "Hillshade Relief": hillshadeLayer
-    }, { collapsed: false }).addTo(map);
-  } catch (e) {
-    console.warn('Gagal menambahkan layer control:', e);
-  }
-
-  map.on('focus', () => map.scrollWheelZoom.enable());
-  map.on('blur', () => map.scrollWheelZoom.disable());
-
-  await loadLokasiMarkers(map);
-}
-
-/* ---------- Ambil elevasi (mdpl) buat satu titik, dengan fallback estimasi ---------- */
-async function fetchElevationForLokasi(lat, lng) {
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 5000);
-    const res = await fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lng}`, { signal: controller.signal });
-    clearTimeout(timer);
-    if (!res.ok) throw new Error('Respon API elevasi tidak OK');
-    const data = await res.json();
-    const elev = data.results?.[0]?.elevation;
-    if (elev == null) throw new Error('Elevasi kosong');
-    return { value: Math.round(elev), estimate: false };
-  } catch (err) {
-    return { value: Math.round(280 + Math.abs(lat - 3.8) * 650), estimate: true };
-  }
-}
-
-/* ---------- Marker titik lokasi (dari admin, tabel project_locations) ---------- */
-async function loadLokasiMarkers(map) {
-  try {
-    const { data, error } = await sbClient
-      .from('project_locations')
-      .select('*');
-    if (error) throw error;
-    console.log('📍 project_locations dari Supabase:', data);
-    (data || []).forEach(loc => {
-      const marker = L.circleMarker([loc.lat, loc.lng], {
-        radius: 12,
-        color: '#ffffff',
-        weight: 3,
-        fillColor: '#ff3b30',
-        fillOpacity: 0.95
-      }).addTo(map);
-
-      const img = loc.image_url ? `<img src="${escapeHtmlIndex(loc.image_url)}" alt="" onerror="this.style.display='none'" />` : '';
-      const desc = loc.description ? `<br>${escapeHtmlIndex(loc.description)}` : '';
-      const coordLine = `<small>${Number(loc.lat).toFixed(4)}, ${Number(loc.lng).toFixed(4)}</small>`;
-      const buildContent = (elevLine) => `${img}<b>${escapeHtmlIndex(loc.name)}</b>${desc}<br>${elevLine}<br>${coordLine}`;
-
-      marker.bindPopup(buildContent('<small>Memuat elevasi...</small>'), { maxWidth: 380, minWidth: 300 });
-
-      let elevLoaded = false;
-      marker.on('popupopen', async () => {
-        if (elevLoaded) return;
-        elevLoaded = true;
-        const elev = await fetchElevationForLokasi(loc.lat, loc.lng);
-        const elevLine = `<b>${elev.value} mdpl</b>${elev.estimate ? ' <small>(estimasi)</small>' : ''}`;
-        marker.setPopupContent(buildContent(elevLine));
-      });
-    });
-  } catch (err) {
-    console.warn('Gagal memuat titik lokasi:', err);
-  }
-}
-    /* ---------- Load Fakta Lapangan (foto/video) dari Supabase ---------- */
-    let currentSlide = 0;
-    let slidesCount = 0;
-    async function loadFaktaMedia() {
-      const container = document.getElementById('faktaContainer');
-      try {
-        const { data, error } = await sbClient
-          .from('fakta_media')
-          .select('*')
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        const validFiles = data || [];
-        if (validFiles.length === 0) {
-          container.innerHTML = `<div class="fakta-empty">Belum ada foto atau video Fakta Lapangan.</div>`;
-          return;
-        }
-        let htmlContent = '';
-        validFiles.forEach((file, index) => {
-          const isVideo = file.media_type === 'video';
-          const activeClass = index === 0 ? 'active' : '';
-          if (isVideo) {
-            htmlContent += `
-              <div class="fakta-slide ${activeClass}" onclick="openLightbox('video', '${file.url}')">
-                <video muted playsinline>
-                  <source src="${file.url}" type="video/mp4">
-                </video>
-              </div>`;
-          } else {
-            htmlContent += `
-              <div class="fakta-slide ${activeClass}" onclick="openLightbox('image', '${file.url}')">
-                <img src="${file.url}" alt="Fakta Lapangan" loading="lazy" />
-              </div>`;
-          }
-        });
-        if (validFiles.length > 1) {
-          htmlContent += `
-            <button class="fakta-nav-btn fakta-prev" onclick="event.stopPropagation(); changeSlide(-1)">&#10094;</button>
-            <button class="fakta-nav-btn fakta-next" onclick="event.stopPropagation(); changeSlide(1)">&#10095;</button>
-          `;
-        }
-        container.innerHTML = htmlContent;
-        slidesCount = validFiles.length;
-      } catch (err) {
-        console.error(err);
-        container.innerHTML = `<div class="fakta-empty">Gagal memuat media Fakta Lapangan.</div>`;
-      }
-    }
-
-    /* ---------- Load Kartu Inisiatif dari Supabase ---------- */
-    async function loadCampaigns() {
-      const grid = document.getElementById('campaignGrid');
-      try {
-        const { data, error } = await sbClient
-          .from('campaigns')
-          .select('*')
-          .order('position', { ascending: true });
-        if (error) throw error;
-        const rows = data || [];
-        if (rows.length === 0) {
-          grid.innerHTML = `<div class="fakta-empty" style="grid-column:1/-1;">Belum ada inisiatif ditambahkan.</div>`;
-          return;
-        }
-        grid.innerHTML = rows.map(r => `
-          <div class="campaign-card">
-            <span class="campaign-badge"><span class="dot"></span>${escapeHtmlIndex(r.status || 'On Progress')}</span>
-            <img src="${escapeHtmlIndex(r.image_url)}" alt="${escapeHtmlIndex(r.name)}" loading="lazy" />
-            <div class="campaign-overlay">
-              <span class="campaign-index">${String(r.position).padStart(2, '0')}</span>
-              <h3 class="campaign-name">${escapeHtmlIndex(r.name)}</h3>
-              <p class="campaign-desc">${escapeHtmlIndex(r.description)}</p>
-            </div>
-          </div>
-        `).join('');
-      } catch (err) {
-        console.error(err);
-        grid.innerHTML = `<div class="fakta-empty" style="grid-column:1/-1;">Gagal memuat inisiatif.</div>`;
-      }
-    }
-    /* ---------- Load Ragam Mandau dari Supabase ---------- */
-    async function loadMandau() {
-      const grid = document.getElementById('mandauGrid');
-      try {
-        const { data, error } = await sbClient
-          .from('mandau_items')
-          .select('*')
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        const rows = data || [];
-        if (rows.length === 0) {
-          grid.innerHTML = `<div class="fakta-empty" style="grid-column:1/-1;">Belum ada mandau ditambahkan.</div>`;
-          return;
-        }
-        grid.innerHTML = rows.map(r => `
-          <div class="mandau-card">
-            <div class="mandau-img-wrap${r.image_url ? '' : ' mandau-img-empty'}"${r.image_url ? ` onclick="openLightbox('image', '${escapeHtmlIndex(r.image_url)}')" style="cursor:pointer;"` : ''}>
-              ${r.image_url ? `<img src="${escapeHtmlIndex(r.image_url)}" alt="${escapeHtmlIndex(r.name)}" loading="lazy" onerror="this.closest('.mandau-img-wrap').classList.add('mandau-img-empty')" />` : ''}
-            </div>
-            <h3>${escapeHtmlIndex(r.name)}</h3>
-            ${r.description ? `<p>${escapeHtmlIndex(r.description)}</p>` : ''}
-          </div>
-        `).join('');
-      } catch (err) {
-        console.error(err);
-        grid.innerHTML = `<div class="fakta-empty" style="grid-column:1/-1;">Gagal memuat data mandau.</div>`;
-      }
-    }
-    function escapeHtmlIndex(str) {
-      const div = document.createElement('div');
-      div.textContent = str == null ? '' : String(str);
-      return div.innerHTML;
-    }
-    function changeSlide(direction) {
-      const slides = document.querySelectorAll('.fakta-slide');
-      if (slides.length === 0) return;
-      slides[currentSlide].classList.remove('active');
-      currentSlide = (currentSlide + direction + slidesCount) % slidesCount;
-      slides[currentSlide].classList.add('active');
-    }
-    /* Lightbox Functions */
-    const lightboxModal = document.getElementById('lightboxModal');
-    const lightboxContent = document.getElementById('lightboxContent');
-    const lightboxClose = document.getElementById('lightboxClose');
-    function openLightbox(type, url) {
-      const existingMedia = lightboxContent.querySelector('img, video');
-      if (existingMedia) existingMedia.remove();
-      if (type === 'video') {
-        const vid = document.createElement('video');
-        vid.src = url;
-        vid.controls = true;
-        vid.autoplay = true;
-        lightboxContent.insertBefore(vid, lightboxClose);
-      } else {
-        const img = document.createElement('img');
-        img.src = url;
-        lightboxContent.insertBefore(img, lightboxClose);
-      }
-      lightboxModal.classList.add('active');
-    }
-    lightboxClose.addEventListener('click', () => {
-      lightboxModal.classList.remove('active');
-      const existingMedia = lightboxContent.querySelector('img, video');
-      if (existingMedia) existingMedia.remove();
-    });
-    lightboxModal.addEventListener('click', (e) => {
-      if (e.target === lightboxModal) {
-        lightboxModal.classList.remove('active');
-        const existingMedia = lightboxContent.querySelector('img, video');
-        if (existingMedia) existingMedia.remove();
-      }
-    });
-    window.addEventListener('load', () => {
-      loadFaktaMedia();
-      loadCampaigns();
-      loadMandau();
-      initPetaMap();
-    });
-    const COUNTRY_LANG_MAP = {
-      // Asia Tenggara & Asia Timur
-      MY: 'ms', BN: 'ms', TH: 'th', VN: 'vi', KH: 'km', LA: 'lo', MM: 'my', TL: 'pt',
-      SG: 'en', PH: 'tl', JP: 'ja', KR: 'ko', KP: 'ko', CN: 'zh-CN', TW: 'zh-TW', HK: 'zh-TW', MO: 'zh-TW',
-      IN: 'hi', BD: 'bn', LK: 'si', PK: 'ur', NP: 'ne', BT: 'en', MV: 'en',
-      MN: 'mn', AF: 'fa',
-      // Asia Tengah
-      KZ: 'kk', UZ: 'uz', KG: 'ky', TJ: 'tg', TM: 'en', AZ: 'az', AM: 'hy', GE: 'ka',
-      // Timur Tengah
-      SA: 'ar', AE: 'ar', QA: 'ar', BH: 'ar', KW: 'ar', OM: 'ar', YE: 'ar',
-      IQ: 'ar', JO: 'ar', LB: 'ar', SY: 'ar', PS: 'ar', IL: 'he', IR: 'fa', TR: 'tr',
-      // Eropa
-      GB: 'en', IE: 'en', DE: 'de', AT: 'de', CH: 'de', LI: 'de',
-      FR: 'fr', BE: 'nl', LU: 'fr', MC: 'fr',
-      NL: 'nl', ES: 'es', PT: 'pt', IT: 'it', SM: 'it', VA: 'it',
-      RU: 'ru', UA: 'uk', BY: 'be', PL: 'pl', CZ: 'cs', SK: 'sk',
-      HU: 'hu', RO: 'ro', MD: 'ro', BG: 'bg', GR: 'el', CY: 'el',
-      HR: 'hr', BA: 'bs', RS: 'sr', ME: 'sr', XK: 'sq', AL: 'sq',
-      MK: 'mk', SI: 'sl', SE: 'sv', NO: 'no', DK: 'da', FI: 'fi',
-      IS: 'is', EE: 'et', LV: 'lv', LT: 'lt', MT: 'mt', AD: 'ca',
-      // Afrika
-      EG: 'ar', LY: 'ar', TN: 'ar', DZ: 'ar', MA: 'ar', SD: 'ar', MR: 'ar', KM: 'ar', ER: 'ar',
-      ET: 'am', SO: 'so', KE: 'sw', TZ: 'sw', UG: 'en', RW: 'fr', BI: 'fr',
-      NG: 'en', GH: 'en', ZA: 'en', ZM: 'en', ZW: 'en', BW: 'en', NA: 'en', SZ: 'en', LS: 'st',
-      MW: 'ny', SS: 'en', LR: 'en', SL: 'en', GM: 'en',
-      CM: 'fr', CI: 'fr', SN: 'fr', ML: 'fr', NE: 'fr', BF: 'fr', TD: 'fr', GA: 'fr',
-      CG: 'fr', CD: 'fr', CF: 'fr', DJ: 'fr', GN: 'fr', TG: 'fr', SC: 'fr', MU: 'fr',
-      AO: 'pt', MZ: 'pt', GW: 'pt', CV: 'pt', ST: 'pt', GQ: 'es', MG: 'mg',
-      // Amerika
-      US: 'en', CA: 'en', MX: 'es', BR: 'pt',
-      AR: 'es', CL: 'es', CO: 'es', PE: 'es', VE: 'es', EC: 'es', BO: 'es', PY: 'es',
-      UY: 'es', CR: 'es', PA: 'es', GT: 'es', HN: 'es', NI: 'es', SV: 'es', CU: 'es', DO: 'es',
-      HT: 'ht', JM: 'en', TT: 'en', BS: 'en', BB: 'en', BZ: 'en', GY: 'en', SR: 'nl',
-      DM: 'en', GD: 'en', KN: 'en', LC: 'en', VC: 'en',
-      // Oseania
-      AU: 'en', NZ: 'en', FJ: 'en', PG: 'en', SB: 'en', VU: 'en', WS: 'sm',
-      KI: 'en', TO: 'en', TV: 'en', NR: 'en', MH: 'en', FM: 'en', PW: 'en',
-    };
-
-    // Teks notice per bahasa. Kalau bahasanya nggak ada di sini, pakai fallback English.
-    const NOTICE_TEXT_MAP = {
-      en: { notice: "This page has been automatically translated.", button: "Back to Indonesian" },
-      ms: { notice: "Halaman ini telah diterjemahkan secara automatik.", button: "Kembali ke Bahasa Indonesia" },
-      th: { notice: "หน้านี้ได้รับการแปลโดยอัตโนมัติ", button: "กลับไปเป็นภาษาอินโดนีเซีย" },
-      vi: { notice: "Trang này đã được dịch tự động.", button: "Quay lại tiếng Indonesia" },
-      ja: { notice: "このページは自動翻訳されています。", button: "インドネシア語に戻す" },
-      ko: { notice: "이 페이지는 자동 번역되었습니다.", button: "인도네시아어로 돌아가기" },
-      'zh-CN': { notice: "此页面已自动翻译。", button: "返回印尼语" },
-      'zh-TW': { notice: "此頁面已自動翻譯。", button: "返回印尼語" },
-      ar: { notice: "تمت ترجمة هذه الصفحة تلقائيًا.", button: "العودة إلى الإندونيسية" },
-      tr: { notice: "Bu sayfa otomatik olarak çevrilmiştir.", button: "Endonezceye geri dön" },
-      de: { notice: "Diese Seite wurde automatisch übersetzt.", button: "Zurück zu Indonesisch" },
-      fr: { notice: "Cette page a été traduite automatiquement.", button: "Retour à l'indonésien" },
-      nl: { notice: "Deze pagina is automatisch vertaald.", button: "Terug naar Indonesisch" },
-      es: { notice: "Esta página ha sido traducida automáticamente.", button: "Volver al indonesio" },
-      pt: { notice: "Esta página foi traduzida automaticamente.", button: "Voltar para o indonésio" },
-      it: { notice: "Questa pagina è stata tradotta automaticamente.", button: "Torna all'indonesiano" },
-      ru: { notice: "Эта страница переведена автоматически.", button: "Вернуться на индонезийский" },
-      uk: { notice: "Цю сторінку перекладено автоматично.", button: "Повернутися до індонезійської" },
-      pl: { notice: "Ta strona została automatycznie przetłumaczona.", button: "Powrót do indonezyjskiego" },
-      hi: { notice: "इस पृष्ठ का स्वतः अनुवाद किया गया है।", button: "इंडोनेशियाई भाषा पर वापस जाएं" },
-      bn: { notice: "এই পৃষ্ঠাটি স্বয়ংক্রিয়ভাবে অনুবাদ করা হয়েছে।", button: "ইন্দোনেশিয়ান ভাষায় ফিরে যান" },
-      ur: { notice: "اس صفحے کا خودکار ترجمہ کیا گیا ہے۔", button: "انڈونیشین زبان پر واپس جائیں" },
-    };
-
-    let googleTranslateReady = false;
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement(
-        { pageLanguage: 'id', autoDisplay: false },
-        'google_translate_element'
-      );
-      googleTranslateReady = true;
-    }
-
-    function applyTranslation(langCode) {
-      const tryApply = setInterval(() => {
-        const combo = document.querySelector('.goog-te-combo');
-        if (combo && googleTranslateReady) {
-          clearInterval(tryApply);
-          combo.value = langCode;
-          combo.dispatchEvent(new Event('change', { bubbles: true }));
-
-          const noticeText = document.getElementById('langNoticeText');
-          const revertBtn = document.getElementById('revertLangBtn');
-          const texts = NOTICE_TEXT_MAP[langCode] || NOTICE_TEXT_MAP['en']; // fallback teks ke English
-          noticeText.textContent = texts.notice;
-          revertBtn.textContent = texts.button;
-          document.getElementById('langNotice').classList.add('visible');
-        }
-      }, 250);
-      setTimeout(() => clearInterval(tryApply), 8000);
-    }
-
-    function revertToIndonesian() {
-      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${location.hostname}`;
-      location.reload();
-    }
-
-    async function detectCountryAndTranslate() {
-      try {
-        const res = await fetch('/api/geo');
-        if (res.ok) {
-          const { country } = await res.json();
-          if (country && country !== 'ID') {
-            const langCode = COUNTRY_LANG_MAP[country] || 'en';
-            applyTranslation(langCode);
-          }
-        }
-      } catch (error) {
-        console.warn('Deteksi negara gagal, halaman tetap Bahasa Indonesia', error);
-      }
-    }
-
-    document.getElementById('revertLangBtn').addEventListener('click', revertToIndonesian);
-    window.addEventListener('load', detectCountryAndTranslate);
-    /* ---------- Kontrol Floating Chat Widget ---------- */
-    (function () {
-      const fabBtn = document.getElementById('chatFabBtn');
-      const menu = document.getElementById('chatMenu');
-      if (!fabBtn || !menu) return;
-      function toggleMenu() {
-        const isOpen = menu.classList.toggle('open');
-        fabBtn.classList.toggle('open', isOpen);
-        fabBtn.setAttribute('aria-label', isOpen ? 'Tutup menu chat' : 'Buka menu chat');
-      }
-      fabBtn.addEventListener('click', toggleMenu);
-      document.addEventListener('click', function (e) {
-        if (!menu.classList.contains('open')) return;
-        if (!menu.contains(e.target) && e.target !== fabBtn && !fabBtn.contains(e.target)) {
-          menu.classList.remove('open');
-          fabBtn.classList.remove('open');
-        }
-      });
-    })();
-  </script>
-  <div id="google_translate_element"></div>
 </body>
 </html>
