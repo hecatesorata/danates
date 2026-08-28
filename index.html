@@ -114,7 +114,11 @@
   .dest-photo span.tag{position:absolute;bottom:8px;left:8px;background:rgba(15,38,71,0.8);color:#fff;font-size:9.5px;letter-spacing:0.05em;padding:3px 8px;border-radius:10px;z-index:2;}
   .dest-info{padding:11px 13px;background:var(--white);}
   .dest-info b{display:block;font-size:13.5px;color:var(--navy);}
-  .dest-info span{font-size:11.5px;color:var(--muted);}
+  .dest-info span.loc{font-size:11.5px;color:var(--muted);}
+  .dest-info .maps-link{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;font-weight:600;color:var(--navy);}
+  .dest-info .maps-link:hover{color:var(--gold);}
+  .dest-info .maps-link svg{flex:0 0 auto;}
+  .dest-info .meta{display:block;font-size:10.5px;color:var(--muted);margin-top:4px;line-height:1.4;}
 
   /* ---------- Why us ---------- */
   .why-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
@@ -352,31 +356,69 @@
         <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Masjid_Agung_At-Taqwa_Balikpapan.jpg?width=500');">
           <span class="tag">Balikpapan</span>
         </div>
-        <div class="dest-info"><b>Masjid Agung At-Taqwa</b><span>Balikpapan, Kaltim</span></div>
+        <div class="dest-info">
+          <b>Masjid Agung At-Taqwa</b>
+          <span class="loc">Jl. Jenderal Sudirman, Balikpapan, Kaltim</span>
+          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Masjid+Agung+At-Taqwa+Balikpapan" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
       </div>
       <div class="dest-card">
         <div class="dest-photo" style="background-image:url('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/images%20(15).jpeg');">
           <span class="tag">Balikpapan</span>
         </div>
-        <div class="dest-info"><b>Pantai Kemala</b><span>Balikpapan, Kaltim</span></div>
+        <div class="dest-info">
+          <b>Pantai Kemala</b>
+          <span class="loc">Klandasan Ilir, Balikpapan, Kaltim</span>
+          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Pantai+Kemala+Balikpapan" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
       </div>
       <div class="dest-card">
         <div class="dest-photo" style="background-image:url('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/History10.jpg');">
           <span class="tag">Balikpapan</span>
         </div>
-        <div class="dest-info"><b>KWPLH Sun Bear Sanctuary</b><span>Balikpapan, Kaltim</span></div>
+        <div class="dest-info">
+          <b>KWPLH Sun Bear Sanctuary</b>
+          <span class="loc">Km 23, Hutan Wain, Balikpapan Utara, Kaltim</span>
+          <span class="meta">08:00–17:00 WITA · Gratis/Sumbangan sukarela (parkir Rp5.000)</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.1342,116.8619" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
       </div>
       <div class="dest-card">
         <div class="dest-photo" style="background-image:url('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/01jtmnybs1m8wg524zr25hy4xm.jpg');">
           <span class="tag">Balikpapan</span>
         </div>
-        <div class="dest-info"><b>Bukit Bangkirai</b><span>Balikpapan, Kaltim</span></div>
+        <div class="dest-info">
+          <b>Bukit Bangkirai</b>
+          <span class="loc">Samboja, Kutai Kartanegara, Kaltim</span>
+          <span class="meta">08:00–17:00 WITA · Rp15.000 masuk, Rp30.000 canopy bridge</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-0.9667,116.8667" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
       </div>
       <div class="dest-card">
         <div class="dest-photo" style="background-image:url('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/unnamed-2.jpg');">
           <span class="tag">Balikpapan</span>
         </div>
-        <div class="dest-info"><b>Pantai Manggar Segarasari</b><span>Balikpapan, Kaltim</span></div>
+        <div class="dest-info">
+          <b>Pantai Manggar Segarasari</b>
+          <span class="loc">Manggar, Balikpapan Timur, Kaltim</span>
+          <span class="meta">06:00–18:00 WITA · Rp10.000 dewasa, Rp5.000 anak</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.1963,116.9587" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -394,31 +436,207 @@
         <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Kepiting_Bakau_Papua.jpg?width=500');">
           <span class="tag">Kuliner</span>
         </div>
-        <div class="dest-info"><b>Kepiting Soka Kenari</b><span>Balikpapan, Kaltim</span></div>
+        <div class="dest-info">
+          <b>Kepiting Soka Kenari</b>
+          <span class="loc">Kenari Sari, Balikpapan, Kaltim</span>
+          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Kepiting+Soka+Kenari+Balikpapan" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
       </div>
       <div class="dest-card">
         <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Ikan_Pari_Bakar_Berempah.jpg?width=500');">
           <span class="tag">Kuliner</span>
         </div>
-        <div class="dest-info"><b>Ikan Bakar Melawai</b><span>Balikpapan, Kaltim</span></div>
+        <div class="dest-info">
+          <b>Ikan Bakar Melawai</b>
+          <span class="loc">Kawasan Melawai, Balikpapan, Kaltim</span>
+          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Ikan+Bakar+Melawai+Balikpapan" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
       </div>
       <div class="dest-card">
         <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20Kuning%20Banjar%20001.jpg?width=500');">
           <span class="tag">Kuliner</span>
         </div>
-        <div class="dest-info"><b>Nasi Kuning Khas Kaltim</b><span>Balikpapan, Kaltim</span></div>
+        <div class="dest-info">
+          <b>Nasi Kuning Khas Kaltim</b>
+          <span class="loc">Kawasan Kampung Baru / Kota, Balikpapan, Kaltim</span>
+          <span class="meta">06:00–12:00 WITA · Rp15.000–Rp30.000/porsi</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.2415,116.8288" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
       </div>
       <div class="dest-card">
         <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Amplang%20from%20Sabah,%20Malaysia.jpg?width=500');">
           <span class="tag">Oleh-oleh</span>
         </div>
-        <div class="dest-info"><b>Amplang Balikpapan</b><span>Balikpapan, Kaltim</span></div>
+        <div class="dest-info">
+          <b>Amplang Balikpapan</b>
+          <span class="loc">Balikpapan, Kaltim</span>
+          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Toko+Amplang+Balikpapan" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
       </div>
       <div class="dest-card">
         <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Rumah%20Dahor%20Balikpapan.JPG?width=500');">
           <span class="tag">Kuliner</span>
         </div>
-        <div class="dest-info"><b>Kawasan Kuliner Kampung Atas Air</b><span>Balikpapan, Kaltim</span></div>
+        <div class="dest-info">
+          <b>Kawasan Kuliner Kampung Atas Air</b>
+          <span class="loc">Margasari, Balikpapan, Kaltim</span>
+          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Kampung+Atas+Air+Margasari+Balikpapan" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Sunset_ocean.jpg?width=500');">
+          <span class="tag">Sunset View</span>
+        </div>
+        <div class="dest-info">
+          <b>Cafe Puncak Pertamina</b>
+          <span class="loc">Balikpapan, Kaltim</span>
+          <span class="meta">15:00–23:00 WITA · Menu Rp15.000–Rp50.000</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.2745,116.8211" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Fried%20seafood%20platter.jpg?width=500');">
+          <span class="tag">Kuliner</span>
+        </div>
+        <div class="dest-info">
+          <b>Seafood Haur Gading</b>
+          <span class="loc">Pasar Inpres Kebun Sayur, Balikpapan, Kaltim</span>
+          <span class="meta">10:00–21:00 WITA · Rp50.000–Rp150.000/porsi</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.2388,116.8210" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Bakpao.jpg?width=500');">
+          <span class="tag">Oleh-oleh</span>
+        </div>
+        <div class="dest-info">
+          <b>Mantau Balikpapan</b>
+          <span class="loc">Mantau Straat 1 / Cantik Manis, Balikpapan, Kaltim</span>
+          <span class="meta">08:00–20:00 WITA · Rp50.000–Rp120.000/porsi</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.2481,116.8402" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Coto%20Makassar-dish.JPG?width=500');">
+          <span class="tag">Kuliner</span>
+        </div>
+        <div class="dest-info">
+          <b>Coto Makassar H. Kasim</b>
+          <span class="loc">Balikpapan, Kaltim</span>
+          <span class="meta">08:00–21:00 WITA · Rp30.000–Rp45.000/porsi</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.2585,116.8342" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20padang.jpg?width=500');">
+          <span class="tag">Kuliner</span>
+        </div>
+        <div class="dest-info">
+          <b>Restoran Nasi Padang Upik</b>
+          <span class="loc">Balikpapan, Kaltim</span>
+          <span class="meta">08:00–22:00 WITA · Rp25.000–Rp60.000/porsi</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.2611,116.8415" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Warung%20Kopi.jpg?width=500');">
+          <span class="tag">Kuliner &amp; Cafe</span>
+        </div>
+        <div class="dest-info">
+          <b>Kopi Tiam (Kedai Kopi Nam Min)</b>
+          <span class="loc">Balikpapan, Kaltim</span>
+          <span class="meta">06:00–18:00 WITA · Rp15.000–Rp35.000</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.2422,116.8231" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Gudeg.jpg?width=500');">
+          <span class="tag">Kuliner</span>
+        </div>
+        <div class="dest-info">
+          <b>Gudeg Jogja Km. 10</b>
+          <span class="loc">Jl. Soekarno-Hatta Km 10, Balikpapan, Kaltim</span>
+          <span class="meta">07:00–21:00 WITA · Rp20.000–Rp40.000/porsi</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.1842,116.8685" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20Pecel.jpg?width=500');">
+          <span class="tag">Kuliner Jawa</span>
+        </div>
+        <div class="dest-info">
+          <b>Nasi Pecel Mas Pery</b>
+          <span class="loc">Balikpapan, Kaltim</span>
+          <span class="meta">06:30–14:00 WITA · Rp15.000–Rp25.000/porsi</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.2489,116.8512" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Kepiting%20saus%20padang.jpg?width=500');">
+          <span class="tag">Kuliner khas</span>
+        </div>
+        <div class="dest-info">
+          <b>Kepiting Dandito Balikpapan</b>
+          <span class="loc">Balikpapan, Kaltim</span>
+          <span class="meta">08:00–22:00 WITA · Rp150.000–Rp350.000/porsi</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.2678,116.8643" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
+      </div>
+      <div class="dest-card">
+        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Milkfish%20bandeng.JPG?width=500');">
+          <span class="tag">Kuliner Seafood</span>
+        </div>
+        <div class="dest-info">
+          <b>Restoran Rumah Makan Torani</b>
+          <span class="loc">Balikpapan, Kaltim</span>
+          <span class="meta">09:00–23:00 WITA · Rp40.000–Rp150.000/porsi</span>
+          <a class="maps-link" href="https://www.google.com/maps?q=-1.2643,116.8791" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+            Lihat Lokasi
+          </a>
+        </div>
       </div>
     </div>
     <p class="fleet-foot">ⓘ Ingin mampir ke tempat makan tertentu? Sampaikan saja ke tour guide kami, rute bisa disesuaikan sepanjang perjalanan di Balikpapan.</p>
