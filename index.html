@@ -4,11 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BorneoDrive — Tour Guide &amp; Travel Sabah, Kuching, Brunei ke Balikpapan</title>
-<meta name="description" content="BorneoDrive menyediakan tour guide dan travel lintas negara dari Sabah, Kuching (Serawak), dan Brunei menuju Balikpapan. Driver berpengalaman, harga transparan Rp1.000.000/hari, reservasi mudah via WhatsApp." />
+<meta name="description" content="BorneoDrive menyediakan tour guide dan travel lintas negara dari Sabah, Kuching (Serawak), dan Brunei menuju Balikpapan. Driver berpengalaman, Paket Reguler mulai Rp2.800.000/hari dan Paket Executive Rp3.200.000/hari, reservasi mudah via WhatsApp." />
 <meta name="theme-color" content="#0f2647" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="BorneoDrive — Tour Guide & Travel Sabah, Kuching, Brunei ke Balikpapan" />
-<meta property="og:description" content="Tour guide & travel lintas negara dari Sabah, Kuching, dan Brunei menuju Balikpapan. Rp1.000.000/hari, driver berpengalaman, asuransi penumpang." />
+<meta property="og:description" content="Tour guide & travel lintas negara dari Sabah, Kuching, dan Brunei menuju Balikpapan. Paket Reguler Rp2.800.000/hari & Paket Executive Rp3.200.000/hari, driver berpengalaman, asuransi penumpang." />
 <meta property="og:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Sultan_Omar_Ali_Saifuddien_Mosque_(17971529663).jpg?width=1200" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -189,8 +189,9 @@
   .fleet-photo{transition:background-size .5s var(--ease);}
   .fleet-body{padding:16px 18px;}
   .fleet-body h4{font-family:var(--display);font-size:15.5px;margin:0 0 8px;color:var(--navy);}
-  .fleet-specs{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:0;}
+  .fleet-specs{display:flex;gap:14px;flex-wrap:wrap;row-gap:6px;font-size:12px;color:var(--muted);margin-bottom:0;}
   .fleet-specs span{display:flex;align-items:center;gap:5px;}
+  .fleet-specs span:last-child{background:var(--panel);color:var(--navy);font-weight:700;font-size:10.5px;letter-spacing:0.02em;padding:3px 9px;border-radius:10px;}
   .fleet-price{background:linear-gradient(120deg,var(--navy),var(--navy-2));color:var(--white);text-align:center;padding:11px;font-size:13.5px;font-weight:700;letter-spacing:0.01em;}
   .fleet-foot{text-align:center;font-size:12px;color:var(--muted);margin-top:18px;}
 
@@ -198,8 +199,28 @@
   .dest-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
   @media (max-width:960px){ .dest-grid{grid-template-columns:1fr 1fr 1fr;} }
   @media (max-width:640px){ .dest-grid{grid-template-columns:1fr 1fr;} }
-  .dest-card{border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-sm);transition:transform .25s var(--ease),box-shadow .25s var(--ease);background:var(--white);}
+  .dest-card{border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-sm);transition:transform .25s var(--ease),box-shadow .25s var(--ease);background:var(--white);cursor:pointer;}
+  .places-loading{grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:30px 0;}
   .dest-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md);}
+  .dest-card:focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;}
+
+  /* ---------- Destinasi/Kuliner mini pop-out modal ---------- */
+  .dest-modal-overlay{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(8,17,33,0.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .25s var(--ease),visibility .25s var(--ease);}
+  .dest-modal-overlay.open{opacity:1;visibility:visible;}
+  .dest-modal{background:var(--white);border-radius:var(--radius-lg);overflow:hidden;max-width:420px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);transform:translateY(18px) scale(.97);transition:transform .3s var(--ease);}
+  .dest-modal-overlay.open .dest-modal{transform:translateY(0) scale(1);}
+  .dest-modal-photo{height:210px;background-size:cover;background-position:center;position:relative;}
+  .dest-modal-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,0,0,0.45) 100%);}
+  .dest-modal-photo span.tag{position:absolute;bottom:12px;left:14px;background:rgba(15,38,71,0.85);color:#fff;font-size:10.5px;letter-spacing:0.05em;padding:4px 10px;border-radius:12px;z-index:2;}
+  .dest-modal-close{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:none;background:rgba(8,17,33,0.55);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;}
+  .dest-modal-close:hover{background:rgba(8,17,33,0.8);}
+  .dest-modal-body{padding:20px 22px 24px;}
+  .dest-modal-body h3{font-family:var(--display);font-size:19px;color:var(--navy);margin:0 0 6px;}
+  .dest-modal-body .loc{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);margin-bottom:10px;}
+  .dest-modal-body .meta{display:block;font-size:12px;color:var(--muted);margin-bottom:12px;}
+  .dest-modal-body .desc{font-size:13.5px;color:var(--text);line-height:1.65;margin:0 0 18px;}
+  .dest-modal-body .maps-btn{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:11px 18px;border-radius:30px;font-size:13px;font-weight:700;}
+  .dest-modal-body .maps-btn:hover{background:var(--navy-2);}
   .dest-photo{height:150px;position:relative;overflow:hidden;background-size:cover;background-position:center;transition:background-size .5s var(--ease);}
   .dest-card:hover .dest-photo{background-size:114%;}
   .dest-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.5) 100%);}
@@ -233,7 +254,7 @@
   .team-body span{display:inline-block;font-size:11.5px;font-weight:600;color:var(--gold);letter-spacing:0.03em;text-transform:uppercase;}
 
   /* ---------- Harga ---------- */
-  .price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
   @media (max-width:900px){ .price-grid{grid-template-columns:1fr 1fr;} }
   @media (max-width:560px){ .price-grid{grid-template-columns:1fr;} }
   .price-card{border:1px solid var(--line);border-radius:var(--radius-md);background:var(--white);overflow:hidden;box-shadow:var(--shadow-sm);transition:transform .25s var(--ease),box-shadow .25s var(--ease);position:relative;}
@@ -290,6 +311,13 @@
   .resv-field .box select,.resv-field .box input,.resv-field .box textarea{border:none;background:transparent;font:inherit;color:var(--text);width:100%;padding:0;outline:none;-webkit-appearance:none;appearance:none;resize:vertical;}
   .resv-error{font-size:11px;color:#d94f4f;display:none;}
   .resv-field .box.invalid + .resv-error{display:block;}
+  .avail-status{font-size:11.5px;font-weight:700;display:none;align-items:center;gap:6px;}
+  .avail-status.show{display:flex;}
+  .avail-status.ok{color:#1c7a3e;}
+  .avail-status.no{color:#d94f4f;}
+  .avail-status.checking{color:var(--muted);font-weight:500;}
+  .resv-submit[disabled]{opacity:0.55;cursor:not-allowed;}
+  .resv-submit[disabled]:hover{transform:none;box-shadow:none;}
   .resv-radio-group{display:flex;gap:10px;flex-wrap:wrap;}
   .resv-radio{display:flex;align-items:center;gap:7px;border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:9px 14px;font-size:13px;color:var(--text);background:var(--panel);cursor:pointer;transition:border-color .2s var(--ease),background .2s var(--ease);}
   .resv-radio input{accent-color:var(--navy);}
@@ -382,7 +410,7 @@
     <p class="badge">TOUR GUIDE &amp; TRAVEL UTAMA</p>
     <h1 class="hero-title">Tour Guide &amp; Travel dari Sabah, Kuching &amp; Brunei menuju Balikpapan</h1>
     <p class="hero-desc">Tour guide berpengalaman memandu perjalanan Anda dari Sabah, Kuching (Serawak), dan Brunei hingga tiba di Balikpapan, dengan mobil dan driver siap sepanjang rute.</p>
-    <p class="hero-price">Harga hanya <b>Rp1.000.000 / hari</b> (12 jam).</p>
+    <p class="hero-price">Mulai <b>Rp2.800.000 / hari</b> (Paket Reguler) — Paket Executive <b>Rp3.200.000 / hari</b>.</p>
 
     <div class="route-strip" aria-hidden="true">
       <div class="stop"><span class="dot"></span><b>Sabah</b></div>
@@ -476,36 +504,36 @@
         <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Toyota_Kijang_Innova_(Side),_Jakarta,_Indonesia.jpg?width=500');"></div>
         <div class="fleet-body">
           <h4>Toyota Innova Reborn</h4>
-          <div class="fleet-specs"><span>👤 6 Penumpang</span><span>🧳 4 Koper</span></div>
+          <div class="fleet-specs"><span>👤 6 Penumpang</span><span>🧳 4 Koper</span><span>Paket Reguler</span></div>
         </div>
-        <div class="fleet-price">Rp1.000.000 / hari</div>
+        <div class="fleet-price">Rp2.800.000 / hari</div>
       </div>
       <div class="fleet-card">
         <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Toyota_Avanza_side.jpg?width=500');"></div>
         <div class="fleet-body">
           <h4>Toyota Avanza</h4>
-          <div class="fleet-specs"><span>👤 6 Penumpang</span><span>🧳 4 Koper</span></div>
+          <div class="fleet-specs"><span>👤 6 Penumpang</span><span>🧳 4 Koper</span><span>Paket Reguler</span></div>
         </div>
-        <div class="fleet-price">Rp1.000.000 / hari</div>
+        <div class="fleet-price">Rp2.800.000 / hari</div>
       </div>
       <div class="fleet-card">
         <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Toyota_HiAce_Side_View.jpg?width=500');"></div>
         <div class="fleet-body">
           <h4>Toyota Hiace</h4>
-          <div class="fleet-specs"><span>👤 12 Penumpang</span><span>🧳 8 Koper</span></div>
+          <div class="fleet-specs"><span>👤 12 Penumpang</span><span>🧳 8 Koper</span><span>Paket Executive</span></div>
         </div>
-        <div class="fleet-price">Rp1.000.000 / hari</div>
+        <div class="fleet-price">Rp3.200.000 / hari</div>
       </div>
       <div class="fleet-card">
         <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/0Hyundai_Starex_(TQ).jpg?width=500');"></div>
         <div class="fleet-body">
           <h4>Hyundai Starex</h4>
-          <div class="fleet-specs"><span>👤 10 Penumpang</span><span>🧳 7 Koper</span></div>
+          <div class="fleet-specs"><span>👤 10 Penumpang</span><span>🧳 7 Koper</span><span>Paket Executive</span></div>
         </div>
-        <div class="fleet-price">Rp1.000.000 / hari</div>
+        <div class="fleet-price">Rp3.200.000 / hari</div>
       </div>
     </div>
-    <p class="fleet-foot">ⓘ Harga berlaku untuk penggunaan sepanjang rute Sabah – Kuching – Brunei – Balikpapan (per hari / 12 jam).</p>
+    <p class="fleet-foot">ⓘ Harga berlaku untuk penggunaan sepanjang rute Sabah – Kuching – Brunei – Balikpapan (per hari / 12 jam). Paket Reguler untuk Innova Reborn &amp; Avanza, Paket Executive (tour guide &amp; service premium) untuk Hiace &amp; Starex.</p>
   </div>
 </section>
 
@@ -516,75 +544,8 @@
       <h2>Destinasi Populer di Balikpapan</h2>
       <p>Tempat menarik yang bisa Anda kunjungi setibanya di Balikpapan.</p>
     </div>
-    <div class="dest-grid reveal-stagger">
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Masjid_Agung_At-Taqwa_Balikpapan.jpg?width=500');">
-          <span class="tag">Balikpapan</span>
-        </div>
-        <div class="dest-info">
-          <b>Masjid Agung At-Taqwa</b>
-          <span class="loc">Jl. Jenderal Sudirman, Balikpapan, Kaltim</span>
-          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Masjid+Agung+At-Taqwa+Balikpapan" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/images%20(15).jpeg');">
-          <span class="tag">Balikpapan</span>
-        </div>
-        <div class="dest-info">
-          <b>Pantai Kemala</b>
-          <span class="loc">Klandasan Ilir, Balikpapan, Kaltim</span>
-          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Pantai+Kemala+Balikpapan" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/History10.jpg');">
-          <span class="tag">Balikpapan</span>
-        </div>
-        <div class="dest-info">
-          <b>KWPLH Sun Bear Sanctuary</b>
-          <span class="loc">Km 23, Hutan Wain, Balikpapan Utara, Kaltim</span>
-          <span class="meta">08:00–17:00 WITA · Gratis/Sumbangan sukarela (parkir Rp5.000)</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.1342,116.8619" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/01jtmnybs1m8wg524zr25hy4xm.jpg');">
-          <span class="tag">Balikpapan</span>
-        </div>
-        <div class="dest-info">
-          <b>Bukit Bangkirai</b>
-          <span class="loc">Samboja, Kutai Kartanegara, Kaltim</span>
-          <span class="meta">08:00–17:00 WITA · Rp15.000 masuk, Rp30.000 canopy bridge</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-0.9667,116.8667" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/unnamed-2.jpg');">
-          <span class="tag">Balikpapan</span>
-        </div>
-        <div class="dest-info">
-          <b>Pantai Manggar Segarasari</b>
-          <span class="loc">Manggar, Balikpapan Timur, Kaltim</span>
-          <span class="meta">06:00–18:00 WITA · Rp10.000 dewasa, Rp5.000 anak</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.1963,116.9587" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
+    <div class="dest-grid reveal-stagger" id="destinasiGrid" data-place-type="destinasi">
+      <p class="places-loading">Memuat destinasi...</p>
     </div>
   </div>
 </section>
@@ -596,217 +557,37 @@
       <h2>Tempat Makan Favorit di Balikpapan</h2>
       <p>Kuliner khas Balikpapan yang bisa Anda cicipi sepanjang perjalanan bersama tour guide kami.</p>
     </div>
-    <div class="dest-grid reveal-stagger">
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Kepiting_Bakau_Papua.jpg?width=500');">
-          <span class="tag">Kuliner</span>
-        </div>
-        <div class="dest-info">
-          <b>Kepiting Soka Kenari</b>
-          <span class="loc">Kenari Sari, Balikpapan, Kaltim</span>
-          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Kepiting+Soka+Kenari+Balikpapan" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Ikan_Pari_Bakar_Berempah.jpg?width=500');">
-          <span class="tag">Kuliner</span>
-        </div>
-        <div class="dest-info">
-          <b>Ikan Bakar Melawai</b>
-          <span class="loc">Kawasan Melawai, Balikpapan, Kaltim</span>
-          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Ikan+Bakar+Melawai+Balikpapan" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20Kuning%20Banjar%20001.jpg?width=500');">
-          <span class="tag">Kuliner</span>
-        </div>
-        <div class="dest-info">
-          <b>Nasi Kuning Khas Kaltim</b>
-          <span class="loc">Kawasan Kampung Baru / Kota, Balikpapan, Kaltim</span>
-          <span class="meta">06:00–12:00 WITA · Rp15.000–Rp30.000/porsi</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.2415,116.8288" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Amplang%20from%20Sabah,%20Malaysia.jpg?width=500');">
-          <span class="tag">Oleh-oleh</span>
-        </div>
-        <div class="dest-info">
-          <b>Amplang Balikpapan</b>
-          <span class="loc">Balikpapan, Kaltim</span>
-          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Toko+Amplang+Balikpapan" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Rumah%20Dahor%20Balikpapan.JPG?width=500');">
-          <span class="tag">Kuliner</span>
-        </div>
-        <div class="dest-info">
-          <b>Kawasan Kuliner Kampung Atas Air</b>
-          <span class="loc">Margasari, Balikpapan, Kaltim</span>
-          <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Kampung+Atas+Air+Margasari+Balikpapan" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Sunset_ocean.jpg?width=500');">
-          <span class="tag">Sunset View</span>
-        </div>
-        <div class="dest-info">
-          <b>Cafe Puncak Pertamina</b>
-          <span class="loc">Balikpapan, Kaltim</span>
-          <span class="meta">15:00–23:00 WITA · Menu Rp15.000–Rp50.000</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.2745,116.8211" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Fried%20seafood%20platter.jpg?width=500');">
-          <span class="tag">Kuliner</span>
-        </div>
-        <div class="dest-info">
-          <b>Seafood Haur Gading</b>
-          <span class="loc">Pasar Inpres Kebun Sayur, Balikpapan, Kaltim</span>
-          <span class="meta">10:00–21:00 WITA · Rp50.000–Rp150.000/porsi</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.2388,116.8210" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Bakpao.jpg?width=500');">
-          <span class="tag">Oleh-oleh</span>
-        </div>
-        <div class="dest-info">
-          <b>Mantau Balikpapan</b>
-          <span class="loc">Mantau Straat 1 / Cantik Manis, Balikpapan, Kaltim</span>
-          <span class="meta">08:00–20:00 WITA · Rp50.000–Rp120.000/porsi</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.2481,116.8402" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Coto%20Makassar-dish.JPG?width=500');">
-          <span class="tag">Kuliner</span>
-        </div>
-        <div class="dest-info">
-          <b>Coto Makassar H. Kasim</b>
-          <span class="loc">Balikpapan, Kaltim</span>
-          <span class="meta">08:00–21:00 WITA · Rp30.000–Rp45.000/porsi</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.2585,116.8342" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20padang.jpg?width=500');">
-          <span class="tag">Kuliner</span>
-        </div>
-        <div class="dest-info">
-          <b>Restoran Nasi Padang Upik</b>
-          <span class="loc">Balikpapan, Kaltim</span>
-          <span class="meta">08:00–22:00 WITA · Rp25.000–Rp60.000/porsi</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.2611,116.8415" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Warung%20Kopi.jpg?width=500');">
-          <span class="tag">Kuliner &amp; Cafe</span>
-        </div>
-        <div class="dest-info">
-          <b>Kopi Tiam (Kedai Kopi Nam Min)</b>
-          <span class="loc">Balikpapan, Kaltim</span>
-          <span class="meta">06:00–18:00 WITA · Rp15.000–Rp35.000</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.2422,116.8231" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Gudeg.jpg?width=500');">
-          <span class="tag">Kuliner</span>
-        </div>
-        <div class="dest-info">
-          <b>Gudeg Jogja Km. 10</b>
-          <span class="loc">Jl. Soekarno-Hatta Km 10, Balikpapan, Kaltim</span>
-          <span class="meta">07:00–21:00 WITA · Rp20.000–Rp40.000/porsi</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.1842,116.8685" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20Pecel.jpg?width=500');">
-          <span class="tag">Kuliner Jawa</span>
-        </div>
-        <div class="dest-info">
-          <b>Nasi Pecel Mas Pery</b>
-          <span class="loc">Balikpapan, Kaltim</span>
-          <span class="meta">06:30–14:00 WITA · Rp15.000–Rp25.000/porsi</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.2489,116.8512" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Kepiting%20saus%20padang.jpg?width=500');">
-          <span class="tag">Kuliner khas</span>
-        </div>
-        <div class="dest-info">
-          <b>Kepiting Dandito Balikpapan</b>
-          <span class="loc">Balikpapan, Kaltim</span>
-          <span class="meta">08:00–22:00 WITA · Rp150.000–Rp350.000/porsi</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.2678,116.8643" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
-      <div class="dest-card">
-        <div class="dest-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Milkfish%20bandeng.JPG?width=500');">
-          <span class="tag">Kuliner Seafood</span>
-        </div>
-        <div class="dest-info">
-          <b>Restoran Rumah Makan Torani</b>
-          <span class="loc">Balikpapan, Kaltim</span>
-          <span class="meta">09:00–23:00 WITA · Rp40.000–Rp150.000/porsi</span>
-          <a class="maps-link" href="https://www.google.com/maps?q=-1.2643,116.8791" target="_blank" rel="noopener">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
-            Lihat Lokasi
-          </a>
-        </div>
-      </div>
+    <div class="dest-grid reveal-stagger" id="kulinerGrid" data-place-type="kuliner">
+      <p class="places-loading">Memuat kuliner...</p>
     </div>
     <p class="fleet-foot">ⓘ Ingin mampir ke tempat makan tertentu? Sampaikan saja ke tour guide kami, rute bisa disesuaikan sepanjang perjalanan di Balikpapan.</p>
   </div>
 </section>
+
+<!-- ============ Mini pop-out modal: Destinasi & Kuliner ============ -->
+<div class="dest-modal-overlay" id="destModalOverlay">
+  <div class="dest-modal" role="dialog" aria-modal="true" aria-labelledby="destModalTitle">
+    <div class="dest-modal-photo" id="destModalPhoto">
+      <span class="tag" id="destModalTag"></span>
+      <button class="dest-modal-close" id="destModalClose" aria-label="Tutup">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dest-modal-body">
+      <h3 id="destModalTitle"></h3>
+      <div class="loc">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span id="destModalLoc"></span>
+      </div>
+      <span class="meta" id="destModalMeta"></span>
+      <p class="desc" id="destModalDesc"></p>
+      <a class="maps-btn" id="destModalMapsLink" href="#" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+        Lihat Lokasi di Maps
+      </a>
+    </div>
+  </div>
+</div>
 
 <section class="section alt" id="tentang">
   <div class="wrap">
@@ -817,7 +598,7 @@
     <div class="why-grid reveal-stagger">
       <div class="why-card"><div class="why-icon-wrap"><svg class="why-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.6"/></svg></div><b>Driver Profesional</b><span>Berpengalaman &amp; ramah</span></div>
       <div class="why-card"><div class="why-icon-wrap"><svg class="why-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.4 8.4-7 10-3.6-1.6-7-5-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.6"/></svg></div><b>Aman &amp; Terpercaya</b><span>Perjalanan aman &amp; nyaman</span></div>
-      <div class="why-card"><div class="why-icon-wrap"><svg class="why-icon" viewBox="0 0 24 24" fill="none"><path d="M20 12l-8-8H5a2 2 0 0 0-2 2v7l8 8a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8Z" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/></svg></div><b>Harga Transparan</b><span>Rp1.000.000/hari all-in</span></div>
+      <div class="why-card"><div class="why-icon-wrap"><svg class="why-icon" viewBox="0 0 24 24" fill="none"><path d="M20 12l-8-8H5a2 2 0 0 0-2 2v7l8 8a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8Z" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/></svg></div><b>Harga Transparan</b><span>Mulai Rp2.800.000/hari all-in</span></div>
       <div class="why-card"><div class="why-icon-wrap"><svg class="why-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6"/></svg></div><b>Fleksibel</b><span>Bisa custom itinerary</span></div>
       <div class="why-card"><div class="why-icon-wrap"><svg class="why-icon" viewBox="0 0 24 24" fill="none"><path d="M4 18v-2a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v2M14 18v-2a4 4 0 0 1 3-3.9M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm11 1a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2Z" stroke="currentColor" stroke-width="1.5"/></svg></div><b>Layanan 24/7</b><span>Siap membantu kapan saja</span></div>
     </div>
@@ -842,7 +623,7 @@
       <div class="team-card">
         <img class="team-photo" src="https://raw.githubusercontent.com/hecatesorata/danates/main/assets/WhatsApp%20Image%202026-08-27%20at%2009.32.32.jpeg" alt="Fauzy - Direktur Operasional BorneoDrive" loading="lazy" />
         <div class="team-body">
-          <b> Aji Fauzy Azwary</b>
+          <b>Aji Fauzy Azwary</b>
           <span>Direktur Operasional</span>
         </div>
       </div>
@@ -855,19 +636,20 @@
     <div class="section-head reveal">
       <p class="section-num">Harga</p>
       <h2>Daftar Harga Tour Guide &amp; Travel</h2>
-      <p>Sudah termasuk BBM, tour guide &amp; driver berpengalaman, dan asuransi penumpang — tanpa biaya tersembunyi.</p>
+      <p>Berlaku untuk rute Sabah, Kuching (Serawak), maupun Brunei menuju Balikpapan — sudah termasuk BBM, tour guide, dan asuransi penumpang, tanpa biaya tersembunyi.</p>
     </div>
     <div class="price-grid reveal-stagger">
       <div class="price-card">
         <div class="price-top">
-          <p class="price-tag">Titik Awal</p>
-          <h4>Sabah – Balikpapan</h4>
-          <span>Perjalanan dari Sabah menuju Balikpapan</span>
+          <p class="price-tag">🚗 Standar</p>
+          <h4>Paket Reguler</h4>
+          <span>Innova Reborn / Avanza — cocok untuk perjalanan sehari-hari</span>
         </div>
-        <div class="price-amount">Rp1.000.000<small>/ hari (12 jam)</small></div>
+        <div class="price-amount">Rp2.800.000<small>/ hari (12 jam)</small></div>
         <ul class="price-list">
-          <li>Termasuk BBM &amp; tour guide</li>
-          <li>Mobil bersih &amp; nyaman</li>
+          <li>Sewa mobil + supir</li>
+          <li>Tour guide</li>
+          <li>Makan / minum &amp; BBM termasuk</li>
           <li>Asuransi penumpang</li>
         </ul>
         <a href="#reservasi" class="price-cta">Pilih Paket</a>
@@ -875,29 +657,16 @@
       <div class="price-card featured">
         <span class="price-badge">Paling Diminati</span>
         <div class="price-top">
-          <p class="price-tag">Rekomendasi</p>
-          <h4>Kuching (Serawak) – Balikpapan</h4>
-          <span>Lintas batas dari Kuching menuju Balikpapan</span>
+          <p class="price-tag">👑 Premium</p>
+          <h4>Paket Executive</h4>
+          <span>Hiace / Starex — tour guide &amp; service premium untuk rombongan</span>
         </div>
-        <div class="price-amount">Rp1.000.000<small>/ hari (12 jam)</small></div>
+        <div class="price-amount">Rp3.200.000<small>/ hari (12 jam)</small></div>
         <ul class="price-list">
-          <li>Termasuk BBM &amp; tour guide</li>
-          <li>Dokumen lintas batas dibantu</li>
-          <li>Asuransi penumpang</li>
-        </ul>
-        <a href="#reservasi" class="price-cta">Pilih Paket</a>
-      </div>
-      <div class="price-card">
-        <div class="price-top">
-          <p class="price-tag">Lintas Negara</p>
-          <h4>Brunei – Balikpapan</h4>
-          <span>Perjalanan dari Bandar Seri Begawan menuju Balikpapan</span>
-        </div>
-        <div class="price-amount">Rp1.000.000<small>/ hari (12 jam)</small></div>
-        <ul class="price-list">
-          <li>Termasuk BBM &amp; tour guide</li>
-          <li>Dokumen lintas batas dibantu</li>
-          <li>Asuransi penumpang</li>
+          <li>Sewa mobil + supir</li>
+          <li>Tour guide premium</li>
+          <li>Makan / minum &amp; BBM termasuk</li>
+          <li>Service premium &amp; asuransi penumpang</li>
         </ul>
         <a href="#reservasi" class="price-cta">Pilih Paket</a>
       </div>
@@ -916,7 +685,7 @@
         <a href="https://wa.me/+600149002475" class="price-cta">Konsultasi</a>
       </div>
     </div>
-    <p class="fleet-foot">ⓘ Harga dapat menyesuaikan jarak tempuh dan durasi di luar 12 jam. Hubungi kami untuk penawaran pasti.</p>
+    <p class="fleet-foot">ⓘ Harga berlaku untuk rute Sabah – Balikpapan, Kuching – Balikpapan, maupun Brunei – Balikpapan (per hari / 12 jam). Dokumen lintas batas dibantu oleh tim kami. Harga dapat menyesuaikan jarak tempuh dan durasi di luar 12 jam.</p>
   </div>
 </section>
 
@@ -929,10 +698,10 @@
     </div>
     <div class="faq-list reveal">
       <details class="faq-item">
-        <summary>Apakah harga Rp1.000.000/hari sudah termasuk BBM?
+        <summary>Apakah harga Paket Reguler (Rp2.800.000/hari) dan Executive (Rp3.200.000/hari) sudah termasuk BBM?
           <span class="faq-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
         </summary>
-        <div class="faq-answer"><p>Sudah. Harga tersebut all-in, mencakup BBM, driver berpengalaman, dan asuransi penumpang selama perjalanan.</p></div>
+        <div class="faq-answer"><p>Sudah. Kedua paket bersifat all-in, mencakup BBM, tour guide, driver berpengalaman, dan asuransi penumpang selama perjalanan. Paket Executive menambahkan tour guide premium dan layanan service premium.</p></div>
       </details>
       <details class="faq-item">
         <summary>Bagaimana proses lintas batas dari Sabah/Kuching/Brunei menuju Balikpapan?
@@ -950,7 +719,7 @@
         <summary>Apakah bisa memilih jenis mobil?
           <span class="faq-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
         </summary>
-        <div class="faq-answer"><p>Bisa. Tersedia pilihan Toyota Innova Reborn, Toyota Avanza, Toyota Hiace, dan Hyundai Starex sesuai jumlah penumpang dan bawaan Anda.</p></div>
+        <div class="faq-answer"><p>Bisa. Paket Reguler menggunakan Toyota Innova Reborn atau Toyota Avanza, sedangkan Paket Executive menggunakan Toyota Hiace atau Hyundai Starex — sesuaikan dengan jumlah penumpang dan bawaan Anda.</p></div>
       </details>
       <details class="faq-item">
         <summary>Bagaimana cara reservasi?
@@ -1014,6 +783,7 @@
             <input type="date" id="rTanggal" required />
           </div>
           <span class="resv-error">Pilih tanggal keberangkatan.</span>
+          <span class="avail-status" id="availStatus"></span>
         </div>
         <div class="resv-field">
           <label for="rPenumpang">Jumlah Penumpang</label>
@@ -1126,7 +896,7 @@
     <div class="footer-divider"></div>
     <div class="footer-bottom">
       <span>© 2026 BorneoDrive — Tour Guide &amp; Travel Sabah-Kuching-Brunei ke Balikpapan.</span>
-      <span class="credits">Semua hak dilindungi.</span>
+      <span class="credits"><a href="admin.html" style="color:#5f7188;">Admin</a> · Semua hak dilindungi.</span>
     </div>
   </div>
 </footer>
@@ -1135,6 +905,29 @@
   <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>
   <span class="fab-tooltip">Chat dengan kami</span>
 </a>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+  var firebaseConfig = {
+    apiKey: "GANTI_DENGAN_API_KEY",
+    authDomain: "GANTI.firebaseapp.com",
+    projectId: "GANTI_PROJECT_ID",
+    storageBucket: "GANTI.appspot.com",
+    messagingSenderId: "GANTI",
+    appId: "GANTI"
+  };
+  var dbReady = false;
+  var db = null;
+  try{
+    if(firebaseConfig.projectId && firebaseConfig.projectId.indexOf('GANTI') === -1){
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      dbReady = true;
+    }
+  }catch(err){ console.warn('Firebase belum dikonfigurasi:', err); }
+</script>
 
 <script>
   /* ---------- Navbar scroll transition ---------- */
@@ -1183,7 +976,53 @@
     window.open('https://wa.me/+600149002475?text=' + pesan, '_blank');
   });
 
-  /* ---------- Reservasi form: validation + WhatsApp ---------- */
+  /* ---------- Reservasi form: cek ketersediaan real-time ---------- */
+  var rTanggal = document.getElementById('rTanggal');
+  var availStatus = document.getElementById('availStatus');
+  var isSlotAvailable = true; /* default true kalau database belum aktif */
+
+  function currentArmada(){
+    var checked = document.querySelector('input[name="rArmada"]:checked');
+    return checked ? checked.value : '';
+  }
+
+  function checkAvailability(){
+    var tanggal = rTanggal.value;
+    var armada = currentArmada();
+    if(!dbReady){
+      availStatus.classList.remove('show');
+      isSlotAvailable = true;
+      return;
+    }
+    if(!tanggal){
+      availStatus.classList.remove('show');
+      return;
+    }
+    availStatus.className = 'avail-status show checking';
+    availStatus.textContent = 'Mengecek ketersediaan...';
+    db.collection('availability').doc(tanggal).get().then(function(doc){
+      var blocked = doc.exists && Array.isArray(doc.data().blockedArmada) ? doc.data().blockedArmada : [];
+      if(blocked.indexOf(armada) !== -1){
+        isSlotAvailable = false;
+        availStatus.className = 'avail-status show no';
+        availStatus.textContent = '✕ ' + armada + ' tidak tersedia pada tanggal ini. Pilih tanggal atau armada lain.';
+      } else {
+        isSlotAvailable = true;
+        availStatus.className = 'avail-status show ok';
+        availStatus.textContent = '✓ ' + armada + ' tersedia pada tanggal ini.';
+      }
+    }).catch(function(err){
+      console.warn('Gagal cek ketersediaan:', err);
+      isSlotAvailable = true;
+      availStatus.classList.remove('show');
+    });
+  }
+  rTanggal.addEventListener('change', checkAvailability);
+  document.querySelectorAll('input[name="rArmada"]').forEach(function(r){
+    r.addEventListener('change', checkAvailability);
+  });
+
+  /* ---------- Reservasi form: validation + simpan ke database + WhatsApp ---------- */
   var resvForm = document.getElementById('resvForm');
   resvForm.addEventListener('submit', function(e){
     e.preventDefault();
@@ -1211,9 +1050,14 @@
       return;
     }
 
+    if(dbReady && !isSlotAvailable){
+      availStatus.closest('.resv-field').scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+
     var dari = document.getElementById('rDari').value;
     var tujuan = document.getElementById('rTujuan').value;
-    var armada = document.querySelector('input[name="rArmada"]:checked').value;
+    var armada = currentArmada();
     var durasi = document.getElementById('rDurasi').value;
     var jemput = document.getElementById('rJemput').value || '-';
     var catatan = document.getElementById('rCatatan').value || '-';
@@ -1230,10 +1074,34 @@
       '%0ATitik Penjemputan: ' + encodeURIComponent(jemput) +
       '%0ACatatan: ' + encodeURIComponent(catatan);
 
-    var successBox = document.getElementById('resvSuccess');
-    successBox.classList.add('show');
-    window.open('https://wa.me/+600149002475?text=' + pesan, '_blank');
-    setTimeout(function(){ successBox.classList.remove('show'); }, 6000);
+    function goToWhatsApp(){
+      var successBox = document.getElementById('resvSuccess');
+      successBox.classList.add('show');
+      window.open('https://wa.me/+600149002475?text=' + pesan, '_blank');
+      setTimeout(function(){ successBox.classList.remove('show'); }, 6000);
+    }
+
+    if(dbReady){
+      db.collection('reservations').add({
+        nama: nama.value,
+        whatsapp: wa.value,
+        dari: dari,
+        tujuan: tujuan,
+        tanggal: tanggal.value,
+        penumpang: Number(penumpang.value),
+        armada: armada,
+        durasi: durasi,
+        jemput: jemput,
+        catatan: catatan,
+        status: 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(goToWhatsApp).catch(function(err){
+        console.warn('Gagal menyimpan reservasi ke database:', err);
+        goToWhatsApp(); /* tetap lanjut ke WhatsApp meski gagal simpan */
+      });
+    } else {
+      goToWhatsApp();
+    }
   });
 
   /* clear invalid state as user types */
@@ -1242,6 +1110,133 @@
       var box = el.closest('.box');
       if(box) box.classList.remove('invalid');
     });
+  });
+
+  /* ---------- Destinasi & Kuliner: data dari database (Firestore) ----------
+     Admin bisa menambah/mengedit/menghapus destinasi & kuliner lewat admin.html
+     (koleksi 'places'). Jika database belum terhubung / koleksi masih kosong,
+     website tetap menampilkan data awal (seed) di bawah ini supaya tidak kosong. */
+  var SEED_PLACES = [{"type": "destinasi", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Masjid_Agung_At-Taqwa_Balikpapan.jpg?width=500", "tag": "Balikpapan", "title": "Masjid Agung At-Taqwa", "loc": "Jl. Jenderal Sudirman, Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Masjid+Agung+At-Taqwa+Balikpapan", "desc": "Masjid terbesar di Balikpapan dengan arsitektur megah, cocok untuk singgah sholat sekaligus berfoto.", "id": "seed-1", "order": 1}, {"type": "destinasi", "photo": "https://raw.githubusercontent.com/hecatesorata/danates/main/assets/images%20(15).jpeg", "tag": "Balikpapan", "title": "Pantai Kemala", "loc": "Klandasan Ilir, Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Pantai+Kemala+Balikpapan", "desc": "Pantai kota yang ramai di sore hari, favorit untuk bersantai sambil menikmati suasana pesisir Balikpapan.", "id": "seed-2", "order": 2}, {"type": "destinasi", "photo": "https://raw.githubusercontent.com/hecatesorata/danates/main/assets/History10.jpg", "tag": "Balikpapan", "title": "KWPLH Sun Bear Sanctuary", "loc": "Km 23, Hutan Wain, Balikpapan Utara, Kaltim", "meta": "08:00–17:00 WITA · Gratis/Sumbangan sukarela (parkir Rp5.000)", "maps": "https://www.google.com/maps?q=-1.1342,116.8619", "desc": "Suaka beruang madu satu-satunya di dunia, tempat edukasi konservasi satwa khas Kalimantan.", "id": "seed-3", "order": 3}, {"type": "destinasi", "photo": "https://raw.githubusercontent.com/hecatesorata/danates/main/assets/01jtmnybs1m8wg524zr25hy4xm.jpg", "tag": "Balikpapan", "title": "Bukit Bangkirai", "loc": "Samboja, Kutai Kartanegara, Kaltim", "meta": "08:00–17:00 WITA · Rp15.000 masuk, Rp30.000 canopy bridge", "maps": "https://www.google.com/maps?q=-0.9667,116.8667", "desc": "Hutan hujan tropis dengan jembatan kanopi setinggi pohon, cocok untuk wisata alam dan petualangan.", "id": "seed-4", "order": 4}, {"type": "destinasi", "photo": "https://raw.githubusercontent.com/hecatesorata/danates/main/assets/unnamed-2.jpg", "tag": "Balikpapan", "title": "Pantai Manggar Segarasari", "loc": "Manggar, Balikpapan Timur, Kaltim", "meta": "06:00–18:00 WITA · Rp10.000 dewasa, Rp5.000 anak", "maps": "https://www.google.com/maps?q=-1.1963,116.9587", "desc": "Pantai keluarga dengan pasir putih landai, area bermain anak, dan banyak warung makan pinggir pantai.", "id": "seed-5", "order": 5}, {"type": "destinasi", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Taman%20Bekapai%20Balikpapan.jpg?width=500", "tag": "Balikpapan", "title": "Taman Bekapai", "loc": "Jl. Jenderal Sudirman, Balikpapan, Kaltim", "meta": "24 jam · Taman kota, gratis", "maps": "https://www.google.com/maps/search/?api=1&query=Taman+Bekapai+Balikpapan", "desc": "Taman kota terbuka di pusat Balikpapan, nyaman untuk jalan santai dan istirahat sejenak.", "id": "seed-6", "order": 6}, {"type": "destinasi", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Traditional%20market%20Indonesia.jpg?width=500", "tag": "Balikpapan", "title": "Pasar Klandasan", "loc": "Klandasan Ulu, Balikpapan, Kaltim", "meta": "05:00–17:00 WITA · Pasar tradisional & oleh-oleh", "maps": "https://www.google.com/maps/search/?api=1&query=Pasar+Klandasan+Balikpapan", "desc": "Pasar tradisional terbesar di Balikpapan, tempat belanja oleh-oleh khas dan hasil laut segar.", "id": "seed-7", "order": 7}, {"type": "destinasi", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Mangrove%20forest.jpg?width=500", "tag": "Balikpapan", "title": "Hutan Mangrove Margomulyo", "loc": "Margomulyo, Balikpapan Barat, Kaltim", "meta": "08:00–17:00 WITA · Rp15.000 tiket masuk", "maps": "https://www.google.com/maps?q=-1.2261,116.7935", "desc": "Kawasan konservasi mangrove dengan jalur tracking kayu, cocok untuk wisata edukasi lingkungan.", "id": "seed-8", "order": 8}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Kepiting_Bakau_Papua.jpg?width=500", "tag": "Kuliner", "title": "Kepiting Soka Kenari", "loc": "Kenari Sari, Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Kepiting+Soka+Kenari+Balikpapan", "desc": "Kepiting lunak goreng renyah khas Balikpapan, bisa dimakan utuh dengan cangkangnya.", "id": "seed-9", "order": 9}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Ikan_Pari_Bakar_Berempah.jpg?width=500", "tag": "Kuliner", "title": "Ikan Bakar Melawai", "loc": "Kawasan Melawai, Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Ikan+Bakar+Melawai+Balikpapan", "desc": "Ikan bakar segar khas pesisir dengan bumbu rempah, favorit wisatawan di kawasan Melawai.", "id": "seed-10", "order": 10}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20Kuning%20Banjar%20001.jpg?width=500", "tag": "Kuliner", "title": "Nasi Kuning Khas Kaltim", "loc": "Kawasan Kampung Baru / Kota, Balikpapan, Kaltim", "meta": "06:00–12:00 WITA · Rp15.000–Rp30.000/porsi", "maps": "https://www.google.com/maps?q=-1.2415,116.8288", "desc": "Sarapan khas Kalimantan Timur dengan nasi kuning gurih dan aneka lauk pelengkap.", "id": "seed-11", "order": 11}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Amplang%20from%20Sabah,%20Malaysia.jpg?width=500", "tag": "Oleh-oleh", "title": "Amplang Balikpapan", "loc": "Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Toko+Amplang+Balikpapan", "desc": "Kerupuk ikan renyah khas Balikpapan, oleh-oleh wajib untuk dibawa pulang.", "id": "seed-12", "order": 12}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Rumah%20Dahor%20Balikpapan.JPG?width=500", "tag": "Kuliner", "title": "Kawasan Kuliner Kampung Atas Air", "loc": "Margasari, Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Kampung+Atas+Air+Margasari+Balikpapan", "desc": "Kampung unik di atas air dengan deretan warung makan tradisional bernuansa lokal.", "id": "seed-13", "order": 13}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Sunset_ocean.jpg?width=500", "tag": "Sunset View", "title": "Cafe Puncak Pertamina", "loc": "Balikpapan, Kaltim", "meta": "15:00–23:00 WITA · Menu Rp15.000–Rp50.000", "maps": "https://www.google.com/maps?q=-1.2745,116.8211", "desc": "Cafe di ketinggian dengan pemandangan sunset terbaik di Balikpapan, cocok untuk nongkrong sore.", "id": "seed-14", "order": 14}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Fried%20seafood%20platter.jpg?width=500", "tag": "Kuliner", "title": "Seafood Haur Gading", "loc": "Pasar Inpres Kebun Sayur, Balikpapan, Kaltim", "meta": "10:00–21:00 WITA · Rp50.000–Rp150.000/porsi", "maps": "https://www.google.com/maps?q=-1.2388,116.8210", "desc": "Hidangan seafood segar hasil laut Balikpapan, diolah dengan bumbu khas nusantara.", "id": "seed-15", "order": 15}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Bakpao.jpg?width=500", "tag": "Oleh-oleh", "title": "Mantau Balikpapan", "loc": "Mantau Straat 1 / Cantik Manis, Balikpapan, Kaltim", "meta": "08:00–20:00 WITA · Rp50.000–Rp120.000/porsi", "maps": "https://www.google.com/maps?q=-1.2481,116.8402", "desc": "Roti kukus khas dengan berbagai isian, jajanan populer untuk oleh-oleh maupun camilan.", "id": "seed-16", "order": 16}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Coto%20Makassar-dish.JPG?width=500", "tag": "Kuliner", "title": "Coto Makassar H. Kasim", "loc": "Balikpapan, Kaltim", "meta": "08:00–21:00 WITA · Rp30.000–Rp45.000/porsi", "maps": "https://www.google.com/maps?q=-1.2585,116.8342", "desc": "Sup daging khas Makassar dengan kuah rempah kental, populer di kalangan warga Balikpapan.", "id": "seed-17", "order": 17}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20padang.jpg?width=500", "tag": "Kuliner", "title": "Restoran Nasi Padang Upik", "loc": "Balikpapan, Kaltim", "meta": "08:00–22:00 WITA · Rp25.000–Rp60.000/porsi", "maps": "https://www.google.com/maps?q=-1.2611,116.8415", "desc": "Nasi Padang dengan aneka lauk khas Minang, pilihan makan siang yang mengenyangkan.", "id": "seed-18", "order": 18}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Warung%20Kopi.jpg?width=500", "tag": "Kuliner & Cafe", "title": "Kopi Tiam (Kedai Kopi Nam Min)", "loc": "Balikpapan, Kaltim", "meta": "06:00–18:00 WITA · Rp15.000–Rp35.000", "maps": "https://www.google.com/maps?q=-1.2422,116.8231", "desc": "Kedai kopi legendaris bergaya Tionghoa-Melayu dengan kopi tubruk dan roti bakar klasik.", "id": "seed-19", "order": 19}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Gudeg.jpg?width=500", "tag": "Kuliner", "title": "Gudeg Jogja Km. 10", "loc": "Jl. Soekarno-Hatta Km 10, Balikpapan, Kaltim", "meta": "07:00–21:00 WITA · Rp20.000–Rp40.000/porsi", "maps": "https://www.google.com/maps?q=-1.1842,116.8685", "desc": "Gudeg khas Jogja dengan cita rasa manis gurih, hadir di tengah kota Balikpapan.", "id": "seed-20", "order": 20}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20Pecel.jpg?width=500", "tag": "Kuliner Jawa", "title": "Nasi Pecel Mas Pery", "loc": "Balikpapan, Kaltim", "meta": "06:30–14:00 WITA · Rp15.000–Rp25.000/porsi", "maps": "https://www.google.com/maps?q=-1.2489,116.8512", "desc": "Nasi pecel khas Jawa dengan sambal kacang gurih, pilihan sarapan favorit warga lokal.", "id": "seed-21", "order": 21}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Kepiting%20saus%20padang.jpg?width=500", "tag": "Kuliner khas", "title": "Kepiting Dandito Balikpapan", "loc": "Balikpapan, Kaltim", "meta": "08:00–22:00 WITA · Rp150.000–Rp350.000/porsi", "maps": "https://www.google.com/maps?q=-1.2678,116.8643", "desc": "Kepiting saus khas dengan porsi besar, salah satu kuliner seafood paling terkenal di kota ini.", "id": "seed-22", "order": 22}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Milkfish%20bandeng.JPG?width=500", "tag": "Kuliner Seafood", "title": "Restoran Rumah Makan Torani", "loc": "Balikpapan, Kaltim", "meta": "09:00–23:00 WITA · Rp40.000–Rp150.000/porsi", "maps": "https://www.google.com/maps?q=-1.2643,116.8791", "desc": "Restoran seafood keluarga dengan menu ikan dan olahan laut segar setiap hari.", "id": "seed-23", "order": 23}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Street%20food%20night%20market.jpg?width=500", "tag": "Kuliner Malam", "title": "Kawasan Kuliner Pasar Baru", "loc": "Pasar Baru, Balikpapan, Kaltim", "meta": "17:00–23:00 WITA · Aneka jajanan & makanan ringan", "maps": "https://www.google.com/maps/search/?api=1&query=Pasar+Baru+Balikpapan", "desc": "Pusat jajanan malam dengan aneka street food, ramai dikunjungi warga saat malam hari.", "id": "seed-24", "order": 24}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Indonesian%20coffee.jpg?width=500", "tag": "Kuliner & Cafe", "title": "Deretan Kafe Jl. Sudirman", "loc": "Jl. Jenderal Sudirman, Balikpapan, Kaltim", "meta": "10:00–22:00 WITA · Kopi & makanan ringan", "maps": "https://www.google.com/maps/search/?api=1&query=Cafe+Jl+Sudirman+Balikpapan", "desc": "Barisan kafe kekinian di jalan utama kota, cocok untuk ngopi santai sambil menikmati suasana perkotaan.", "id": "seed-25", "order": 25}];
+
+  function escapePlaceText(str){
+    return String(str || '').replace(/[&<>"']/g, function(m){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m];
+    });
+  }
+
+  function placeCardHtml(p){
+    var desc = escapePlaceText(p.desc);
+    var photo = (p.photo || '').replace(/'/g, "%27");
+    var metaHtml = p.meta ? '<span class="meta">' + escapePlaceText(p.meta) + '</span>' : '';
+    var mapsHtml = p.maps ? (
+      '<a class="maps-link" href="' + escapePlaceText(p.maps) + '" target="_blank" rel="noopener">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>' +
+        'Lihat Lokasi' +
+      '</a>'
+    ) : '';
+    return '<div class="dest-card" data-desc="' + desc + '" tabindex="0">' +
+      '<div class="dest-photo" style="background-image:url(\'' + photo + '\');"><span class="tag">' + escapePlaceText(p.tag) + '</span></div>' +
+      '<div class="dest-info"><b>' + escapePlaceText(p.title) + '</b><span class="loc">' + escapePlaceText(p.loc) + '</span>' + metaHtml + mapsHtml + '</div>' +
+    '</div>';
+  }
+
+  function renderPlaces(list){
+    var destGrid = document.getElementById('destinasiGrid');
+    var kulinerGrid = document.getElementById('kulinerGrid');
+    var destItems = list.filter(function(p){ return p.type === 'destinasi'; });
+    var kulinerItems = list.filter(function(p){ return p.type === 'kuliner'; });
+    destGrid.innerHTML = destItems.length ? destItems.map(placeCardHtml).join('') : '<p class="places-loading">Belum ada destinasi.</p>';
+    kulinerGrid.innerHTML = kulinerItems.length ? kulinerItems.map(placeCardHtml).join('') : '<p class="places-loading">Belum ada kuliner.</p>';
+  }
+
+  if(dbReady){
+    db.collection('places').orderBy('order', 'asc').onSnapshot(function(snap){
+      if(snap.empty){
+        renderPlaces(SEED_PLACES);
+        return;
+      }
+      var list = [];
+      snap.forEach(function(doc){ list.push(doc.data()); });
+      renderPlaces(list);
+    }, function(err){
+      console.warn('Gagal memuat destinasi/kuliner dari database:', err);
+      renderPlaces(SEED_PLACES);
+    });
+  } else {
+    renderPlaces(SEED_PLACES);
+  }
+
+  /* ---------- Destinasi/Kuliner mini pop-out modal ----------
+     Delegated listeners so this also works for cards rendered dynamically above. */
+  var destModalOverlay = document.getElementById('destModalOverlay');
+  var destModalPhoto = document.getElementById('destModalPhoto');
+  var destModalTag = document.getElementById('destModalTag');
+  var destModalTitle = document.getElementById('destModalTitle');
+  var destModalLoc = document.getElementById('destModalLoc');
+  var destModalMeta = document.getElementById('destModalMeta');
+  var destModalDesc = document.getElementById('destModalDesc');
+  var destModalMapsLink = document.getElementById('destModalMapsLink');
+  var destModalClose = document.getElementById('destModalClose');
+  var lastFocusedCard = null;
+
+  function openDestModal(card){
+    var photo = card.querySelector('.dest-photo');
+    var tag = card.querySelector('.tag');
+    var title = card.querySelector('.dest-info b');
+    var loc = card.querySelector('.loc');
+    var meta = card.querySelector('.meta');
+    var mapsLink = card.querySelector('.maps-link');
+    var desc = card.getAttribute('data-desc');
+
+    destModalPhoto.style.backgroundImage = photo ? photo.style.backgroundImage : '';
+    destModalTag.textContent = tag ? tag.textContent : '';
+    destModalTag.style.display = tag ? '' : 'none';
+    destModalTitle.textContent = title ? title.textContent : '';
+    destModalLoc.textContent = loc ? loc.textContent : '';
+    if(meta){
+      destModalMeta.textContent = meta.textContent;
+      destModalMeta.style.display = '';
+    } else {
+      destModalMeta.style.display = 'none';
+    }
+    destModalDesc.textContent = desc || '';
+    destModalDesc.style.display = desc ? '' : 'none';
+    if(mapsLink){
+      destModalMapsLink.href = mapsLink.href;
+      destModalMapsLink.style.display = '';
+    } else {
+      destModalMapsLink.style.display = 'none';
+    }
+
+    lastFocusedCard = card;
+    destModalOverlay.classList.add('open');
+    destModalClose.focus();
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDestModal(){
+    destModalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+    if(lastFocusedCard){ lastFocusedCard.focus(); }
+  }
+
+  document.addEventListener('click', function(e){
+    var mapsLink = e.target.closest('.maps-link');
+    if(mapsLink){ e.stopPropagation(); return; }
+    var card = e.target.closest('.dest-card');
+    if(card){ openDestModal(card); }
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && destModalOverlay.classList.contains('open')){ closeDestModal(); return; }
+    if(e.key === 'Enter' || e.key === ' '){
+      var card = e.target.closest && e.target.closest('.dest-card');
+      if(card){ e.preventDefault(); openDestModal(card); }
+    }
+  });
+
+  destModalClose.addEventListener('click', closeDestModal);
+  destModalOverlay.addEventListener('click', function(e){
+    if(e.target === destModalOverlay){ closeDestModal(); }
   });
 
   /* ---------- Scroll reveal animations ---------- */
