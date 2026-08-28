@@ -177,7 +177,25 @@
   .btn-whatsapp{background:var(--green);color:#fff;padding:14px 22px;border-radius:10px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:13.5px;}
   .btn-whatsapp small{display:block;font-weight:500;font-size:11px;opacity:0.9;}
 
-  footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;font-size:12px;color:var(--muted);}
+  /* ---------- Reservasi Form ---------- */
+  .resv-card{max-width:820px;margin:0 auto;background:var(--white);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 28px rgba(15,38,71,0.08);padding:32px 34px;}
+  @media (max-width:640px){ .resv-card{padding:24px 20px;} }
+  .resv-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 20px;}
+  @media (max-width:640px){ .resv-grid{grid-template-columns:1fr;} }
+  .resv-field{display:flex;flex-direction:column;gap:7px;}
+  .resv-field.full{grid-column:1/-1;}
+  .resv-field label{font-size:12px;font-weight:600;color:var(--navy);}
+  .resv-field .box{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;padding:11px 12px;font-size:13.5px;color:var(--text);background:var(--panel);transition:border-color .15s;}
+  .resv-field .box:focus-within{border-color:var(--navy);}
+  .resv-field .box svg{flex:0 0 auto;color:var(--navy);}
+  .resv-field .box select,.resv-field .box input,.resv-field .box textarea{border:none;background:transparent;font:inherit;color:var(--text);width:100%;padding:0;outline:none;-webkit-appearance:none;appearance:none;resize:vertical;}
+  .resv-radio-group{display:flex;gap:10px;flex-wrap:wrap;}
+  .resv-radio{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;padding:9px 14px;font-size:13px;color:var(--text);background:var(--panel);cursor:pointer;transition:border-color .15s,background .15s;}
+  .resv-radio input{accent-color:var(--navy);}
+  .resv-radio:has(input:checked){border-color:var(--navy);background:#eef3f9;font-weight:600;color:var(--navy);}
+  .resv-submit{margin-top:22px;width:100%;background:var(--green);color:#fff;border:none;border-radius:10px;padding:15px;font-size:14.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s;}
+  .resv-submit:hover{transform:translateY(-2px);}
+  .resv-note{text-align:center;font-size:11.5px;color:var(--muted);margin-top:12px;}
   footer .credits{display:block;margin-top:6px;font-size:10.5px;color:#9aa7b5;}
 </style>
 </head>
@@ -197,6 +215,7 @@
       <a href="#kuliner">Kuliner</a>
       <a href="#harga">Harga</a>
       <a href="#faq">FAQ</a>
+      <a href="#reservasi">Reservasi</a>
       <a href="#kontak">Kontak</a>
     </nav>
     <a href="#kontak" class="btn-call">
@@ -782,6 +801,107 @@
   </div>
 </section>
 
+<section class="section alt" id="reservasi">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="section-num">Reservasi</p>
+      <h2>Form Reservasi Tour Guide &amp; Travel</h2>
+      <p>Isi data perjalanan Anda, ringkasannya akan otomatis terkirim ke WhatsApp tim kami untuk konfirmasi.</p>
+    </div>
+    <form class="resv-card" id="resvForm">
+      <div class="resv-grid">
+        <div class="resv-field">
+          <label for="rNama">Nama Lengkap</label>
+          <div class="box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.6"/></svg>
+            <input type="text" id="rNama" placeholder="Nama Anda" required />
+          </div>
+        </div>
+        <div class="resv-field">
+          <label for="rWa">Nomor WhatsApp</label>
+          <div class="box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1.1.5 1.1 1.1V20c0 .6-.5 1-1.1 1C10.6 21 3 13.4 3 4.1 3 3.5 3.5 3 4.1 3H7c.6 0 1.1.5 1.1 1.1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1L6.6 10.8Z" stroke="currentColor" stroke-width="1.5"/></svg>
+            <input type="tel" id="rWa" placeholder="08xx / 60xx" required />
+          </div>
+        </div>
+        <div class="resv-field">
+          <label for="rDari">Dari</label>
+          <div class="box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
+            <select id="rDari">
+              <option>Sabah</option>
+              <option>Kuching (Serawak)</option>
+              <option>Brunei (Bandar Seri Begawan)</option>
+            </select>
+          </div>
+        </div>
+        <div class="resv-field">
+          <label for="rTujuan">Tujuan</label>
+          <div class="box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
+            <select id="rTujuan">
+              <option>Balikpapan</option>
+            </select>
+          </div>
+        </div>
+        <div class="resv-field">
+          <label for="rTanggal">Tanggal Keberangkatan</label>
+          <div class="box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6"/></svg>
+            <input type="date" id="rTanggal" required />
+          </div>
+        </div>
+        <div class="resv-field">
+          <label for="rPenumpang">Jumlah Penumpang</label>
+          <div class="box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 18v-2a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v2M14 18v-2a4 4 0 0 1 3-3.9M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm11 1a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2Z" stroke="currentColor" stroke-width="1.5"/></svg>
+            <input type="number" id="rPenumpang" min="1" max="12" placeholder="Contoh: 4" required />
+          </div>
+        </div>
+        <div class="resv-field full">
+          <label>Pilihan Armada</label>
+          <div class="resv-radio-group">
+            <label class="resv-radio"><input type="radio" name="rArmada" value="Toyota Innova Reborn" checked />Innova Reborn</label>
+            <label class="resv-radio"><input type="radio" name="rArmada" value="Toyota Avanza" />Avanza</label>
+            <label class="resv-radio"><input type="radio" name="rArmada" value="Toyota Hiace" />Hiace</label>
+            <label class="resv-radio"><input type="radio" name="rArmada" value="Hyundai Starex" />Starex</label>
+          </div>
+        </div>
+        <div class="resv-field">
+          <label for="rDurasi">Durasi Sewa</label>
+          <div class="box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6"/></svg>
+            <select id="rDurasi">
+              <option>1 Hari (12 Jam)</option>
+              <option>2 Hari</option>
+              <option>3 Hari</option>
+              <option>Lebih dari 3 Hari (Custom)</option>
+            </select>
+          </div>
+        </div>
+        <div class="resv-field">
+          <label for="rJemput">Titik Penjemputan</label>
+          <div class="box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
+            <input type="text" id="rJemput" placeholder="Bandara / Hotel / Alamat" />
+          </div>
+        </div>
+        <div class="resv-field full">
+          <label for="rCatatan">Catatan Tambahan</label>
+          <div class="box">
+            <textarea id="rCatatan" rows="3" placeholder="Contoh: ingin mampir kuliner tertentu, jumlah koper, dsb."></textarea>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="resv-submit">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>
+        Kirim Reservasi via WhatsApp
+      </button>
+      <p class="resv-note">Data Anda hanya digunakan untuk proses reservasi dan tidak dibagikan ke pihak lain.</p>
+    </form>
+  </div>
+</section>
+
 <section class="section" id="kontak">
   <div class="wrap">
     <div class="cta">
@@ -791,7 +911,6 @@
       </div>
       <div class="cta-list">
         <span>✓ Respon cepat</span>
-        <span>✓ Penjemputan di bandara / hotel</span>
         <span>✓ Pembayaran mudah &amp; aman</span>
       </div>
       <a href="https://wa.me/+600149002475" class="btn-whatsapp">
@@ -801,6 +920,36 @@
     </div>
   </div>
 </section>
+
+<script>
+  document.getElementById('resvForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var nama = document.getElementById('rNama').value;
+    var wa = document.getElementById('rWa').value;
+    var dari = document.getElementById('rDari').value;
+    var tujuan = document.getElementById('rTujuan').value;
+    var tanggal = document.getElementById('rTanggal').value || 'belum dipilih';
+    var penumpang = document.getElementById('rPenumpang').value;
+    var armada = document.querySelector('input[name="rArmada"]:checked').value;
+    var durasi = document.getElementById('rDurasi').value;
+    var jemput = document.getElementById('rJemput').value || '-';
+    var catatan = document.getElementById('rCatatan').value || '-';
+
+    var pesan = 'Halo BorneoDrive, saya ingin melakukan reservasi:%0A' +
+      'Nama: ' + encodeURIComponent(nama) +
+      '%0ANo. WhatsApp: ' + encodeURIComponent(wa) +
+      '%0ADari: ' + encodeURIComponent(dari) +
+      '%0ATujuan: ' + encodeURIComponent(tujuan) +
+      '%0ATanggal: ' + encodeURIComponent(tanggal) +
+      '%0AJumlah Penumpang: ' + encodeURIComponent(penumpang) +
+      '%0AArmada: ' + encodeURIComponent(armada) +
+      '%0ADurasi: ' + encodeURIComponent(durasi) +
+      '%0ATitik Penjemputan: ' + encodeURIComponent(jemput) +
+      '%0ACatatan: ' + encodeURIComponent(catatan);
+
+    window.open('https://wa.me/+600149002475?text=' + pesan, '_blank');
+  });
+</script>
 
 <footer>
   <div class="wrap">
