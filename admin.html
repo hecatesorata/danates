@@ -40,6 +40,7 @@
   .btn-ghost{background:var(--panel);color:var(--text);border:1px solid var(--line);}
   .btn-block{width:100%;}
   .btn-sm{padding:7px 12px;font-size:12px;}
+  .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
   .login-error{color:var(--red);font-size:12.5px;margin-top:10px;display:none;}
   .login-error.show{display:block;}
   .login-hint{margin-top:18px;font-size:11.5px;color:var(--muted);background:var(--panel);border-radius:9px;padding:10px 12px;line-height:1.6;}
@@ -95,11 +96,14 @@
   .chat-conv-item b{display:block;font-size:13.5px;color:var(--navy);padding-right:20px;}
   .chat-conv-item .preview{font-size:11.5px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:20px;}
   .chat-conv-item .dot{position:absolute;right:14px;top:16px;width:9px;height:9px;border-radius:50%;background:var(--green);}
+  .chat-conv-item .lock-tag{display:inline-block;font-size:9.5px;font-weight:700;color:#a8721f;background:#fbf1de;padding:2px 7px;border-radius:8px;margin-top:4px;}
   .chat-thread{display:flex;flex-direction:column;min-height:520px;}
   .chat-thread-empty{margin:auto;color:var(--muted);font-size:13px;padding:20px;text-align:center;}
   .chat-thread-active{display:flex;flex-direction:column;height:100%;}
-  .chat-thread-head{padding:14px 18px;border-bottom:1px solid var(--line);}
+  .chat-thread-head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;}
   .chat-thread-head b{color:var(--navy);font-size:14px;}
+  .chat-lock-banner{display:none;align-items:center;justify-content:space-between;gap:10px;background:#fbf1de;border-bottom:1px solid #eddcb3;color:#7a5a1a;font-size:12px;font-weight:600;padding:9px 18px;}
+  .chat-lock-banner span{flex:1 1 auto;}
   .chat-thread-messages{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:9px;background:var(--panel);max-height:420px;}
   .chat-thread-messages .chat-msg{display:flex;}
   .chat-thread-messages .chat-msg.from-visitor{justify-content:flex-start;}
@@ -110,6 +114,7 @@
   .chat-thread-input{display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--line);background:#fff;}
   .chat-thread-input input{flex:1;border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;font-size:13px;background:var(--panel);}
   .chat-thread-input input:focus{outline:none;border-color:var(--navy);background:#fff;}
+  .chat-thread-input input:disabled{opacity:0.6;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -269,7 +274,14 @@
         <div class="chat-thread" id="chatThread">
           <div class="chat-thread-empty" id="chatThreadEmpty">Pilih salah satu percakapan di sebelah kiri untuk membalas pengunjung.</div>
           <div class="chat-thread-active" id="chatThreadActive" style="display:none;">
-            <div class="chat-thread-head"><b id="chatThreadName"></b></div>
+            <div class="chat-thread-head">
+              <b id="chatThreadName"></b>
+              <button class="btn btn-ghost btn-sm" id="chatReleaseBtn" style="display:none;">Lepas Percakapan</button>
+            </div>
+            <div class="chat-lock-banner" id="chatLockBanner">
+              <span id="chatLockText"></span>
+              <button class="btn btn-ghost btn-sm" id="chatTakeoverBtn">Ambil Alih</button>
+            </div>
             <div class="chat-thread-messages" id="chatThreadMessages"></div>
             <form class="chat-thread-input" id="chatReplyForm">
               <input type="text" id="chatReplyInput" placeholder="Tulis balasan..." autocomplete="off" />
@@ -305,15 +317,19 @@
   }
 
   /* =============== AUTH =============== */
+  var currentAdminEmail = '';
+
   function showAdmin(user){
     loginScreen.style.display = 'none';
     adminScreen.classList.add('show');
+    currentAdminEmail = user.email;
     document.getElementById('adminEmailLabel').textContent = user.email;
     loadArmada();
     loadPlaces('destinasi');
     loadPlaces('kuliner');
     loadChatConversations();
     subscribeChatGlobal();
+    subscribeClaimsGlobal();
   }
   function showLogin(){
     adminScreen.classList.remove('show');
@@ -341,7 +357,11 @@
   });
 
   document.getElementById('logoutBtn').addEventListener('click', function(){
-    supabase.auth.signOut().then(showLogin);
+    /* Lepas semua percakapan yang sedang dipegang admin ini sebelum keluar */
+    var email = currentAdminEmail;
+    supabase.from(CLAIM_TABLE).delete().eq('admin_email', email).then(function(){
+      supabase.auth.signOut().then(showLogin);
+    });
   });
 
   /* =============== TABS =============== */
@@ -540,15 +560,24 @@
 
   /* =============== CHAT DENGAN PENGUNJUNG =============== */
   var CHAT_TABLE = 'borneodrive_chat';
+  var CLAIM_TABLE = 'borneodrive_chat_claims';
   var activeVisitorId = null;
   var chatConvChannel = null;
   var chatThreadChannel = null;
+  var claimsChannel = null;
 
   function loadChatConversations(){
-    supabase.from(CHAT_TABLE).select('*').order('created_at', { ascending: false }).then(function(res){
+    Promise.all([
+      supabase.from(CHAT_TABLE).select('*').order('created_at', { ascending: false }),
+      supabase.from(CLAIM_TABLE).select('*')
+    ]).then(function(results){
+      var chatRes = results[0], claimRes = results[1];
       var listEl = document.getElementById('chatConvList');
-      if(res.error){ listEl.innerHTML = '<p class="empty-note">Gagal memuat: ' + res.error.message + '</p>'; return; }
-      var rows = res.data || [];
+      if(chatRes.error){ listEl.innerHTML = '<p class="empty-note">Gagal memuat: ' + chatRes.error.message + '</p>'; return; }
+      var rows = chatRes.data || [];
+      var claimsByVisitor = {};
+      (claimRes.data || []).forEach(function(c){ claimsByVisitor[c.visitor_id] = c.admin_email; });
+
       var byVisitor = {};
       var order = [];
       rows.forEach(function(m){
@@ -568,9 +597,12 @@
       if(!convs.length){ listEl.innerHTML = '<p class="empty-note">Belum ada percakapan dari pengunjung.</p>'; return; }
       listEl.innerHTML = convs.map(function(c){
         var name = c.visitor_name || 'Pengunjung';
+        var claimedBy = claimsByVisitor[c.visitor_id];
+        var lockedByOther = claimedBy && claimedBy !== currentAdminEmail;
         return '<div class="chat-conv-item' + (c.visitor_id === activeVisitorId ? ' active' : '') + '" data-vid="' + c.visitor_id + '" data-vname="' + escapeHtml(name) + '">' +
           '<b>' + escapeHtml(name) + '</b>' +
           '<div class="preview">' + escapeHtml(c.last.message) + '</div>' +
+          (lockedByOther ? '<span class="lock-tag">🔒 ditangani ' + escapeHtml(claimedBy) + '</span>' : '') +
           (c.unread > 0 ? '<span class="dot"></span>' : '') +
         '</div>';
       }).join('');
@@ -589,6 +621,7 @@
     document.getElementById('chatThreadName').textContent = vname || 'Pengunjung';
     document.querySelectorAll('.chat-conv-item').forEach(function(it){ it.classList.toggle('active', it.dataset.vid === vid); });
     loadChatThreadMessages();
+    claimConversationIfFree(vid);
 
     if(chatThreadChannel){ supabase.removeChannel(chatThreadChannel); }
     chatThreadChannel = supabase.channel('admin-thread-' + vid)
@@ -616,10 +649,78 @@
     });
   }
 
+  /* --- Kunci percakapan: hanya 1 admin yang bisa membalas pada satu waktu --- */
+  function setThreadLocked(locked, byEmail){
+    var banner = document.getElementById('chatLockBanner');
+    var lockText = document.getElementById('chatLockText');
+    var input = document.getElementById('chatReplyInput');
+    var sendBtn = document.querySelector('#chatReplyForm button[type="submit"]');
+    var releaseBtn = document.getElementById('chatReleaseBtn');
+    if(locked){
+      lockText.textContent = '🔒 Percakapan ini sedang dibalas oleh admin: ' + byEmail;
+      banner.style.display = 'flex';
+      input.disabled = true;
+      input.placeholder = 'Sedang ditangani admin lain...';
+      sendBtn.disabled = true;
+      releaseBtn.style.display = 'none';
+    } else {
+      banner.style.display = 'none';
+      input.disabled = false;
+      input.placeholder = 'Tulis balasan...';
+      sendBtn.disabled = false;
+      releaseBtn.style.display = '';
+    }
+  }
+
+  function claimConversationIfFree(vid){
+    supabase.from(CLAIM_TABLE).select('*').eq('visitor_id', vid).maybeSingle().then(function(res){
+      var claim = res.data;
+      if(claim && claim.admin_email && claim.admin_email !== currentAdminEmail){
+        setThreadLocked(true, claim.admin_email);
+      } else {
+        setThreadLocked(false);
+        supabase.from(CLAIM_TABLE).upsert({ visitor_id: vid, admin_email: currentAdminEmail, claimed_at: new Date().toISOString() }, { onConflict: 'visitor_id' }).then(function(){
+          loadChatConversations();
+        });
+      }
+    });
+  }
+
+  function refreshLockStateIfActive(vid){
+    if(vid !== activeVisitorId) return;
+    supabase.from(CLAIM_TABLE).select('*').eq('visitor_id', vid).maybeSingle().then(function(res){
+      var claim = res.data;
+      if(claim && claim.admin_email && claim.admin_email !== currentAdminEmail){
+        setThreadLocked(true, claim.admin_email);
+      } else if(!claim){
+        setThreadLocked(false);
+      }
+    });
+  }
+
+  document.getElementById('chatReleaseBtn').addEventListener('click', function(){
+    if(!activeVisitorId) return;
+    supabase.from(CLAIM_TABLE).delete().eq('visitor_id', activeVisitorId).eq('admin_email', currentAdminEmail).then(function(){
+      showToast('Percakapan dilepas, admin lain kini bisa membalas.');
+      loadChatConversations();
+    });
+  });
+
+  document.getElementById('chatTakeoverBtn').addEventListener('click', function(){
+    if(!activeVisitorId) return;
+    if(!confirm('Ambil alih percakapan ini dari admin lain?')) return;
+    supabase.from(CLAIM_TABLE).upsert({ visitor_id: activeVisitorId, admin_email: currentAdminEmail, claimed_at: new Date().toISOString() }, { onConflict: 'visitor_id' }).then(function(res){
+      if(res.error){ showToast('Gagal mengambil alih: ' + res.error.message, true); return; }
+      setThreadLocked(false);
+      loadChatConversations();
+    });
+  });
+
   document.getElementById('chatReplyForm').addEventListener('submit', function(e){
     e.preventDefault();
     if(!activeVisitorId) return;
     var input = document.getElementById('chatReplyInput');
+    if(input.disabled) return;
     var text = input.value.trim();
     if(!text) return;
     input.value = '';
@@ -640,6 +741,24 @@
       if(activeVisitorId) loadChatThreadMessages();
     }, 15000);
   }
+
+  function subscribeClaimsGlobal(){
+    if(claimsChannel) return;
+    claimsChannel = supabase.channel('admin-claims-global')
+      .on('postgres_changes', { event: '*', schema: 'public', table: CLAIM_TABLE }, function(payload){
+        loadChatConversations();
+        var vid = (payload.new && payload.new.visitor_id) || (payload.old && payload.old.visitor_id);
+        if(vid){ refreshLockStateIfActive(vid); }
+      }).subscribe();
+  }
+
+  window.addEventListener('beforeunload', function(){
+    if(currentAdminEmail){
+      /* Percobaan terbaik untuk melepas kunci saat admin menutup tab.
+         Jika gagal terkirim, admin lain tetap bisa pakai tombol "Ambil Alih". */
+      supabase.from(CLAIM_TABLE).delete().eq('admin_email', currentAdminEmail);
+    }
+  });
 </script>
 </body>
 </html>
