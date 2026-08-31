@@ -54,8 +54,10 @@
   .admin-user{font-size:12.5px;color:#b9c6d8;display:flex;align-items:center;gap:12px;}
 
   .tabs{display:flex;gap:8px;margin:22px 0 20px;flex-wrap:wrap;}
-  .tab-btn{background:#fff;border:1.5px solid var(--line);border-radius:30px;padding:9px 18px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;}
+  .tab-btn{background:#fff;border:1.5px solid var(--line);border-radius:30px;padding:9px 18px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;position:relative;}
   .tab-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .tab-btn .tab-dot{position:absolute;top:5px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--red);display:none;}
+  .tab-btn .tab-dot.show{display:block;}
 
   .panel{display:none;}
   .panel.active{display:block;}
@@ -82,6 +84,32 @@
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy-deep);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:200;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .toast.err{background:#7a2020;}
+
+  /* ---- Chat tab ---- */
+  .chat-admin-wrap{display:grid;grid-template-columns:280px 1fr;gap:0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-height:520px;box-shadow:0 4px 14px rgba(15,38,71,0.05);}
+  @media (max-width:760px){ .chat-admin-wrap{grid-template-columns:1fr;} }
+  .chat-conv-list{border-right:1px solid var(--line);overflow-y:auto;max-height:600px;}
+  .chat-conv-item{padding:13px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s;position:relative;}
+  .chat-conv-item:hover{background:var(--panel);}
+  .chat-conv-item.active{background:#eef3f9;}
+  .chat-conv-item b{display:block;font-size:13.5px;color:var(--navy);padding-right:20px;}
+  .chat-conv-item .preview{font-size:11.5px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:20px;}
+  .chat-conv-item .dot{position:absolute;right:14px;top:16px;width:9px;height:9px;border-radius:50%;background:var(--green);}
+  .chat-thread{display:flex;flex-direction:column;min-height:520px;}
+  .chat-thread-empty{margin:auto;color:var(--muted);font-size:13px;padding:20px;text-align:center;}
+  .chat-thread-active{display:flex;flex-direction:column;height:100%;}
+  .chat-thread-head{padding:14px 18px;border-bottom:1px solid var(--line);}
+  .chat-thread-head b{color:var(--navy);font-size:14px;}
+  .chat-thread-messages{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:9px;background:var(--panel);max-height:420px;}
+  .chat-thread-messages .chat-msg{display:flex;}
+  .chat-thread-messages .chat-msg.from-visitor{justify-content:flex-start;}
+  .chat-thread-messages .chat-msg.from-admin{justify-content:flex-end;}
+  .chat-thread-messages .bubble{max-width:70%;padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.4;word-wrap:break-word;}
+  .chat-thread-messages .chat-msg.from-visitor .bubble{background:#fff;border:1px solid var(--line);color:var(--text);border-bottom-left-radius:4px;}
+  .chat-thread-messages .chat-msg.from-admin .bubble{background:var(--navy);color:#fff;border-bottom-right-radius:4px;}
+  .chat-thread-input{display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--line);background:#fff;}
+  .chat-thread-input input{flex:1;border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;font-size:13px;background:var(--panel);}
+  .chat-thread-input input:focus{outline:none;border-color:var(--navy);background:#fff;}
 </style>
 </head>
 <body>
@@ -90,7 +118,7 @@
 <div id="loginScreen">
   <div class="login-card">
     <h1>Admin BorneoDrive</h1>
-    <p class="sub">Masuk untuk mengelola armada, destinasi, dan kuliner.</p>
+    <p class="sub">Masuk untuk mengelola armada, destinasi, kuliner, dan chat.</p>
     <form id="loginForm">
       <div class="field">
         <label for="loginEmail">Email</label>
@@ -126,6 +154,7 @@
       <button class="tab-btn active" data-tab="armada">🚗 Armada</button>
       <button class="tab-btn" data-tab="destinasi">📍 Destinasi</button>
       <button class="tab-btn" data-tab="kuliner">🍽️ Kuliner</button>
+      <button class="tab-btn" data-tab="chat">💬 Chat<span class="tab-dot" id="chatTabDot"></span></button>
     </div>
 
     <!-- ===== TAB: ARMADA ===== -->
@@ -231,6 +260,25 @@
 
       <div class="item-list" id="kulinerList"><p class="empty-note">Memuat data...</p></div>
     </section>
+
+    <!-- ===== TAB: CHAT ===== -->
+    <section class="panel" id="panel-chat">
+      <div class="panel-head"><h2>Chat dengan Pengunjung Website</h2></div>
+      <div class="chat-admin-wrap">
+        <div class="chat-conv-list" id="chatConvList"><p class="empty-note">Memuat percakapan...</p></div>
+        <div class="chat-thread" id="chatThread">
+          <div class="chat-thread-empty" id="chatThreadEmpty">Pilih salah satu percakapan di sebelah kiri untuk membalas pengunjung.</div>
+          <div class="chat-thread-active" id="chatThreadActive" style="display:none;">
+            <div class="chat-thread-head"><b id="chatThreadName"></b></div>
+            <div class="chat-thread-messages" id="chatThreadMessages"></div>
+            <form class="chat-thread-input" id="chatReplyForm">
+              <input type="text" id="chatReplyInput" placeholder="Tulis balasan..." autocomplete="off" />
+              <button type="submit" class="btn btn-navy btn-sm">Kirim</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -264,6 +312,8 @@
     loadArmada();
     loadPlaces('destinasi');
     loadPlaces('kuliner');
+    loadChatConversations();
+    subscribeChatGlobal();
   }
   function showLogin(){
     adminScreen.classList.remove('show');
@@ -301,6 +351,10 @@
       document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
       btn.classList.add('active');
       document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+      if(btn.dataset.tab === 'chat'){
+        document.getElementById('chatTabDot').classList.remove('show');
+        loadChatConversations();
+      }
     });
   });
 
@@ -482,6 +536,109 @@
     return String(str || '').replace(/[&<>"']/g, function(m){
       return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m];
     });
+  }
+
+  /* =============== CHAT DENGAN PENGUNJUNG =============== */
+  var CHAT_TABLE = 'borneodrive_chat';
+  var activeVisitorId = null;
+  var chatConvChannel = null;
+  var chatThreadChannel = null;
+
+  function loadChatConversations(){
+    supabase.from(CHAT_TABLE).select('*').order('created_at', { ascending: false }).then(function(res){
+      var listEl = document.getElementById('chatConvList');
+      if(res.error){ listEl.innerHTML = '<p class="empty-note">Gagal memuat: ' + res.error.message + '</p>'; return; }
+      var rows = res.data || [];
+      var byVisitor = {};
+      var order = [];
+      rows.forEach(function(m){
+        if(!byVisitor[m.visitor_id]){
+          byVisitor[m.visitor_id] = { visitor_id: m.visitor_id, visitor_name: m.visitor_name, last: m, unread: 0 };
+          order.push(m.visitor_id);
+        }
+        if(!byVisitor[m.visitor_id].visitor_name && m.visitor_name){ byVisitor[m.visitor_id].visitor_name = m.visitor_name; }
+        if(m.sender === 'visitor' && !m.is_read){ byVisitor[m.visitor_id].unread++; }
+      });
+      var convs = order.map(function(vid){ return byVisitor[vid]; });
+      var totalUnread = convs.reduce(function(sum,c){ return sum + c.unread; }, 0);
+      var dot = document.getElementById('chatTabDot');
+      var chatPanelActive = document.getElementById('panel-chat').classList.contains('active');
+      if(totalUnread > 0 && !chatPanelActive){ dot.classList.add('show'); } else { dot.classList.remove('show'); }
+
+      if(!convs.length){ listEl.innerHTML = '<p class="empty-note">Belum ada percakapan dari pengunjung.</p>'; return; }
+      listEl.innerHTML = convs.map(function(c){
+        var name = c.visitor_name || 'Pengunjung';
+        return '<div class="chat-conv-item' + (c.visitor_id === activeVisitorId ? ' active' : '') + '" data-vid="' + c.visitor_id + '" data-vname="' + escapeHtml(name) + '">' +
+          '<b>' + escapeHtml(name) + '</b>' +
+          '<div class="preview">' + escapeHtml(c.last.message) + '</div>' +
+          (c.unread > 0 ? '<span class="dot"></span>' : '') +
+        '</div>';
+      }).join('');
+      listEl.querySelectorAll('.chat-conv-item').forEach(function(item){
+        item.addEventListener('click', function(){
+          openChatThread(item.dataset.vid, item.dataset.vname);
+        });
+      });
+    });
+  }
+
+  function openChatThread(vid, vname){
+    activeVisitorId = vid;
+    document.getElementById('chatThreadEmpty').style.display = 'none';
+    document.getElementById('chatThreadActive').style.display = 'flex';
+    document.getElementById('chatThreadName').textContent = vname || 'Pengunjung';
+    document.querySelectorAll('.chat-conv-item').forEach(function(it){ it.classList.toggle('active', it.dataset.vid === vid); });
+    loadChatThreadMessages();
+
+    if(chatThreadChannel){ supabase.removeChannel(chatThreadChannel); }
+    chatThreadChannel = supabase.channel('admin-thread-' + vid)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: CHAT_TABLE, filter: 'visitor_id=eq.' + vid }, function(){
+        loadChatThreadMessages();
+        loadChatConversations();
+      }).subscribe();
+  }
+
+  function loadChatThreadMessages(){
+    if(!activeVisitorId) return;
+    var vid = activeVisitorId;
+    supabase.from(CHAT_TABLE).select('*').eq('visitor_id', vid).order('created_at', { ascending: true }).then(function(res){
+      if(res.error) return;
+      var rows = res.data || [];
+      var wrap = document.getElementById('chatThreadMessages');
+      wrap.innerHTML = rows.map(function(m){
+        return '<div class="chat-msg ' + (m.sender === 'admin' ? 'from-admin' : 'from-visitor') + '"><div class="bubble">' + escapeHtml(m.message) + '</div></div>';
+      }).join('');
+      wrap.scrollTop = wrap.scrollHeight;
+      var unreadIds = rows.filter(function(m){ return m.sender === 'visitor' && !m.is_read; }).map(function(m){ return m.id; });
+      if(unreadIds.length){
+        supabase.from(CHAT_TABLE).update({ is_read: true }).in('id', unreadIds).then(function(){ loadChatConversations(); });
+      }
+    });
+  }
+
+  document.getElementById('chatReplyForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!activeVisitorId) return;
+    var input = document.getElementById('chatReplyInput');
+    var text = input.value.trim();
+    if(!text) return;
+    input.value = '';
+    supabase.from(CHAT_TABLE).insert({ visitor_id: activeVisitorId, sender: 'admin', message: text }).then(function(res){
+      if(!res.error) loadChatThreadMessages();
+    });
+  });
+
+  function subscribeChatGlobal(){
+    if(chatConvChannel) return;
+    chatConvChannel = supabase.channel('admin-chat-global')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: CHAT_TABLE }, function(){
+        loadChatConversations();
+      }).subscribe();
+    /* Polling ringan sebagai fallback jika realtime tidak aktif di project Supabase */
+    setInterval(function(){
+      loadChatConversations();
+      if(activeVisitorId) loadChatThreadMessages();
+    }, 15000);
   }
 </script>
 </body>
