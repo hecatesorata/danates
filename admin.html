@@ -3,1459 +3,486 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Admin — Penjaga Batas</title>
+<meta name="robots" content="noindex, nofollow" />
+<title>Admin BorneoDrive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,600;1,400&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #181310;
-    --surface: #211a15;
-    --surface-raised: #291f18;
-    --border: #3a2e23;
-    --text: #f2e9dc;
-    --muted: #a4937d;
-    --muted-dim: #6f6153;
-    --gold: #c9a15a;
-    --gold-dim: rgba(201, 161, 90, 0.14);
-    --red: #a2402f;
-    --red-dim: rgba(162, 64, 47, 0.16);
-    --green: #4c8c5b;
-    --display: 'Spectral', Georgia, serif;
-    --body: 'Karla', system-ui, sans-serif;
-    --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  :root{
+    --navy:#0f2647; --navy-2:#16345c; --navy-deep:#081426;
+    --gold:#caa14c; --green:#25d366; --red:#d94f4f;
+    --text:#1c2b3a; --muted:#64748b; --line:#e4eaf1; --panel:#f6f9fc; --white:#fff;
+    --display:'Manrope', system-ui, sans-serif; --body:'Inter', system-ui, sans-serif;
+    --radius:12px;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--body);
-    line-height: 1.5;
-    min-height: 100vh;
-  }
-  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
-  a { color: inherit; }
-  .login-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-  .login-card {
-    width: 100%;
-    max-width: 360px;
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 32px 28px;
-  }
-  .login-card h1 {
-    font-family: var(--display);
-    font-size: 22px;
-    margin: 0 0 6px;
-    color: var(--gold);
-  }
-  .login-card p.sub {
-    font-family: var(--mono);
-    font-size: 11.5px;
-    color: var(--muted);
-    margin: 0 0 24px;
-  }
-  label {
-    display: block;
-    font-family: var(--mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    margin: 14px 0 6px;
-  }
-  input, textarea, select {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 10px 12px;
-    border-radius: 5px;
-    font-family: var(--body);
-    font-size: 14px;
-  }
-  input:focus, textarea:focus, select:focus {
-    outline: none;
-    border-color: var(--gold);
-  }
-  textarea { resize: vertical; min-height: 70px; }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 11px 18px;
-    border-radius: 5px;
-    border: 1px solid transparent;
-    font-weight: 600;
-    font-size: 13.5px;
-    font-family: var(--body);
-    cursor: pointer;
-    background: var(--gold);
-    color: var(--bg);
-    transition: filter 0.15s ease, transform 0.15s ease;
-  }
-  .btn:hover { filter: brightness(1.08); }
-  .btn:active { transform: translateY(1px); }
-  .btn.full { width: 100%; margin-top: 20px; }
-  .btn.ghost { background: transparent; border-color: var(--border); color: var(--text); }
-  .btn.danger { background: var(--red); color: #fff; }
-  .btn.small { padding: 7px 12px; font-size: 12px; }
-  .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
-  .error-msg {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: #e58a7a;
-    background: var(--red-dim);
-    border: 1px solid rgba(162,64,47,0.4);
-    padding: 8px 10px;
-    border-radius: 5px;
-    margin-top: 14px;
-    display: none;
-  }
-  .error-msg.visible { display: block; }
-  .dash { display: none; }
-  .dash.visible { display: block; }
-  header.admin-header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: rgba(24,19,16,0.92);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--border);
-  }
-  .admin-header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-  .admin-header-inner h1 {
-    font-family: var(--display);
-    font-size: 18px;
-    margin: 0;
-    color: var(--gold);
-  }
-  .admin-header-inner .user-email {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    display: block;
-    margin-top: 2px;
-  }
-  .tabs {
-    display: flex;
-    gap: 4px;
-    padding: 16px 20px 0;
-    max-width: 1000px;
-    margin: 0 auto;
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-  }
-  .tab-btn {
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 12.5px;
-    letter-spacing: 0.03em;
-    padding: 10px 16px;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-  }
-  .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
-  .tab-panel { display: none; padding: 28px 0 60px; }
-  .tab-panel.active { display: block; }
-  .panel-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .panel-head h2 { font-family: var(--display); font-size: 20px; margin: 0; }
-  .panel-head p { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin: 4px 0 0; }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-  .card h3 {
-    font-family: var(--mono);
-    font-size: 12.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--gold);
-    margin: 0 0 14px;
-  }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
-  .form-grid .full { grid-column: 1 / -1; }
-  @media (max-width: 620px) { .form-grid { grid-template-columns: 1fr; } }
-  .hint { font-family: var(--mono); font-size: 11px; color: var(--muted-dim); margin: 6px 0 0; }
-  .img-preview {
-    width: 100%;
-    max-height: 160px;
-    object-fit: cover;
-    border-radius: 6px;
-    margin-top: 8px;
-    display: none;
-    background: #000;
-  }
-  .upload-inline { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .upload-inline .btn { flex-shrink: 0; }
-  .upload-inline .upload-status { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
-  .row-item {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    transition: opacity 0.25s ease, transform 0.25s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease;
-  }
-  .row-item img, .row-item video {
-    width: 72px;
-    height: 72px;
-    object-fit: cover;
-    border-radius: 5px;
-    background: #000;
-    flex-shrink: 0;
-  }
-  .row-body { flex: 1; min-width: 0; }
-  .row-body .row-title { font-family: var(--display); font-weight: 600; font-size: 15px; margin: 0 0 3px; }
-  .row-body .row-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin: 0 0 3px; }
-  .row-body .row-desc {
-    font-size: 12.5px;
-    color: var(--muted);
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .row-actions { display: flex; gap: 6px; flex-shrink: 0; flex-direction: column; }
-  .empty-note { font-family: var(--mono); font-size: 12px; color: var(--muted-dim); text-align: center; padding: 30px 0; }
-  .badge {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    background: var(--gold-dim);
-    color: var(--gold);
-    border: 1px solid rgba(201,161,90,0.35);
-  }
-  .upload-drop {
-    border: 1.5px dashed var(--border);
-    border-radius: 8px;
-    padding: 26px;
-    text-align: center;
-    font-family: var(--mono);
-    font-size: 12.5px;
-    color: var(--muted);
-    cursor: pointer;
-    display: block;
-  }
-  .upload-drop:hover { border-color: var(--gold); color: var(--gold); }
-  .stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
-  .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
-  .stat-box .num { font-family: var(--mono); font-size: 22px; color: var(--gold); }
-  .stat-box .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
-  .toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--surface-raised);
-    border: 1px solid var(--gold);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 12.5px;
-    padding: 10px 18px;
-    border-radius: 6px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    z-index: 999;
-    max-width: 90vw;
-    text-align: center;
-  }
-  .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
-  #lokasiPickerMap {
-    width: 100%;
-    height: 340px;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    background: var(--surface-raised);
-    margin-bottom: 14px;
-  }
-  .leaflet-popup-content-wrapper {
-    background: var(--surface-raised);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-family: var(--body);
-  }
-  .leaflet-popup-tip { background: var(--surface-raised); border: 1px solid var(--border); }
-  .leaflet-popup-content { margin: 10px 12px; font-size: 12.5px; }
-  .leaflet-popup-content img {
-    width: 100%;
-    max-height: 120px;
-    object-fit: cover;
-    border-radius: 4px;
-    margin-bottom: 6px;
-  }
-  .leaflet-popup-content b { font-family: var(--display); color: var(--gold); display: block; margin-bottom: 3px; }
-  .leaflet-control-attribution { background: rgba(24,19,16,0.75) !important; color: var(--muted-dim) !important; font-size: 9.5px !important; }
-  .leaflet-control-attribution a { color: var(--muted) !important; }
-  .leaflet-control-zoom a { background: var(--surface-raised) !important; color: var(--text) !important; border-color: var(--border) !important; }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:var(--body);color:var(--text);background:var(--panel);line-height:1.5;}
+  a{color:inherit;}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px;}
+
+  /* ---- Login ---- */
+  #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--navy-deep),var(--navy));padding:20px;}
+  .login-card{background:#fff;border-radius:18px;padding:36px 32px;max-width:380px;width:100%;box-shadow:0 30px 60px rgba(0,0,0,0.3);}
+  .login-card h1{font-family:var(--display);font-size:20px;color:var(--navy);margin:0 0 4px;}
+  .login-card p.sub{font-size:13px;color:var(--muted);margin:0 0 24px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px;}
+  .field input,.field select,.field textarea{width:100%;border:1.5px solid var(--line);border-radius:9px;padding:11px 12px;font:inherit;font-size:13.5px;background:var(--panel);transition:border-color .2s;}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--navy);background:#fff;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:9px;padding:12px 18px;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;transition:transform .15s,opacity .15s;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn-navy{background:var(--navy);color:#fff;}
+  .btn-navy:hover{background:var(--navy-2);}
+  .btn-green{background:var(--green);color:#fff;}
+  .btn-red{background:#fdeceb;color:var(--red);}
+  .btn-ghost{background:var(--panel);color:var(--text);border:1px solid var(--line);}
+  .btn-block{width:100%;}
+  .btn-sm{padding:7px 12px;font-size:12px;}
+  .login-error{color:var(--red);font-size:12.5px;margin-top:10px;display:none;}
+  .login-error.show{display:block;}
+  .login-hint{margin-top:18px;font-size:11.5px;color:var(--muted);background:var(--panel);border-radius:9px;padding:10px 12px;line-height:1.6;}
+
+  /* ---- Admin shell ---- */
+  #adminScreen{display:none;min-height:100vh;}
+  #adminScreen.show{display:block;}
+  header.admin-top{background:var(--navy-deep);color:#fff;padding:16px 0;}
+  .admin-top-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .admin-brand{font-family:var(--display);font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px;}
+  .admin-brand span{color:var(--gold);}
+  .admin-user{font-size:12.5px;color:#b9c6d8;display:flex;align-items:center;gap:12px;}
+
+  .tabs{display:flex;gap:8px;margin:22px 0 20px;flex-wrap:wrap;}
+  .tab-btn{background:#fff;border:1.5px solid var(--line);border-radius:30px;padding:9px 18px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;}
+  .tab-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  .panel-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+  .panel-head h2{font-family:var(--display);font-size:18px;color:var(--navy);margin:0;}
+
+  .card-form{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:24px;box-shadow:0 4px 14px rgba(15,38,71,0.05);}
+  .card-form h3{font-size:14px;color:var(--navy);margin:0 0 16px;font-family:var(--display);}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;}
+  @media (max-width:640px){ .form-grid{grid-template-columns:1fr;} }
+  .form-grid .full{grid-column:1/-1;}
+  .form-actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;}
+
+  .item-list{display:flex;flex-direction:column;gap:10px;}
+  .item-row{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 12px rgba(15,38,71,0.04);}
+  .item-row img{width:64px;height:64px;border-radius:9px;object-fit:cover;flex:0 0 auto;background:var(--panel);}
+  .item-row .info{flex:1 1 auto;min-width:0;}
+  .item-row .info b{display:block;font-size:14px;color:var(--navy);}
+  .item-row .info .sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .item-row .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.03em;background:var(--panel);color:var(--navy);padding:3px 9px;border-radius:10px;margin-top:5px;text-transform:uppercase;}
+  .item-row .actions{display:flex;gap:8px;flex:0 0 auto;}
+  .empty-note{color:var(--muted);font-size:13px;text-align:center;padding:30px 0;}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy-deep);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:200;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.err{background:#7a2020;}
 </style>
 </head>
 <body>
 
-  <div class="login-screen" id="loginScreen">
-    <div class="login-card">
-      <h1>Admin Penjaga Batas</h1>
-      <p class="sub">Masuk pakai akun yang sudah dibuat di Supabase Auth</p>
-      <form id="loginForm">
+<!-- ================= LOGIN ================= -->
+<div id="loginScreen">
+  <div class="login-card">
+    <h1>Admin BorneoDrive</h1>
+    <p class="sub">Masuk untuk mengelola armada, destinasi, dan kuliner.</p>
+    <form id="loginForm">
+      <div class="field">
         <label for="loginEmail">Email</label>
         <input type="email" id="loginEmail" required autocomplete="username" />
-        <label for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" required autocomplete="current-password" />
-        <button class="btn full" type="submit">Masuk</button>
-        <div class="error-msg" id="loginError"></div>
-      </form>
-    </div>
-  </div>
-
-  <div class="login-screen" id="setPasswordScreen" style="display:none;">
-    <div class="login-card">
-      <h1>Aktifkan Akun Admin</h1>
-      <p class="sub">Kamu diundang jadi admin. Buat password buat akun ini dulu.</p>
-      <form id="setPasswordForm">
-        <label for="setPasswordInput">Password Baru</label>
-        <input type="password" id="setPasswordInput" required minlength="6" autocomplete="new-password" />
-        <label for="setPasswordConfirm">Ulangi Password</label>
-        <input type="password" id="setPasswordConfirm" required minlength="6" autocomplete="new-password" />
-        <button class="btn full" type="submit">Aktifkan &amp; Masuk</button>
-        <div class="error-msg" id="setPasswordError"></div>
-      </form>
-    </div>
-  </div>
-
-  <div class="dash" id="dash">
-    <header class="admin-header">
-      <div class="admin-header-inner">
-        <div>
-          <h1>Admin Penjaga Batas</h1>
-          <span class="user-email" id="userEmailLabel"></span>
-        </div>
-        <button class="btn ghost small" id="logoutBtn">Keluar</button>
       </div>
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="mandau">Mandau</button>
-        <button class="tab-btn" data-tab="inisiatif">Inisiatif</button>
-        <button class="tab-btn" data-tab="fakta">Fakta Lapangan</button>
-        <button class="tab-btn" data-tab="lokasi">Lokasi</button>
-        <button class="tab-btn" data-tab="akun">Akun</button>
+      <div class="field">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" required autocomplete="current-password" />
       </div>
-    </header>
-
-    <div class="wrap">
-      <section class="tab-panel active" id="panel-mandau">
-        <div class="card">
-          <h3 id="mandauFormTitle">Tambah Mandau</h3>
-          <input type="hidden" id="mandauId" />
-          <input type="hidden" id="mandauImagePath" />
-          <div class="form-grid">
-            <div class="full">
-              <label>Nama Mandau</label>
-              <input type="text" id="mandauName" placeholder="Mandau Ukir Naga" />
-            </div>
-            <div class="full">
-              <label>Deskripsi</label>
-              <textarea id="mandauDesc" placeholder="Ceritakan bahan, ukiran, dan asal-usul mandau ini..."></textarea>
-            </div>
-            <div class="full">
-              <label>Gambar</label>
-              <div class="upload-inline">
-                <button type="button" class="btn ghost small" id="mandauImageUploadBtn">📎 Upload ke GitHub</button>
-                <span class="upload-status" id="mandauImageUploadStatus"></span>
-              </div>
-              <input type="file" id="mandauImageFileInput" accept="image/*" style="display:none;" />
-              <input type="text" id="mandauImage" placeholder="assets/mandau/mandau1.jpg atau URL penuh" style="margin-top:8px;" />
-              <p class="hint">Klik "Upload ke GitHub" untuk pilih gambar dari HP/PC — otomatis terupload ke repo &amp; kolom di atas terisi sendiri. Atau isi manual kalau gambarnya sudah ada.</p>
-              <img class="img-preview" id="mandauImagePreview" alt="Preview" />
-            </div>
-          </div>
-          <div style="margin-top:14px; display:flex; gap:8px;">
-            <button class="btn" id="saveMandauBtn">Simpan Mandau</button>
-            <button class="btn ghost" id="cancelMandauEditBtn" style="display:none;">Batal Edit</button>
-          </div>
-        </div>
-        <div class="panel-head">
-          <div>
-            <h2>Daftar Mandau</h2>
-            <p id="mandauCountLabel">Memuat...</p>
-          </div>
-        </div>
-        <div id="mandauList"></div>
-      </section>
-
-      <section class="tab-panel" id="panel-inisiatif">
-        <div class="card">
-          <h3 id="campaignFormTitle">Tambah Inisiatif</h3>
-          <input type="hidden" id="campaignId" />
-          <input type="hidden" id="campImagePath" />
-          <div class="form-grid">
-            <div>
-              <label>Urutan Tampil</label>
-              <input type="number" id="campPosition" placeholder="1" />
-            </div>
-            <div>
-              <label>Status Badge</label>
-              <input type="text" id="campStatus" placeholder="On Progress" value="On Progress" />
-            </div>
-            <div class="full">
-              <label>Nama Inisiatif</label>
-              <input type="text" id="campName" placeholder="Ruang Kelas Baru" />
-            </div>
-            <div class="full">
-              <label>Deskripsi</label>
-              <textarea id="campDesc" placeholder="Deskripsi singkat inisiatif..."></textarea>
-            </div>
-            <div class="full">
-              <label>Gambar</label>
-              <div class="upload-inline">
-                <button type="button" class="btn ghost small" id="campImageUploadBtn">📎 Upload ke GitHub</button>
-                <span class="upload-status" id="campImageUploadStatus"></span>
-              </div>
-              <input type="file" id="campImageFileInput" accept="image/*" style="display:none;" />
-              <input type="text" id="campImage" placeholder="assets/campaign/sekolah.jpg atau URL penuh" style="margin-top:8px;" />
-              <p class="hint">Klik "Upload ke GitHub" untuk pilih gambar dari HP/PC — otomatis terupload ke repo &amp; kolom di atas terisi sendiri. Atau isi manual kalau gambarnya sudah ada.</p>
-              <img class="img-preview" id="campImagePreview" alt="Preview" />
-            </div>
-          </div>
-          <div style="margin-top:14px; display:flex; gap:8px;">
-            <button class="btn" id="saveCampaignBtn">Simpan Inisiatif</button>
-            <button class="btn ghost" id="cancelCampaignEditBtn" style="display:none;">Batal Edit</button>
-          </div>
-        </div>
-        <div class="panel-head">
-          <div>
-            <h2>Daftar Inisiatif</h2>
-            <p id="campaignCountLabel">Memuat...</p>
-          </div>
-        </div>
-        <div id="campaignList"></div>
-      </section>
-
-      <section class="tab-panel" id="panel-fakta">
-        <div class="card">
-          <h3>Upload Foto / Video (tersimpan di GitHub repo)</h3>
-          <label class="upload-drop" for="faktaFileInput" id="uploadDropLabel">
-            📎 Klik untuk pilih foto atau video, lalu otomatis terupload ke GitHub
-          </label>
-          <input type="file" id="faktaFileInput" accept="image/*,video/*" style="display:none;" />
-          <p class="hint">File akan tersimpan permanen di folder <code>assets/fakta</code> pada repo GitHub, dan datanya otomatis tercatat di tabel Supabase supaya muncul di halaman utama.</p>
-        </div>
-        <div class="panel-head">
-          <div>
-            <h2>Media Fakta Lapangan</h2>
-            <p id="faktaCountLabel">Memuat...</p>
-          </div>
-        </div>
-        <div id="faktaList"></div>
-      </section>
-
-      <section class="tab-panel" id="panel-lokasi">
-        <div class="card">
-          <h3 id="lokasiFormTitle">Tambah Titik Lokasi</h3>
-          <input type="hidden" id="lokasiId" />
-          <p class="hint" style="margin-bottom:10px;">Klik langsung di peta untuk pilih titiknya — latitude/longitude otomatis terisi.</p>
-          <div id="lokasiPickerMap"></div>
-          <div class="form-grid">
-            <div>
-              <label>Latitude</label>
-              <input type="number" step="0.000001" id="lokasiLat" placeholder="3.85" />
-            </div>
-            <div>
-              <label>Longitude</label>
-              <input type="number" step="0.000001" id="lokasiLng" placeholder="116.55" />
-            </div>
-            <div class="full">
-              <label>Nama Lokasi</label>
-              <input type="text" id="lokasiName" placeholder="Titik Pembangunan Sekolah Long Bawan" />
-            </div>
-            <div class="full">
-              <label>Deskripsi (opsional)</label>
-              <textarea id="lokasiDesc" placeholder="Keterangan singkat titik ini..."></textarea>
-            </div>
-            <div class="full">
-              <label>Gambar (opsional)</label>
-              <div class="upload-inline">
-                <button type="button" class="btn ghost small" id="lokasiImageUploadBtn">📎 Upload ke GitHub</button>
-                <span class="upload-status" id="lokasiImageUploadStatus"></span>
-              </div>
-              <input type="file" id="lokasiImageFileInput" accept="image/*" style="display:none;" />
-              <input type="text" id="lokasiImage" placeholder="URL gambar (otomatis terisi setelah upload)" style="margin-top:8px;" />
-              <img class="img-preview" id="lokasiImagePreview" alt="Preview" />
-            </div>
-          </div>
-          <div style="margin-top:14px; display:flex; gap:8px;">
-            <button class="btn" id="saveLokasiBtn">Simpan Lokasi</button>
-            <button class="btn ghost" id="cancelLokasiEditBtn" style="display:none;">Batal Edit</button>
-          </div>
-        </div>
-        <div class="panel-head">
-          <div>
-            <h2>Daftar Titik Lokasi</h2>
-            <p id="lokasiCountLabel">Memuat...</p>
-          </div>
-        </div>
-        <div id="lokasiList"></div>
-      </section>
-
-      <section class="tab-panel" id="panel-akun">
-        <div class="card">
-          <h3>Ganti Password</h3>
-          <p class="hint" style="margin-bottom:10px;">Ganti password buat akun yang lagi login sekarang (<span id="akunEmailLabel"></span>).</p>
-          <div class="form-grid">
-            <div class="full">
-              <label>Password Baru</label>
-              <input type="password" id="newPassword" placeholder="Minimal 6 karakter" autocomplete="new-password" />
-            </div>
-            <div class="full">
-              <label>Ulangi Password Baru</label>
-              <input type="password" id="newPasswordConfirm" placeholder="Ulangi password baru" autocomplete="new-password" />
-            </div>
-          </div>
-          <div style="margin-top:14px;">
-            <button class="btn" id="changePasswordBtn">Ganti Password</button>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:20px;">
-          <h3>Tambah Admin Baru</h3>
-          <p class="hint" style="margin-bottom:10px;">Bikin akun admin baru langsung pakai email &amp; password (langsung bisa dipakai login, gak perlu konfirmasi email).</p>
-          <div class="form-grid">
-            <div class="full">
-              <label>Email Admin Baru (Gmail)</label>
-              <input type="email" id="newAdminEmail" placeholder="namaadmin@gmail.com" />
-            </div>
-            <div class="full">
-              <label>Password Admin Baru</label>
-              <input type="password" id="newAdminPassword" placeholder="Minimal 6 karakter" autocomplete="new-password" />
-            </div>
-          </div>
-          <div style="margin-top:14px;">
-            <button class="btn" id="addAdminBtn">Buat Admin</button>
-          </div>
-          <p class="hint" id="addAdminStatus" style="margin-top:10px;"></p>
-        </div>
-      </section>
+      <button type="submit" class="btn btn-navy btn-block">Masuk</button>
+      <p class="login-error" id="loginError">Email atau password salah.</p>
+    </form>
+    <div class="login-hint">
+      Belum punya akun admin? Buat lewat <b>Supabase Dashboard → Authentication → Users → Add User</b>, lalu login di sini dengan email &amp; password tersebut.
     </div>
   </div>
+</div>
 
-  <div class="toast" id="toast"></div>
+<!-- ================= ADMIN SHELL ================= -->
+<div id="adminScreen">
+  <header class="admin-top">
+    <div class="wrap admin-top-inner">
+      <div class="admin-brand">Borneo<span>Drive</span> · Admin</div>
+      <div class="admin-user">
+        <span id="adminEmailLabel"></span>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="background:transparent;border-color:rgba(255,255,255,0.3);color:#fff;">Keluar</button>
+      </div>
+    </div>
+  </header>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = "https://jnkhrqvlqtamdclvwacx.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impua2hycXZscXRhbWRjbHZ3YWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5ODQ0ODUsImV4cCI6MjA5OTU2MDQ4NX0.rNYh35Beg93OJIG-6aF-zRLDfwD2wZFX_wSRmS3v-II";
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  <div class="wrap">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="armada">🚗 Armada</button>
+      <button class="tab-btn" data-tab="destinasi">📍 Destinasi</button>
+      <button class="tab-btn" data-tab="kuliner">🍽️ Kuliner</button>
+    </div>
 
-    const loginScreen = document.getElementById('loginScreen');
-    const dash = document.getElementById('dash');
-    const loginForm = document.getElementById('loginForm');
-    const loginError = document.getElementById('loginError');
-    const userEmailLabel = document.getElementById('userEmailLabel');
-    const toast = document.getElementById('toast');
+    <!-- ===== TAB: ARMADA ===== -->
+    <section class="panel active" id="panel-armada">
+      <div class="panel-head"><h2>Kelola Armada</h2></div>
 
-    function showToast(msg) {
-      toast.textContent = msg;
-      toast.classList.add('visible');
-      setTimeout(() => toast.classList.remove('visible'), 3200);
-    }
-    function escapeHtml(str) {
-      const div = document.createElement('div');
-      div.textContent = str == null ? '' : String(str);
-      return div.innerHTML;
-    }
-
-    function animateRemoveRow(el) {
-      return new Promise(resolve => {
-        if (!el) { resolve(); return; }
-        const h = el.getBoundingClientRect().height;
-        el.style.height = h + 'px';
-        el.style.overflow = 'hidden';
-        void el.offsetHeight;
-        requestAnimationFrame(() => {
-          el.style.opacity = '0';
-          el.style.transform = 'translateX(24px) scale(0.97)';
-          el.style.height = '0px';
-          el.style.marginBottom = '0px';
-          el.style.paddingTop = '0px';
-          el.style.paddingBottom = '0px';
-        });
-        let done = false;
-        const finish = () => {
-          if (done) return;
-          done = true;
-          el.removeEventListener('transitionend', onEnd);
-          resolve();
-        };
-        const onEnd = (e) => { if (e.propertyName === 'height') finish(); };
-        el.addEventListener('transitionend', onEnd);
-        setTimeout(finish, 450);
-      });
-    }
-
-    // ---------- Upload ke GitHub lewat backend (/api/upload-to-github) ----------
-    // Token GitHub tidak ada di kode ini sama sekali — cuma dipegang server (Cloudflare Pages env var).
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = () => reject(new Error('Gagal membaca file'));
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function uploadFileToGithub(file, folder) {
-      const contentBase64 = await fileToBase64(file);
-      const res = await fetch('/api/upload-to-github', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: file.name, contentBase64, folder })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || ('Upload gagal (status ' + res.status + ')'));
-      return data;
-    }
-
-    // Normalisasi storage_path lama: sebagian record fakta yang didaftarkan manual
-    // pakai prefix "github:" di depan path aslinya. Path asli GitHub selalu diawali "assets/".
-    function resolveGithubPath(rawPath) {
-      if (!rawPath) return null;
-      if (rawPath.startsWith('assets/')) return rawPath;
-      if (rawPath.startsWith('github:assets/')) return rawPath.slice('github:'.length);
-      return null; // bukan path GitHub yang valid (misal placeholder "github" polos, atau upload Supabase Storage lama)
-    }
-
-    async function deleteFileFromGithub(path) {
-      const realPath = resolveGithubPath(path);
-      if (!realPath) return; // tidak ada file GitHub yang perlu/bisa dihapus
-      const res = await fetch('/api/delete-from-github', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: realPath })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || ('Hapus file GitHub gagal (status ' + res.status + ')'));
-      return data;
-    }
-
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      loginError.classList.remove('visible');
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      const { data, error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) {
-        loginError.textContent = 'Login gagal: ' + error.message;
-        loginError.classList.add('visible');
-        return;
-      }
-      onLoggedIn(data.session);
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await sb.auth.signOut();
-      dash.classList.remove('visible');
-      loginScreen.style.display = 'flex';
-    });
-
-    function onLoggedIn(session) {
-      loginScreen.style.display = 'none';
-      dash.classList.add('visible');
-      userEmailLabel.textContent = session?.user?.email || '';
-      document.getElementById('akunEmailLabel').textContent = session?.user?.email || '';
-      loadMandau();
-      loadCampaigns();
-      loadFaktaMedia();
-      loadLokasi();
-    }
-
-    (async function initSession() {
-      const { data } = await sb.auth.getSession();
-      if (data.session) {
-        if (isInviteOrRecovery()) {
-          showSetPasswordScreen();
-        } else {
-          onLoggedIn(data.session);
-        }
-      }
-    })();
-
-    function getHashParams() {
-      const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : '';
-      return new URLSearchParams(hash);
-    }
-    function isInviteOrRecovery() {
-      const p = getHashParams();
-      return p.has('access_token') && (p.get('type') === 'invite' || p.get('type') === 'recovery');
-    }
-    function showSetPasswordScreen() {
-      loginScreen.style.display = 'none';
-      dash.classList.remove('visible');
-      document.getElementById('setPasswordScreen').style.display = 'flex';
-    }
-    document.getElementById('setPasswordForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const pass = document.getElementById('setPasswordInput').value;
-      const confirmPass = document.getElementById('setPasswordConfirm').value;
-      const errEl = document.getElementById('setPasswordError');
-      errEl.classList.remove('visible');
-      if (!pass || pass.length < 6) {
-        errEl.textContent = 'Password minimal 6 karakter';
-        errEl.classList.add('visible');
-        return;
-      }
-      if (pass !== confirmPass) {
-        errEl.textContent = 'Konfirmasi password tidak cocok';
-        errEl.classList.add('visible');
-        return;
-      }
-      const { error } = await sb.auth.updateUser({ password: pass });
-      if (error) {
-        errEl.textContent = 'Gagal: ' + error.message;
-        errEl.classList.add('visible');
-        return;
-      }
-      // Bersihin token dari URL biar gak ke-trigger lagi kalau reload
-      history.replaceState(null, '', window.location.pathname + window.location.search);
-      document.getElementById('setPasswordScreen').style.display = 'none';
-      const { data: sessionData } = await sb.auth.getSession();
-      onLoggedIn(sessionData.session);
-    });
-
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
-        if (btn.dataset.tab === 'lokasi') {
-          ensureLokasiMapReady();
-        }
-      });
-    });
-
-    // ==================== MANDAU ====================
-    let mandauRows = [];
-
-    async function loadMandau() {
-      const list = document.getElementById('mandauList');
-      list.innerHTML = '<div class="empty-note">Memuat data mandau...</div>';
-      const { data, error } = await sb.from('mandau_items').select('*').order('created_at', { ascending: false });
-      if (error) {
-        list.innerHTML = '<div class="empty-note">Gagal memuat: ' + escapeHtml(error.message) + '</div>';
-        return;
-      }
-      const rows = data || [];
-      mandauRows = rows;
-      document.getElementById('mandauCountLabel').textContent = rows.length + ' mandau';
-      if (rows.length === 0) {
-        list.innerHTML = '<div class="empty-note">Belum ada mandau. Tambahkan lewat form di atas.</div>';
-        return;
-      }
-      list.innerHTML = rows.map(r => `
-        <div class="row-item" data-row-id="${r.id}">
-          ${r.image_url ? `<img src="${escapeHtml(r.image_url)}" alt="" onerror="this.style.opacity=0" />` : ''}
-          <div class="row-body">
-            <p class="row-title">${escapeHtml(r.name)}</p>
-            ${r.description ? `<p class="row-desc">${escapeHtml(r.description)}</p>` : ''}
+      <div class="card-form">
+        <h3 id="armadaFormTitle">Tambah Armada Baru</h3>
+        <input type="hidden" id="armadaId" />
+        <div class="form-grid">
+          <div class="field"><label>Nama Kendaraan</label><input type="text" id="armadaNama" placeholder="Contoh: Toyota Innova Reborn" required /></div>
+          <div class="field"><label>URL Foto</label><input type="text" id="armadaFoto" placeholder="https://..." /></div>
+          <div class="field"><label>Jumlah Penumpang</label><input type="number" id="armadaPenumpang" min="1" /></div>
+          <div class="field"><label>Jumlah Koper</label><input type="number" id="armadaKoper" min="0" /></div>
+          <div class="field">
+            <label>Paket</label>
+            <select id="armadaPaket">
+              <option value="Reguler">Reguler</option>
+              <option value="Executive">Executive</option>
+            </select>
           </div>
-          <div class="row-actions">
-            <button class="btn ghost small" data-action="edit-mandau" data-id="${r.id}">Edit</button>
-            <button class="btn danger small" data-action="delete-mandau" data-id="${r.id}">Hapus</button>
-          </div>
+          <div class="field"><label>Harga per Hari (Rp)</label><input type="number" id="armadaHarga" min="0" step="50000" placeholder="Contoh: 2800000" /></div>
+          <div class="field"><label>Urutan Tampil</label><input type="number" id="armadaUrutan" value="0" /></div>
         </div>
-      `).join('');
-    }
+        <div class="form-actions">
+          <button class="btn btn-navy" id="armadaSaveBtn">Simpan</button>
+          <button class="btn btn-ghost" id="armadaCancelBtn" style="display:none;">Batal Edit</button>
+        </div>
+      </div>
 
-    document.getElementById('mandauList').addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-action]');
-      if (!btn) return;
-      const id = btn.dataset.id;
-      const row = mandauRows.find(r => String(r.id) === String(id));
-      if (!row) return;
-      if (btn.dataset.action === 'edit-mandau') editMandau(row);
-      if (btn.dataset.action === 'delete-mandau') deleteMandau(row.id);
-    });
+      <div class="item-list" id="armadaList"><p class="empty-note">Memuat data...</p></div>
+    </section>
 
-    function editMandau(row) {
-      document.getElementById('mandauId').value = row.id;
-      document.getElementById('mandauName').value = row.name;
-      document.getElementById('mandauDesc').value = row.description || '';
-      document.getElementById('mandauImage').value = row.image_url || '';
-      document.getElementById('mandauImagePath').value = row.image_path || '';
-      updateMandauImagePreview(row.image_url || '');
-      document.getElementById('mandauFormTitle').textContent = 'Edit Mandau';
-      document.getElementById('cancelMandauEditBtn').style.display = 'inline-flex';
-      document.getElementById('panel-mandau').scrollIntoView({ behavior: 'smooth' });
-    }
+    <!-- ===== TAB: DESTINASI ===== -->
+    <section class="panel" id="panel-destinasi">
+      <div class="panel-head"><h2>Kelola Destinasi</h2></div>
 
-    function resetMandauForm() {
-      document.getElementById('mandauId').value = '';
-      document.getElementById('mandauName').value = '';
-      document.getElementById('mandauDesc').value = '';
-      document.getElementById('mandauImage').value = '';
-      document.getElementById('mandauImagePath').value = '';
-      document.getElementById('mandauImageUploadStatus').textContent = '';
-      updateMandauImagePreview('');
-      document.getElementById('mandauFormTitle').textContent = 'Tambah Mandau';
-      document.getElementById('cancelMandauEditBtn').style.display = 'none';
-    }
-    document.getElementById('cancelMandauEditBtn').addEventListener('click', resetMandauForm);
+      <div class="card-form">
+        <h3 id="destinasiFormTitle">Tambah Destinasi Baru</h3>
+        <input type="hidden" id="destinasiId" />
+        <div class="form-grid">
+          <div class="field full"><label>Nama Tempat</label><input type="text" id="destinasiNama" required /></div>
+          <div class="field">
+            <label>Kategori (filter)</label>
+            <input type="text" id="destinasiKategori" list="kategoriDestinasiList" placeholder="Contoh: Tempat Wisata, Alam, Pantai, Religi..." />
+            <datalist id="kategoriDestinasiList">
+              <option value="Tempat Wisata"></option>
+              <option value="Alam"></option>
+              <option value="Pantai"></option>
+              <option value="Religi"></option>
+              <option value="Konservasi"></option>
+              <option value="Budaya"></option>
+            </datalist>
+          </div>
+          <div class="field"><label>Lokasi</label><input type="text" id="destinasiLokasi" placeholder="Contoh: Balikpapan, Kaltim" /></div>
+          <div class="field full"><label>Jam Operasional / Harga Tiket (opsional)</label><input type="text" id="destinasiInfo" placeholder="Contoh: 08:00–17:00 WITA · Rp15.000" /></div>
+          <div class="field"><label>URL Foto</label><input type="text" id="destinasiFoto" placeholder="https://..." /></div>
+          <div class="field"><label>Link Google Maps</label><input type="text" id="destinasiMaps" placeholder="https://www.google.com/maps?q=..." /></div>
+          <div class="field full"><label>Deskripsi Singkat</label><textarea id="destinasiDeskripsi" rows="2"></textarea></div>
+          <div class="field"><label>Urutan Tampil</label><input type="number" id="destinasiUrutan" value="0" /></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-navy" id="destinasiSaveBtn">Simpan</button>
+          <button class="btn btn-ghost" id="destinasiCancelBtn" style="display:none;">Batal Edit</button>
+        </div>
+      </div>
 
-    function updateMandauImagePreview(url) {
-      const img = document.getElementById('mandauImagePreview');
-      if (url) { img.src = url; img.style.display = 'block'; }
-      else { img.removeAttribute('src'); img.style.display = 'none'; }
-    }
-    document.getElementById('mandauImage').addEventListener('input', (e) => {
-      updateMandauImagePreview(e.target.value.trim());
-      document.getElementById('mandauImagePath').value = '';
-    });
+      <div class="item-list" id="destinasiList"><p class="empty-note">Memuat data...</p></div>
+    </section>
 
-    document.getElementById('mandauImageUploadBtn').addEventListener('click', () => {
-      document.getElementById('mandauImageFileInput').click();
-    });
-    document.getElementById('mandauImageFileInput').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const statusEl = document.getElementById('mandauImageUploadStatus');
-      const btn = document.getElementById('mandauImageUploadBtn');
-      btn.disabled = true;
-      statusEl.textContent = 'Mengupload ke GitHub...';
-      try {
-        const { url, path } = await uploadFileToGithub(file, 'assets/mandau');
-        document.getElementById('mandauImage').value = url;
-        document.getElementById('mandauImagePath').value = path;
-        updateMandauImagePreview(url);
-        statusEl.textContent = '✓ Terupload ke repo';
-        showToast('Gambar berhasil diupload ke GitHub');
-      } catch (err) {
-        statusEl.textContent = '';
-        showToast('Gagal upload: ' + err.message);
-      } finally {
-        btn.disabled = false;
-        e.target.value = '';
+    <!-- ===== TAB: KULINER ===== -->
+    <section class="panel" id="panel-kuliner">
+      <div class="panel-head"><h2>Kelola Kuliner</h2></div>
+
+      <div class="card-form">
+        <h3 id="kulinerFormTitle">Tambah Kuliner Baru</h3>
+        <input type="hidden" id="kulinerId" />
+        <div class="form-grid">
+          <div class="field full"><label>Nama Tempat / Menu</label><input type="text" id="kulinerNama" required /></div>
+          <div class="field">
+            <label>Kategori (filter)</label>
+            <input type="text" id="kulinerKategori" list="kategoriKulinerList" placeholder="Contoh: Kuliner, Oleh-oleh, Cafe, Seafood..." />
+            <datalist id="kategoriKulinerList">
+              <option value="Kuliner"></option>
+              <option value="Oleh-oleh"></option>
+              <option value="Cafe"></option>
+              <option value="Seafood"></option>
+              <option value="Kuliner Malam"></option>
+            </datalist>
+          </div>
+          <div class="field"><label>Lokasi</label><input type="text" id="kulinerLokasi" placeholder="Contoh: Balikpapan, Kaltim" /></div>
+          <div class="field full"><label>Jam Buka / Kisaran Harga (opsional)</label><input type="text" id="kulinerInfo" placeholder="Contoh: 08:00–21:00 WITA · Rp25.000–Rp60.000/porsi" /></div>
+          <div class="field"><label>URL Foto</label><input type="text" id="kulinerFoto" placeholder="https://..." /></div>
+          <div class="field"><label>Link Google Maps</label><input type="text" id="kulinerMaps" placeholder="https://www.google.com/maps?q=..." /></div>
+          <div class="field full"><label>Deskripsi Singkat</label><textarea id="kulinerDeskripsi" rows="2"></textarea></div>
+          <div class="field"><label>Urutan Tampil</label><input type="number" id="kulinerUrutan" value="0" /></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-navy" id="kulinerSaveBtn">Simpan</button>
+          <button class="btn btn-ghost" id="kulinerCancelBtn" style="display:none;">Batal Edit</button>
+        </div>
+      </div>
+
+      <div class="item-list" id="kulinerList"><p class="empty-note">Memuat data...</p></div>
+    </section>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  /* =============== KONFIGURASI SUPABASE =============== */
+  /* Ganti dengan anon key project Supabase Anda:
+     Supabase Dashboard > Project Settings > API > anon public */
+  var SUPABASE_URL = 'https://epuyvcwrdrltxbhdegsi.supabase.co';
+  var SUPABASE_ANON_KEY = 'GANTI_DENGAN_SUPABASE_ANON_KEY';
+
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  var loginScreen = document.getElementById('loginScreen');
+  var adminScreen = document.getElementById('adminScreen');
+  var toastEl = document.getElementById('toast');
+
+  function showToast(msg, isErr){
+    toastEl.textContent = msg;
+    toastEl.className = 'toast show' + (isErr ? ' err' : '');
+    setTimeout(function(){ toastEl.className = 'toast'; }, 3200);
+  }
+
+  /* =============== AUTH =============== */
+  function showAdmin(user){
+    loginScreen.style.display = 'none';
+    adminScreen.classList.add('show');
+    document.getElementById('adminEmailLabel').textContent = user.email;
+    loadArmada();
+    loadPlaces('destinasi');
+    loadPlaces('kuliner');
+  }
+  function showLogin(){
+    adminScreen.classList.remove('show');
+    loginScreen.style.display = 'flex';
+  }
+
+  supabase.auth.getSession().then(function(res){
+    if(res.data.session){ showAdmin(res.data.session.user); }
+  });
+
+  document.getElementById('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var email = document.getElementById('loginEmail').value;
+    var pass = document.getElementById('loginPass').value;
+    var errEl = document.getElementById('loginError');
+    errEl.classList.remove('show');
+    supabase.auth.signInWithPassword({ email: email, password: pass }).then(function(res){
+      if(res.error){
+        errEl.textContent = res.error.message;
+        errEl.classList.add('show');
+        return;
       }
+      showAdmin(res.data.user);
     });
+  });
 
-    document.getElementById('saveMandauBtn').addEventListener('click', async () => {
-      const id = document.getElementById('mandauId').value;
-      const payload = {
-        name: document.getElementById('mandauName').value.trim(),
-        description: document.getElementById('mandauDesc').value.trim() || null,
-        image_url: document.getElementById('mandauImage').value.trim() || null,
-        image_path: document.getElementById('mandauImagePath').value.trim() || null,
+  document.getElementById('logoutBtn').addEventListener('click', function(){
+    supabase.auth.signOut().then(showLogin);
+  });
+
+  /* =============== TABS =============== */
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* =============== ARMADA CRUD =============== */
+  var armadaFields = ['armadaId','armadaNama','armadaFoto','armadaPenumpang','armadaKoper','armadaPaket','armadaHarga','armadaUrutan'];
+  function resetArmadaForm(){
+    armadaFields.forEach(function(id){ document.getElementById(id).value = id === 'armadaPaket' ? 'Reguler' : (id === 'armadaUrutan' ? '0' : ''); });
+    document.getElementById('armadaFormTitle').textContent = 'Tambah Armada Baru';
+    document.getElementById('armadaCancelBtn').style.display = 'none';
+  }
+
+  function loadArmada(){
+    supabase.from('borneodrive_armada').select('*').order('urutan', { ascending: true }).then(function(res){
+      var listEl = document.getElementById('armadaList');
+      if(res.error){ listEl.innerHTML = '<p class="empty-note">Gagal memuat: ' + res.error.message + '</p>'; return; }
+      var rows = res.data || [];
+      if(!rows.length){ listEl.innerHTML = '<p class="empty-note">Belum ada armada.</p>'; return; }
+      listEl.innerHTML = rows.map(function(a){
+        return '<div class="item-row">' +
+          '<img src="' + (a.foto_url || '') + '" alt="" onerror="this.style.visibility=\'hidden\'" />' +
+          '<div class="info"><b>' + escapeHtml(a.nama) + '</b>' +
+            '<div class="sub">👤 ' + a.penumpang + ' penumpang · 🧳 ' + a.koper + ' koper · Rp' + Number(a.harga).toLocaleString('id-ID') + '/hari</div>' +
+            '<span class="badge">' + escapeHtml(a.paket) + '</span></div>' +
+          '<div class="actions">' +
+            '<button class="btn btn-ghost btn-sm" onclick="editArmada(\'' + a.id + '\')">Edit</button>' +
+            '<button class="btn btn-red btn-sm" onclick="deleteArmada(\'' + a.id + '\')">Hapus</button>' +
+          '</div></div>';
+      }).join('');
+    });
+  }
+
+  window.editArmada = function(id){
+    supabase.from('borneodrive_armada').select('*').eq('id', id).single().then(function(res){
+      if(res.error || !res.data) return;
+      var a = res.data;
+      document.getElementById('armadaId').value = a.id;
+      document.getElementById('armadaNama').value = a.nama || '';
+      document.getElementById('armadaFoto').value = a.foto_url || '';
+      document.getElementById('armadaPenumpang').value = a.penumpang || '';
+      document.getElementById('armadaKoper').value = a.koper || '';
+      document.getElementById('armadaPaket').value = a.paket || 'Reguler';
+      document.getElementById('armadaHarga').value = a.harga || '';
+      document.getElementById('armadaUrutan').value = a.urutan || 0;
+      document.getElementById('armadaFormTitle').textContent = 'Edit: ' + a.nama;
+      document.getElementById('armadaCancelBtn').style.display = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  };
+
+  window.deleteArmada = function(id){
+    if(!confirm('Hapus armada ini?')) return;
+    supabase.from('borneodrive_armada').delete().eq('id', id).then(function(res){
+      if(res.error){ showToast('Gagal hapus: ' + res.error.message, true); return; }
+      showToast('Armada dihapus.');
+      loadArmada();
+    });
+  };
+
+  document.getElementById('armadaCancelBtn').addEventListener('click', resetArmadaForm);
+
+  document.getElementById('armadaSaveBtn').addEventListener('click', function(){
+    var id = document.getElementById('armadaId').value;
+    var payload = {
+      nama: document.getElementById('armadaNama').value.trim(),
+      foto_url: document.getElementById('armadaFoto').value.trim(),
+      penumpang: Number(document.getElementById('armadaPenumpang').value) || 0,
+      koper: Number(document.getElementById('armadaKoper').value) || 0,
+      paket: document.getElementById('armadaPaket').value,
+      harga: Number(document.getElementById('armadaHarga').value) || 0,
+      urutan: Number(document.getElementById('armadaUrutan').value) || 0
+    };
+    if(!payload.nama){ showToast('Nama kendaraan wajib diisi.', true); return; }
+    var query = id ? supabase.from('borneodrive_armada').update(payload).eq('id', id)
+                   : supabase.from('borneodrive_armada').insert(payload);
+    query.then(function(res){
+      if(res.error){ showToast('Gagal menyimpan: ' + res.error.message, true); return; }
+      showToast(id ? 'Armada diperbarui.' : 'Armada ditambahkan.');
+      resetArmadaForm();
+      loadArmada();
+    });
+  });
+
+  /* =============== DESTINASI & KULINER CRUD (tabel sama, tipe beda) =============== */
+  function fieldsFor(tipe){
+    return {
+      id: tipe + 'Id', nama: tipe + 'Nama', kategori: tipe + 'Kategori', lokasi: tipe + 'Lokasi',
+      info: tipe + 'Info', foto: tipe + 'Foto', maps: tipe + 'Maps', deskripsi: tipe + 'Deskripsi', urutan: tipe + 'Urutan'
+    };
+  }
+
+  function resetPlaceForm(tipe){
+    var f = fieldsFor(tipe);
+    Object.keys(f).forEach(function(k){
+      var el = document.getElementById(f[k]);
+      if(el) el.value = k === 'urutan' ? '0' : '';
+    });
+    document.getElementById(tipe + 'FormTitle').textContent = 'Tambah ' + (tipe === 'destinasi' ? 'Destinasi' : 'Kuliner') + ' Baru';
+    document.getElementById(tipe + 'CancelBtn').style.display = 'none';
+  }
+
+  function loadPlaces(tipe){
+    supabase.from('borneodrive_places').select('*').eq('tipe', tipe).order('urutan', { ascending: true }).then(function(res){
+      var listEl = document.getElementById(tipe + 'List');
+      if(res.error){ listEl.innerHTML = '<p class="empty-note">Gagal memuat: ' + res.error.message + '</p>'; return; }
+      var rows = res.data || [];
+      if(!rows.length){ listEl.innerHTML = '<p class="empty-note">Belum ada data.</p>'; return; }
+      listEl.innerHTML = rows.map(function(p){
+        return '<div class="item-row">' +
+          '<img src="' + (p.foto_url || '') + '" alt="" onerror="this.style.visibility=\'hidden\'" />' +
+          '<div class="info"><b>' + escapeHtml(p.nama) + '</b>' +
+            '<div class="sub">' + escapeHtml(p.lokasi || '') + (p.info ? ' · ' + escapeHtml(p.info) : '') + '</div>' +
+            '<span class="badge">' + escapeHtml(p.kategori) + '</span></div>' +
+          '<div class="actions">' +
+            '<button class="btn btn-ghost btn-sm" onclick="editPlace(\'' + tipe + '\',\'' + p.id + '\')">Edit</button>' +
+            '<button class="btn btn-red btn-sm" onclick="deletePlace(\'' + tipe + '\',\'' + p.id + '\')">Hapus</button>' +
+          '</div></div>';
+      }).join('');
+    });
+  }
+
+  window.editPlace = function(tipe, id){
+    supabase.from('borneodrive_places').select('*').eq('id', id).single().then(function(res){
+      if(res.error || !res.data) return;
+      var p = res.data;
+      var f = fieldsFor(tipe);
+      document.getElementById(f.id).value = p.id;
+      document.getElementById(f.nama).value = p.nama || '';
+      document.getElementById(f.kategori).value = p.kategori || '';
+      document.getElementById(f.lokasi).value = p.lokasi || '';
+      document.getElementById(f.info).value = p.info || '';
+      document.getElementById(f.foto).value = p.foto_url || '';
+      document.getElementById(f.maps).value = p.maps_url || '';
+      document.getElementById(f.deskripsi).value = p.deskripsi || '';
+      document.getElementById(f.urutan).value = p.urutan || 0;
+      document.getElementById(tipe + 'FormTitle').textContent = 'Edit: ' + p.nama;
+      document.getElementById(tipe + 'CancelBtn').style.display = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  };
+
+  window.deletePlace = function(tipe, id){
+    if(!confirm('Hapus data ini?')) return;
+    supabase.from('borneodrive_places').delete().eq('id', id).then(function(res){
+      if(res.error){ showToast('Gagal hapus: ' + res.error.message, true); return; }
+      showToast('Data dihapus.');
+      loadPlaces(tipe);
+    });
+  };
+
+  ['destinasi','kuliner'].forEach(function(tipe){
+    document.getElementById(tipe + 'CancelBtn').addEventListener('click', function(){ resetPlaceForm(tipe); });
+    document.getElementById(tipe + 'SaveBtn').addEventListener('click', function(){
+      var f = fieldsFor(tipe);
+      var id = document.getElementById(f.id).value;
+      var payload = {
+        tipe: tipe,
+        nama: document.getElementById(f.nama).value.trim(),
+        kategori: document.getElementById(f.kategori).value.trim() || 'Umum',
+        lokasi: document.getElementById(f.lokasi).value.trim(),
+        info: document.getElementById(f.info).value.trim(),
+        foto_url: document.getElementById(f.foto).value.trim(),
+        maps_url: document.getElementById(f.maps).value.trim(),
+        deskripsi: document.getElementById(f.deskripsi).value.trim(),
+        urutan: Number(document.getElementById(f.urutan).value) || 0
       };
-      if (!payload.name) {
-        showToast('Nama mandau wajib diisi');
-        return;
-      }
-      let error;
-      if (id) {
-        ({ error } = await sb.from('mandau_items').update(payload).eq('id', id));
-      } else {
-        ({ error } = await sb.from('mandau_items').insert([payload]));
-      }
-      if (error) { showToast('Gagal simpan: ' + error.message); return; }
-      showToast(id ? 'Mandau diperbarui' : 'Mandau ditambahkan');
-      resetMandauForm();
-      loadMandau();
-    });
-
-    async function deleteMandau(id) {
-      if (!confirm('Hapus mandau ini? File gambarnya di GitHub juga akan ikut dihapus.')) return;
-      const row = mandauRows.find(r => String(r.id) === String(id));
-      const el = document.querySelector(`#mandauList .row-item[data-row-id="${id}"]`);
-      const { error } = await sb.from('mandau_items').delete().eq('id', id);
-      if (error) { showToast('Gagal hapus: ' + error.message); return; }
-      if (row?.image_path) {
-        try { await deleteFileFromGithub(row.image_path); }
-        catch (err) { showToast('Mandau dihapus, tapi file GitHub gagal dihapus: ' + err.message); }
-      }
-      showToast('Mandau dan file gambarnya dihapus');
-      mandauRows = mandauRows.filter(r => String(r.id) !== String(id));
-      await animateRemoveRow(el);
-      el?.remove();
-      document.getElementById('mandauCountLabel').textContent = mandauRows.length + ' mandau';
-      if (mandauRows.length === 0) {
-        document.getElementById('mandauList').innerHTML = '<div class="empty-note">Belum ada mandau. Tambahkan lewat form di atas.</div>';
-      }
-    }
-
-    // ==================== INISIATIF (CAMPAIGNS) ====================
-    let campaignRows = [];
-
-    async function loadCampaigns() {
-      const list = document.getElementById('campaignList');
-      list.innerHTML = '<div class="empty-note">Memuat inisiatif...</div>';
-      const { data, error } = await sb.from('campaigns').select('*').order('position', { ascending: true });
-      if (error) {
-        list.innerHTML = '<div class="empty-note">Gagal memuat: ' + escapeHtml(error.message) + '</div>';
-        return;
-      }
-      const rows = data || [];
-      campaignRows = rows;
-      document.getElementById('campaignCountLabel').textContent = rows.length + ' inisiatif';
-      if (rows.length === 0) {
-        list.innerHTML = '<div class="empty-note">Belum ada inisiatif. Tambahkan lewat form di atas.</div>';
-        return;
-      }
-      list.innerHTML = rows.map(r => `
-        <div class="row-item" data-row-id="${r.id}">
-          <img src="${escapeHtml(r.image_url)}" alt="" onerror="this.style.opacity=0" />
-          <div class="row-body">
-            <p class="row-title">${String(r.position).padStart(2,'0')} · ${escapeHtml(r.name)} <span class="badge">${escapeHtml(r.status)}</span></p>
-            <p class="row-desc">${escapeHtml(r.description)}</p>
-          </div>
-          <div class="row-actions">
-            <button class="btn ghost small" data-action="edit-campaign" data-id="${r.id}">Edit</button>
-            <button class="btn danger small" data-action="delete-campaign" data-id="${r.id}">Hapus</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    document.getElementById('campaignList').addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-action]');
-      if (!btn) return;
-      const id = btn.dataset.id;
-      const row = campaignRows.find(r => String(r.id) === String(id));
-      if (!row) return;
-      if (btn.dataset.action === 'edit-campaign') editCampaign(row);
-      if (btn.dataset.action === 'delete-campaign') deleteCampaign(row.id);
-    });
-
-    function editCampaign(row) {
-      document.getElementById('campaignId').value = row.id;
-      document.getElementById('campPosition').value = row.position;
-      document.getElementById('campStatus').value = row.status;
-      document.getElementById('campName').value = row.name;
-      document.getElementById('campDesc').value = row.description;
-      document.getElementById('campImage').value = row.image_url;
-      document.getElementById('campImagePath').value = row.image_path || '';
-      updateCampImagePreview(row.image_url);
-      document.getElementById('campaignFormTitle').textContent = 'Edit Inisiatif';
-      document.getElementById('cancelCampaignEditBtn').style.display = 'inline-flex';
-      document.getElementById('panel-inisiatif').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function resetCampaignForm() {
-      document.getElementById('campaignId').value = '';
-      document.getElementById('campPosition').value = '';
-      document.getElementById('campStatus').value = 'On Progress';
-      document.getElementById('campName').value = '';
-      document.getElementById('campDesc').value = '';
-      document.getElementById('campImage').value = '';
-      document.getElementById('campImagePath').value = '';
-      document.getElementById('campImageUploadStatus').textContent = '';
-      updateCampImagePreview('');
-      document.getElementById('campaignFormTitle').textContent = 'Tambah Inisiatif';
-      document.getElementById('cancelCampaignEditBtn').style.display = 'none';
-    }
-    document.getElementById('cancelCampaignEditBtn').addEventListener('click', resetCampaignForm);
-
-    function updateCampImagePreview(url) {
-      const img = document.getElementById('campImagePreview');
-      if (url) { img.src = url; img.style.display = 'block'; }
-      else { img.removeAttribute('src'); img.style.display = 'none'; }
-    }
-    document.getElementById('campImage').addEventListener('input', (e) => {
-      updateCampImagePreview(e.target.value.trim());
-      document.getElementById('campImagePath').value = '';
-    });
-
-    document.getElementById('campImageUploadBtn').addEventListener('click', () => {
-      document.getElementById('campImageFileInput').click();
-    });
-    document.getElementById('campImageFileInput').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const statusEl = document.getElementById('campImageUploadStatus');
-      const btn = document.getElementById('campImageUploadBtn');
-      btn.disabled = true;
-      statusEl.textContent = 'Mengupload ke GitHub...';
-      try {
-        const { url, path } = await uploadFileToGithub(file, 'assets/campaign');
-        document.getElementById('campImage').value = url;
-        document.getElementById('campImagePath').value = path;
-        updateCampImagePreview(url);
-        statusEl.textContent = '✓ Terupload ke repo';
-        showToast('Gambar berhasil diupload ke GitHub');
-      } catch (err) {
-        statusEl.textContent = '';
-        showToast('Gagal upload: ' + err.message);
-      } finally {
-        btn.disabled = false;
-        e.target.value = '';
-      }
-    });
-
-    document.getElementById('saveCampaignBtn').addEventListener('click', async () => {
-      const id = document.getElementById('campaignId').value;
-      const payload = {
-        position: parseInt(document.getElementById('campPosition').value) || 1,
-        status: document.getElementById('campStatus').value.trim() || 'On Progress',
-        name: document.getElementById('campName').value.trim(),
-        description: document.getElementById('campDesc').value.trim(),
-        image_url: document.getElementById('campImage').value.trim(),
-        image_path: document.getElementById('campImagePath').value.trim() || null,
-      };
-      if (!payload.name || !payload.description || !payload.image_url) {
-        showToast('Nama, deskripsi, dan gambar wajib diisi');
-        return;
-      }
-      let error;
-      if (id) {
-        ({ error } = await sb.from('campaigns').update(payload).eq('id', id));
-      } else {
-        ({ error } = await sb.from('campaigns').insert([payload]));
-      }
-      if (error) { showToast('Gagal simpan: ' + error.message); return; }
-      showToast(id ? 'Inisiatif diperbarui' : 'Inisiatif ditambahkan');
-      resetCampaignForm();
-      loadCampaigns();
-    });
-
-    async function deleteCampaign(id) {
-      if (!confirm('Hapus inisiatif ini? File gambarnya di GitHub juga akan ikut dihapus.')) return;
-      const row = campaignRows.find(r => String(r.id) === String(id));
-      const el = document.querySelector(`#campaignList .row-item[data-row-id="${id}"]`);
-      const { error } = await sb.from('campaigns').delete().eq('id', id);
-      if (error) { showToast('Gagal hapus: ' + error.message); return; }
-      if (row?.image_path) {
-        try { await deleteFileFromGithub(row.image_path); }
-        catch (err) { showToast('Inisiatif dihapus, tapi file GitHub gagal dihapus: ' + err.message); }
-      }
-      showToast('Inisiatif dan file gambarnya dihapus');
-      campaignRows = campaignRows.filter(r => String(r.id) !== String(id));
-      await animateRemoveRow(el);
-      el?.remove();
-      document.getElementById('campaignCountLabel').textContent = campaignRows.length + ' inisiatif';
-      if (campaignRows.length === 0) {
-        document.getElementById('campaignList').innerHTML = '<div class="empty-note">Belum ada inisiatif. Tambahkan lewat form di atas.</div>';
-      }
-    }
-
-    // ==================== FAKTA LAPANGAN ====================
-    let faktaRows = [];
-
-    async function loadFaktaMedia() {
-      const list = document.getElementById('faktaList');
-      list.innerHTML = '<div class="empty-note">Memuat media...</div>';
-      const { data, error } = await sb.from('fakta_media').select('*').order('created_at', { ascending: false });
-      if (error) {
-        list.innerHTML = '<div class="empty-note">Gagal memuat: ' + escapeHtml(error.message) + '</div>';
-        return;
-      }
-      const rows = data || [];
-      faktaRows = rows;
-      document.getElementById('faktaCountLabel').textContent = rows.length + ' file media';
-      if (rows.length === 0) {
-        list.innerHTML = '<div class="empty-note">Belum ada foto/video. Upload lewat tombol di atas.</div>';
-        return;
-      }
-      list.innerHTML = rows.map(r => `
-        <div class="row-item" data-row-id="${r.id}">
-          ${r.media_type === 'video'
-            ? `<video src="${escapeHtml(r.url)}" muted></video>`
-            : `<img src="${escapeHtml(r.url)}" alt="" />`}
-          <div class="row-body">
-            <p class="row-title">${r.media_type === 'video' ? '🎬 Video' : '🖼️ Foto'} <span class="badge">GitHub</span></p>
-            <p class="row-meta">${r.created_at ? new Date(r.created_at).toLocaleString('id-ID') : ''}</p>
-          </div>
-          <div class="row-actions">
-            <button class="btn danger small" data-action="delete-fakta" data-id="${r.id}">Hapus</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    document.getElementById('faktaList').addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-action]');
-      if (!btn) return;
-      const id = btn.dataset.id;
-      const row = faktaRows.find(r => String(r.id) === String(id));
-      if (!row) return;
-      if (btn.dataset.action === 'delete-fakta') deleteFaktaMedia(row);
-    });
-
-    document.getElementById('faktaFileInput').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const label = document.getElementById('uploadDropLabel');
-      const isVideo = file.type.startsWith('video/');
-      label.textContent = 'Mengupload ' + file.name + ' ke GitHub...';
-      try {
-        const { url, path } = await uploadFileToGithub(file, 'assets/fakta');
-        const { error: insErr } = await sb.from('fakta_media').insert([{
-          media_type: isVideo ? 'video' : 'image',
-          url,
-          storage_path: path
-        }]);
-        if (insErr) throw insErr;
-        showToast('Media berhasil diupload & tercatat');
-        loadFaktaMedia();
-      } catch (err) {
-        showToast('Gagal upload: ' + err.message);
-      } finally {
-        label.textContent = '📎 Klik untuk pilih foto atau video, lalu otomatis terupload ke GitHub';
-        e.target.value = '';
-      }
-    });
-
-    async function deleteFaktaMedia(row) {
-      if (!confirm('Hapus media ini? File-nya di GitHub juga akan ikut dihapus.')) return;
-      const el = document.querySelector(`#faktaList .row-item[data-row-id="${row.id}"]`);
-      const { error } = await sb.from('fakta_media').delete().eq('id', row.id);
-      if (error) { showToast('Gagal hapus: ' + error.message); return; }
-      try { await deleteFileFromGithub(row.storage_path); }
-      catch (err) { showToast('Data dihapus, tapi file GitHub gagal dihapus: ' + err.message); }
-      showToast('Media dan filenya dihapus');
-      faktaRows = faktaRows.filter(r => String(r.id) !== String(row.id));
-      await animateRemoveRow(el);
-      el?.remove();
-      document.getElementById('faktaCountLabel').textContent = faktaRows.length + ' file media';
-      if (faktaRows.length === 0) {
-        document.getElementById('faktaList').innerHTML = '<div class="empty-note">Belum ada foto/video. Upload lewat tombol di atas.</div>';
-      }
-    }
-
-    // ==================== LOKASI (PROJECT LOCATIONS) ====================
-    let lokasiRows = [];
-    let lokasiMap = null;
-    let lokasiPickerMarker = null;
-    let lokasiExistingMarkers = [];
-
-    async function initLokasiPickerMap() {
-      if (lokasiMap || typeof L === 'undefined') return;
-      lokasiMap = L.map('lokasiPickerMap', { scrollWheelZoom: true }).setView([3.85, 116.55], 8);
-      L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenTopoMap',
-        maxZoom: 17
-      }).addTo(lokasiMap);
-
-      try {
-        const geoRes = await fetch('https://raw.githubusercontent.com/hecatesorata/danates/main/assets/geo.json');
-        if (geoRes.ok) {
-          const geoData = await geoRes.json();
-          L.geoJSON(geoData, {
-            style: {
-              color: '#ffd700',
-              weight: 4,
-              opacity: 0.95,
-              fillColor: '#c9a15a',
-              fillOpacity: 0.07,
-              dashArray: '3 6'
-            }
-          }).addTo(lokasiMap);
-        }
-      } catch (e) {
-        console.warn('Gagal load garis batas di peta admin:', e);
-      }
-
-      lokasiMap.on('click', (e) => {
-        setLokasiPickerMarker(e.latlng.lat, e.latlng.lng);
-        document.getElementById('lokasiLat').value = e.latlng.lat.toFixed(6);
-        document.getElementById('lokasiLng').value = e.latlng.lng.toFixed(6);
+      if(!payload.nama){ showToast('Nama wajib diisi.', true); return; }
+      var query = id ? supabase.from('borneodrive_places').update(payload).eq('id', id)
+                     : supabase.from('borneodrive_places').insert(payload);
+      query.then(function(res){
+        if(res.error){ showToast('Gagal menyimpan: ' + res.error.message, true); return; }
+        showToast(id ? 'Data diperbarui.' : 'Data ditambahkan.');
+        resetPlaceForm(tipe);
+        loadPlaces(tipe);
       });
-    }
-
-    async function ensureLokasiMapReady() {
-      const firstInit = !lokasiMap;
-      await initLokasiPickerMap();
-      if (firstInit) renderLokasiMapMarkers(lokasiRows);
-      // Container baru punya ukuran final setelah panel-nya jadi display:block,
-      // jadi invalidateSize ditunda 2 frame biar reflow-nya kelar dulu.
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (lokasiMap) lokasiMap.invalidateSize();
-        });
-      });
-    }
-
-    function setLokasiPickerMarker(lat, lng) {
-      if (!lokasiMap) return;
-      const pos = [lat, lng];
-      if (lokasiPickerMarker) {
-        lokasiPickerMarker.setLatLng(pos);
-      } else {
-        lokasiPickerMarker = L.marker(pos, { draggable: true }).addTo(lokasiMap);
-        lokasiPickerMarker.on('dragend', () => {
-          const p = lokasiPickerMarker.getLatLng();
-          document.getElementById('lokasiLat').value = p.lat.toFixed(6);
-          document.getElementById('lokasiLng').value = p.lng.toFixed(6);
-        });
-      }
-      lokasiMap.panTo(pos);
-    }
-
-    function renderLokasiMapMarkers(rows) {
-      if (!lokasiMap) return;
-      lokasiExistingMarkers.forEach(m => lokasiMap.removeLayer(m));
-      lokasiExistingMarkers = rows.map(r => {
-        const marker = L.circleMarker([r.lat, r.lng], {
-          radius: 7, color: '#a2402f', weight: 2, fillColor: '#c9a15a', fillOpacity: 0.85
-        }).addTo(lokasiMap);
-        const img = r.image_url ? `<img src="${escapeHtml(r.image_url)}" alt="" />` : '';
-        const desc = r.description ? `<br>${escapeHtml(r.description)}` : '';
-        marker.bindPopup(`${img}<b>${escapeHtml(r.name)}</b>${desc}`);
-        return marker;
-      });
-    }
-
-    async function loadLokasi() {
-      const list = document.getElementById('lokasiList');
-      list.innerHTML = '<div class="empty-note">Memuat titik lokasi...</div>';
-      const { data, error } = await sb.from('project_locations').select('*').order('created_at', { ascending: false });
-      if (error) {
-        list.innerHTML = '<div class="empty-note">Gagal memuat: ' + escapeHtml(error.message) + '</div>';
-        return;
-      }
-      const rows = data || [];
-      lokasiRows = rows;
-      // Peta baru di-init pas tab "Lokasi" dibuka (lihat ensureLokasiMapReady),
-      // supaya Leaflet tidak salah hitung ukuran gara-gara container masih hidden.
-      renderLokasiMapMarkers(rows);
-      document.getElementById('lokasiCountLabel').textContent = rows.length + ' titik lokasi';
-      if (rows.length === 0) {
-        list.innerHTML = '<div class="empty-note">Belum ada titik lokasi. Klik di peta atau isi form di atas.</div>';
-        return;
-      }
-      list.innerHTML = rows.map(r => `
-        <div class="row-item" data-row-id="${r.id}">
-          ${r.image_url ? `<img src="${escapeHtml(r.image_url)}" alt="" onerror="this.style.opacity=0" />` : ''}
-          <div class="row-body">
-            <p class="row-title">${escapeHtml(r.name)}</p>
-            <p class="row-meta">${Number(r.lat).toFixed(5)}, ${Number(r.lng).toFixed(5)}</p>
-            ${r.description ? `<p class="row-desc">${escapeHtml(r.description)}</p>` : ''}
-          </div>
-          <div class="row-actions">
-            <button class="btn ghost small" data-action="edit-lokasi" data-id="${r.id}">Edit</button>
-            <button class="btn danger small" data-action="delete-lokasi" data-id="${r.id}">Hapus</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    document.getElementById('lokasiList').addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-action]');
-      if (!btn) return;
-      const id = btn.dataset.id;
-      const row = lokasiRows.find(r => String(r.id) === String(id));
-      if (!row) return;
-      if (btn.dataset.action === 'edit-lokasi') editLokasi(row);
-      if (btn.dataset.action === 'delete-lokasi') deleteLokasi(row.id);
     });
+  });
 
-    function updateLokasiImagePreview(url) {
-      const img = document.getElementById('lokasiImagePreview');
-      if (url) { img.src = url; img.style.display = 'block'; }
-      else { img.removeAttribute('src'); img.style.display = 'none'; }
-    }
-    document.getElementById('lokasiImage').addEventListener('input', (e) => updateLokasiImagePreview(e.target.value.trim()));
-
-    document.getElementById('lokasiImageUploadBtn').addEventListener('click', () => {
-      document.getElementById('lokasiImageFileInput').click();
+  function escapeHtml(str){
+    return String(str || '').replace(/[&<>"']/g, function(m){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m];
     });
-    document.getElementById('lokasiImageFileInput').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const statusEl = document.getElementById('lokasiImageUploadStatus');
-      const btn = document.getElementById('lokasiImageUploadBtn');
-      btn.disabled = true;
-      statusEl.textContent = 'Mengupload ke GitHub...';
-      try {
-        const { url } = await uploadFileToGithub(file, 'assets/lokasi');
-        document.getElementById('lokasiImage').value = url;
-        updateLokasiImagePreview(url);
-        statusEl.textContent = '✓ Terupload ke repo';
-        showToast('Gambar berhasil diupload ke GitHub');
-      } catch (err) {
-        statusEl.textContent = '';
-        showToast('Gagal upload: ' + err.message);
-      } finally {
-        btn.disabled = false;
-        e.target.value = '';
-      }
-    });
-
-    function editLokasi(row) {
-      document.getElementById('lokasiId').value = row.id;
-      document.getElementById('lokasiLat').value = row.lat;
-      document.getElementById('lokasiLng').value = row.lng;
-      document.getElementById('lokasiName').value = row.name;
-      document.getElementById('lokasiDesc').value = row.description || '';
-      document.getElementById('lokasiImage').value = row.image_url || '';
-      updateLokasiImagePreview(row.image_url || '');
-      setLokasiPickerMarker(row.lat, row.lng);
-      if (lokasiMap) lokasiMap.setView([row.lat, row.lng], 12);
-      document.getElementById('lokasiFormTitle').textContent = 'Edit Titik Lokasi';
-      document.getElementById('cancelLokasiEditBtn').style.display = 'inline-flex';
-      document.getElementById('panel-lokasi').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function resetLokasiForm() {
-      document.getElementById('lokasiId').value = '';
-      document.getElementById('lokasiLat').value = '';
-      document.getElementById('lokasiLng').value = '';
-      document.getElementById('lokasiName').value = '';
-      document.getElementById('lokasiDesc').value = '';
-      document.getElementById('lokasiImage').value = '';
-      document.getElementById('lokasiImageUploadStatus').textContent = '';
-      updateLokasiImagePreview('');
-      if (lokasiPickerMarker && lokasiMap) {
-        lokasiMap.removeLayer(lokasiPickerMarker);
-        lokasiPickerMarker = null;
-      }
-      document.getElementById('lokasiFormTitle').textContent = 'Tambah Titik Lokasi';
-      document.getElementById('cancelLokasiEditBtn').style.display = 'none';
-    }
-    document.getElementById('cancelLokasiEditBtn').addEventListener('click', resetLokasiForm);
-
-    document.getElementById('saveLokasiBtn').addEventListener('click', async () => {
-      const id = document.getElementById('lokasiId').value;
-      const lat = parseFloat(document.getElementById('lokasiLat').value);
-      const lng = parseFloat(document.getElementById('lokasiLng').value);
-      const name = document.getElementById('lokasiName').value.trim();
-      const description = document.getElementById('lokasiDesc').value.trim() || null;
-      const image_url = document.getElementById('lokasiImage').value.trim() || null;
-      if (!name || isNaN(lat) || isNaN(lng)) {
-        showToast('Nama, latitude, dan longitude wajib diisi (klik di peta atau isi manual)');
-        return;
-      }
-      if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-        showToast('Latitude/longitude di luar rentang yang valid');
-        return;
-      }
-      let error;
-      if (id) {
-        ({ error } = await sb.from('project_locations').update({ lat, lng, name, description, image_url }).eq('id', id));
-      } else {
-        ({ error } = await sb.from('project_locations').insert([{ lat, lng, name, description, image_url }]));
-      }
-      if (error) { showToast('Gagal simpan: ' + error.message); return; }
-      showToast(id ? 'Lokasi diperbarui' : 'Lokasi ditambahkan');
-      resetLokasiForm();
-      loadLokasi();
-    });
-
-    async function deleteLokasi(id) {
-      if (!confirm('Hapus titik lokasi ini?')) return;
-      const el = document.querySelector(`#lokasiList .row-item[data-row-id="${id}"]`);
-      const { error } = await sb.from('project_locations').delete().eq('id', id);
-      if (error) { showToast('Gagal hapus: ' + error.message); return; }
-      showToast('Lokasi dihapus');
-      lokasiRows = lokasiRows.filter(r => String(r.id) !== String(id));
-      renderLokasiMapMarkers(lokasiRows);
-      await animateRemoveRow(el);
-      el?.remove();
-      document.getElementById('lokasiCountLabel').textContent = lokasiRows.length + ' titik lokasi';
-      if (lokasiRows.length === 0) {
-        document.getElementById('lokasiList').innerHTML = '<div class="empty-note">Belum ada titik lokasi. Klik di peta atau isi form di atas.</div>';
-      }
-    }
-
-    // ==================== AKUN (GANTI PASSWORD & TAMBAH ADMIN) ====================
-    document.getElementById('changePasswordBtn').addEventListener('click', async () => {
-      const pass = document.getElementById('newPassword').value;
-      const confirmPass = document.getElementById('newPasswordConfirm').value;
-      const btn = document.getElementById('changePasswordBtn');
-      if (!pass || pass.length < 6) {
-        showToast('Password minimal 6 karakter');
-        return;
-      }
-      if (pass !== confirmPass) {
-        showToast('Konfirmasi password tidak cocok');
-        return;
-      }
-      btn.disabled = true;
-      const { error } = await sb.auth.updateUser({ password: pass });
-      btn.disabled = false;
-      if (error) { showToast('Gagal ganti password: ' + error.message); return; }
-      document.getElementById('newPassword').value = '';
-      document.getElementById('newPasswordConfirm').value = '';
-      showToast('Password berhasil diganti');
-    });
-
-    document.getElementById('addAdminBtn').addEventListener('click', async () => {
-      const email = document.getElementById('newAdminEmail').value.trim();
-      const password = document.getElementById('newAdminPassword').value;
-      const btn = document.getElementById('addAdminBtn');
-      const statusEl = document.getElementById('addAdminStatus');
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showToast('Isi email yang valid');
-        return;
-      }
-      if (!password || password.length < 6) {
-        showToast('Password minimal 6 karakter');
-        return;
-      }
-      btn.disabled = true;
-      statusEl.textContent = 'Membuat akun admin...';
-      try {
-        const { data: sessionData } = await sb.auth.getSession();
-        const accessToken = sessionData?.session?.access_token;
-        if (!accessToken) throw new Error('Sesi login tidak ditemukan, coba login ulang');
-
-        const res = await fetch('/api/create-admin', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          },
-          body: JSON.stringify({ email, password })
-        });
-        const result = await res.json();
-        if (!res.ok) throw new Error(result.error || 'Gagal membuat admin');
-
-        statusEl.textContent = '✓ Admin ' + email + ' berhasil dibuat, langsung bisa login.';
-        document.getElementById('newAdminEmail').value = '';
-        document.getElementById('newAdminPassword').value = '';
-        showToast('Admin baru berhasil dibuat: ' + email);
-      } catch (err) {
-        statusEl.textContent = '';
-        showToast('Gagal: ' + err.message);
-      } finally {
-        btn.disabled = false;
-      }
-    });
-  </script>
+  }
+</script>
 </body>
 </html>
