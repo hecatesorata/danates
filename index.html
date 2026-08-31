@@ -47,6 +47,7 @@
   @media (max-width:700px){ .wrap{padding:0 20px;} }
   :focus-visible{outline:2.5px solid var(--gold);outline-offset:3px;border-radius:4px;}
   ::selection{background:var(--gold-light);color:var(--navy-deep);}
+  [id]{scroll-margin-top:96px;}
 
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;scroll-behavior:auto !important;}
@@ -63,9 +64,7 @@
   .reveal-stagger.is-visible > *:nth-child(4){transition-delay:.21s;}
   .reveal-stagger.is-visible > *:nth-child(5){transition-delay:.27s;}
   .reveal-stagger.is-visible > *:nth-child(6){transition-delay:.33s;}
-  .reveal-stagger.is-visible > *:nth-child(7){transition-delay:.37s;}
-  .reveal-stagger.is-visible > *:nth-child(8){transition-delay:.41s;}
-  .reveal-stagger.is-visible > *:nth-child(n+9){transition-delay:.45s;}
+  .reveal-stagger.is-visible > *:nth-child(n+7){transition-delay:.37s;}
 
   /* ---------- Header ---------- */
   header{position:sticky;top:0;z-index:60;background:rgba(9,22,43,0.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.14);transition:background .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease);}
@@ -122,26 +121,27 @@
   .badge{display:inline-flex;align-items:center;gap:7px;background:rgba(202,161,76,0.16);border:1px solid rgba(202,161,76,0.5);color:var(--gold-light);font-size:11.5px;font-weight:700;letter-spacing:0.08em;padding:7px 14px;border-radius:20px;margin-bottom:22px;opacity:0;animation:fadeUp .7s var(--ease) .1s forwards;}
   h1.hero-title{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.6vw,48px);line-height:1.14;color:var(--white);max-width:640px;margin:0 0 16px;opacity:0;animation:fadeUp .7s var(--ease) .22s forwards;}
   .hero-desc{font-size:15.5px;color:#dce6f0;max-width:470px;margin:0 0 6px;opacity:0;animation:fadeUp .7s var(--ease) .34s forwards;}
-  .hero-price{font-size:15px;color:var(--white);margin:8px 0 28px;opacity:0;animation:fadeUp .7s var(--ease) .42s forwards;}
+  .hero-price{font-size:15px;color:var(--white);margin:8px 0 22px;opacity:0;animation:fadeUp .7s var(--ease) .42s forwards;}
   .hero-price b{color:var(--gold-light);font-size:17px;}
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 
-  /* Signature element: the route line */
-  .route-strip{opacity:0;animation:fadeUp .7s var(--ease) .5s forwards;display:flex;align-items:center;gap:0;max-width:640px;margin-bottom:6px;position:relative;}
-  .route-strip .stop{display:flex;flex-direction:column;align-items:center;gap:8px;flex:0 0 auto;position:relative;z-index:2;}
-  .route-strip .dot{width:11px;height:11px;border-radius:50%;background:var(--gold);border:2px solid rgba(255,255,255,0.85);box-shadow:0 0 0 4px rgba(202,161,76,0.18);}
-  .route-strip .stop:last-child .dot{background:var(--white);border-color:var(--gold);}
-  .route-strip .stop b{font-size:11px;font-weight:700;color:var(--white);letter-spacing:0.02em;white-space:nowrap;}
-  .route-strip .seg{flex:1 1 auto;height:0;border-top:1.5px dashed rgba(255,255,255,0.45);position:relative;top:-14px;min-width:16px;}
-  .route-strip .car{position:absolute;top:-25px;left:0;color:var(--gold-light);animation:driveRoute 7s linear infinite;}
-  @keyframes driveRoute{0%{left:0;opacity:0;}5%{opacity:1;}95%{opacity:1;}100%{left:calc(100% - 18px);opacity:0;}}
-  @media (max-width:640px){ .route-strip{display:none;} }
+  .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:30px;opacity:0;animation:fadeUp .7s var(--ease) .5s forwards;}
+  .hero-cta-primary{background:var(--green);color:#fff;padding:13px 22px;border-radius:10px;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px;transition:transform .18s var(--ease),box-shadow .18s var(--ease);}
+  .hero-cta-primary:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(37,211,102,0.35);}
+  .hero-cta-secondary{background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.4);color:#fff;padding:13px 22px;border-radius:10px;font-size:13.5px;font-weight:700;transition:background .18s var(--ease),transform .18s var(--ease);}
+  .hero-cta-secondary:hover{background:rgba(255,255,255,0.2);transform:translateY(-2px);}
 
   .hero-features{display:flex;gap:30px;flex-wrap:wrap;max-width:600px;opacity:0;animation:fadeUp .7s var(--ease) .58s forwards;}
   .feat{display:flex;flex-direction:column;gap:6px;min-width:110px;}
   .feat-icon{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.28);display:flex;align-items:center;justify-content:center;color:var(--gold-light);}
   .feat b{font-size:13px;color:var(--white);}
   .feat span{font-size:11.5px;color:#c6d3e2;}
+
+  .hero-float-card{position:absolute;right:36px;bottom:36px;z-index:3;background:rgba(255,255,255,0.97);backdrop-filter:blur(6px);border-radius:14px;padding:14px 18px;box-shadow:0 20px 40px rgba(0,0,0,0.25);display:flex;align-items:center;gap:12px;opacity:0;animation:fadeUp .7s var(--ease) .7s forwards;}
+  .hero-float-card .icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--navy),var(--navy-2));display:flex;align-items:center;justify-content:center;color:var(--gold-light);flex:0 0 auto;}
+  .hero-float-card b{display:block;font-size:12.5px;color:var(--navy);}
+  .hero-float-card span{font-size:10.5px;color:var(--muted);}
+  @media (max-width:900px){ .hero-float-card{display:none;} }
 
   /* ---------- Search widget ---------- */
   .search-card{position:relative;z-index:5;background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);border:1px solid var(--line);padding:26px 28px;margin:0 auto 56px;margin-top:-50px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:18px;align-items:end;}
@@ -173,10 +173,16 @@
   /* ---------- Sections ---------- */
   .section{padding:24px 0 64px;}
   .section.alt{background:var(--panel);}
-  .section-head{margin-bottom:32px;}
+  .section-head{margin-bottom:28px;}
   .section-num{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.14em;text-transform:uppercase;margin:0 0 8px;}
   .section-head h2{font-family:var(--display);font-size:clamp(23px,2.8vw,29px);color:var(--navy);margin:0 0 8px;}
   .section-head p{color:var(--muted);font-size:14px;margin:0;max-width:620px;}
+
+  /* ---------- Category filter chips ---------- */
+  .filter-chips{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:22px;}
+  .filter-chip{background:var(--white);border:1.5px solid var(--line);border-radius:30px;padding:8px 16px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s var(--ease);}
+  .filter-chip:hover{border-color:var(--gold);color:var(--navy);}
+  .filter-chip.active{background:var(--navy);border-color:var(--navy);color:#fff;}
 
   /* ---------- Fleet ---------- */
   .fleet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
@@ -184,18 +190,17 @@
   @media (max-width:560px){ .fleet-grid{grid-template-columns:1fr;} }
   .fleet-card{border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm);transition:transform .25s var(--ease),box-shadow .25s var(--ease);}
   .fleet-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md);}
-  .fleet-photo{height:150px;position:relative;overflow:hidden;background-size:cover;background-position:center;}
+  .fleet-photo{height:150px;position:relative;overflow:hidden;background-size:cover;background-position:center;transition:background-size .5s var(--ease);}
   .fleet-card:hover .fleet-photo{background-size:112%;}
-  .fleet-photo{transition:background-size .5s var(--ease);}
   .fleet-body{padding:16px 18px;}
   .fleet-body h4{font-family:var(--display);font-size:15.5px;margin:0 0 8px;color:var(--navy);}
   .fleet-specs{display:flex;gap:14px;flex-wrap:wrap;row-gap:6px;font-size:12px;color:var(--muted);margin-bottom:0;}
   .fleet-specs span{display:flex;align-items:center;gap:5px;}
-  .fleet-specs span:last-child{background:var(--panel);color:var(--navy);font-weight:700;font-size:10.5px;letter-spacing:0.02em;padding:3px 9px;border-radius:10px;}
+  .fleet-specs span.pkg{background:var(--panel);color:var(--navy);font-weight:700;font-size:10.5px;letter-spacing:0.02em;padding:3px 9px;border-radius:10px;}
   .fleet-price{background:linear-gradient(120deg,var(--navy),var(--navy-2));color:var(--white);text-align:center;padding:11px;font-size:13.5px;font-weight:700;letter-spacing:0.01em;}
   .fleet-foot{text-align:center;font-size:12px;color:var(--muted);margin-top:18px;}
 
-  /* ---------- Destinations ---------- */
+  /* ---------- Destinations / Kuliner ---------- */
   .dest-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
   @media (max-width:960px){ .dest-grid{grid-template-columns:1fr 1fr 1fr;} }
   @media (max-width:640px){ .dest-grid{grid-template-columns:1fr 1fr;} }
@@ -203,6 +208,17 @@
   .places-loading{grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:30px 0;}
   .dest-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md);}
   .dest-card:focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;}
+  .dest-photo{height:150px;position:relative;overflow:hidden;background-size:cover;background-position:center;transition:background-size .5s var(--ease);}
+  .dest-card:hover .dest-photo{background-size:114%;}
+  .dest-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.5) 100%);}
+  .dest-photo span.tag{position:absolute;bottom:8px;left:8px;background:rgba(15,38,71,0.82);color:#fff;font-size:9.5px;letter-spacing:0.05em;padding:3px 8px;border-radius:10px;z-index:2;}
+  .dest-info{padding:11px 13px;background:var(--white);}
+  .dest-info b{display:block;font-size:13.5px;color:var(--navy);}
+  .dest-info span.loc{font-size:11.5px;color:var(--muted);}
+  .dest-info .maps-link{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;font-weight:600;color:var(--navy);}
+  .dest-info .maps-link:hover{color:var(--gold);}
+  .dest-info .maps-link svg{flex:0 0 auto;}
+  .dest-info .meta{display:block;font-size:10.5px;color:var(--muted);margin-top:4px;line-height:1.4;}
 
   /* ---------- Destinasi/Kuliner mini pop-out modal ---------- */
   .dest-modal-overlay{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(8,17,33,0.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .25s var(--ease),visibility .25s var(--ease);}
@@ -221,17 +237,6 @@
   .dest-modal-body .desc{font-size:13.5px;color:var(--text);line-height:1.65;margin:0 0 18px;}
   .dest-modal-body .maps-btn{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:11px 18px;border-radius:30px;font-size:13px;font-weight:700;}
   .dest-modal-body .maps-btn:hover{background:var(--navy-2);}
-  .dest-photo{height:150px;position:relative;overflow:hidden;background-size:cover;background-position:center;transition:background-size .5s var(--ease);}
-  .dest-card:hover .dest-photo{background-size:114%;}
-  .dest-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.5) 100%);}
-  .dest-photo span.tag{position:absolute;bottom:8px;left:8px;background:rgba(15,38,71,0.82);color:#fff;font-size:9.5px;letter-spacing:0.05em;padding:3px 8px;border-radius:10px;z-index:2;}
-  .dest-info{padding:11px 13px;background:var(--white);}
-  .dest-info b{display:block;font-size:13.5px;color:var(--navy);}
-  .dest-info span.loc{font-size:11.5px;color:var(--muted);}
-  .dest-info .maps-link{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;font-weight:600;color:var(--navy);}
-  .dest-info .maps-link:hover{color:var(--gold);}
-  .dest-info .maps-link svg{flex:0 0 auto;}
-  .dest-info .meta{display:block;font-size:10.5px;color:var(--muted);margin-top:4px;line-height:1.4;}
 
   /* ---------- Why us ---------- */
   .why-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
@@ -311,13 +316,6 @@
   .resv-field .box select,.resv-field .box input,.resv-field .box textarea{border:none;background:transparent;font:inherit;color:var(--text);width:100%;padding:0;outline:none;-webkit-appearance:none;appearance:none;resize:vertical;}
   .resv-error{font-size:11px;color:#d94f4f;display:none;}
   .resv-field .box.invalid + .resv-error{display:block;}
-  .avail-status{font-size:11.5px;font-weight:700;display:none;align-items:center;gap:6px;}
-  .avail-status.show{display:flex;}
-  .avail-status.ok{color:#1c7a3e;}
-  .avail-status.no{color:#d94f4f;}
-  .avail-status.checking{color:var(--muted);font-weight:500;}
-  .resv-submit[disabled]{opacity:0.55;cursor:not-allowed;}
-  .resv-submit[disabled]:hover{transform:none;box-shadow:none;}
   .resv-radio-group{display:flex;gap:10px;flex-wrap:wrap;}
   .resv-radio{display:flex;align-items:center;gap:7px;border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:9px 14px;font-size:13px;color:var(--text);background:var(--panel);cursor:pointer;transition:border-color .2s var(--ease),background .2s var(--ease);}
   .resv-radio input{accent-color:var(--navy);}
@@ -411,23 +409,23 @@
     <h1 class="hero-title">Tour Guide &amp; Travel dari Sabah, Kuching &amp; Brunei menuju Balikpapan</h1>
     <p class="hero-desc">Tour guide berpengalaman memandu perjalanan Anda dari Sabah, Kuching (Serawak), dan Brunei hingga tiba di Balikpapan, dengan mobil dan driver siap sepanjang rute.</p>
     <p class="hero-price">Mulai <b>Rp2.800.000 / hari</b> (Paket Reguler) — Paket Executive <b>Rp3.200.000 / hari</b>.</p>
-
-    <div class="route-strip" aria-hidden="true">
-      <div class="stop"><span class="dot"></span><b>Sabah</b></div>
-      <div class="seg"><svg class="car" width="18" height="12" viewBox="0 0 24 16" fill="none"><path d="M2 11l1-4.5A2 2 0 0 1 4.9 5h9.6a2 2 0 0 1 1.8 1.1L18 11v3a.8.8 0 0 1-.8.8h-.6a.8.8 0 0 1-.8-.8v-.6H4.2v.6a.8.8 0 0 1-.8.8h-.6A.8.8 0 0 1 2 14v-3Z" stroke="currentColor" stroke-width="1.3"/></svg></div>
-      <div class="stop"><span class="dot"></span><b>Kuching</b></div>
-      <div class="seg"></div>
-      <div class="stop"><span class="dot"></span><b>Brunei</b></div>
-      <div class="seg"></div>
-      <div class="stop"><span class="dot"></span><b>Balikpapan</b></div>
+    <div class="hero-ctas">
+      <a href="#reservasi" class="hero-cta-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>
+        Reservasi via WhatsApp
+      </a>
+      <a href="#armada" class="hero-cta-secondary">Lihat Layanan</a>
     </div>
-
     <div class="hero-features">
       <div class="feat"><div class="feat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.4 8.4-7 10-3.6-1.6-7-5-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.6"/></svg></div><b>Aman &amp; Nyaman</b><span>Driver berpengalaman</span></div>
-      <div class="feat"><div class="feat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><b>Tepat Waktu</b><span>On time guarantee</span></div>
+      <div class="feat"><div class="feat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><b>Durasi 12 Jam</b><span>Per hari sewa</span></div>
       <div class="feat"><div class="feat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 16l1.4-4.8A2 2 0 0 1 7.3 10h9.4a2 2 0 0 1 1.9 1.2L20 16v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-.5H7V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3Z" stroke="currentColor" stroke-width="1.5"/></svg></div><b>Harga All-In</b><span>Tanpa biaya tersembunyi</span></div>
       <div class="feat"><div class="feat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 18v-2a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v2M14 18v-2a4 4 0 0 1 3-3.9M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm11 1a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2Z" stroke="currentColor" stroke-width="1.5"/></svg></div><b>Layanan 24/7</b><span>Siap membantu Anda</span></div>
     </div>
+  </div>
+  <div class="hero-float-card">
+    <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.4 8.4-7 10-3.6-1.6-7-5-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.6"/></svg></div>
+    <div><b>100% Aman &amp; Terpercaya</b><span>Asuransi penumpang termasuk</span></div>
   </div>
 </section>
 
@@ -499,39 +497,8 @@
       <h2>Tour Guide &amp; Armada Pendukung</h2>
       <p>Tour guide berpengalaman memandu penuh perjalanan Anda dari Sabah, Kuching &amp; Brunei hingga Balikpapan, didukung armada yang bersih dan nyaman.</p>
     </div>
-    <div class="fleet-grid reveal-stagger">
-      <div class="fleet-card">
-        <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Toyota_Kijang_Innova_(Side),_Jakarta,_Indonesia.jpg?width=500');"></div>
-        <div class="fleet-body">
-          <h4>Toyota Innova Reborn</h4>
-          <div class="fleet-specs"><span>👤 6 Penumpang</span><span>🧳 4 Koper</span><span>Paket Reguler</span></div>
-        </div>
-        <div class="fleet-price">Rp2.800.000 / hari</div>
-      </div>
-      <div class="fleet-card">
-        <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Toyota_Avanza_side.jpg?width=500');"></div>
-        <div class="fleet-body">
-          <h4>Toyota Avanza</h4>
-          <div class="fleet-specs"><span>👤 6 Penumpang</span><span>🧳 4 Koper</span><span>Paket Reguler</span></div>
-        </div>
-        <div class="fleet-price">Rp2.800.000 / hari</div>
-      </div>
-      <div class="fleet-card">
-        <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Toyota_HiAce_Side_View.jpg?width=500');"></div>
-        <div class="fleet-body">
-          <h4>Toyota Hiace</h4>
-          <div class="fleet-specs"><span>👤 12 Penumpang</span><span>🧳 8 Koper</span><span>Paket Executive</span></div>
-        </div>
-        <div class="fleet-price">Rp3.200.000 / hari</div>
-      </div>
-      <div class="fleet-card">
-        <div class="fleet-photo" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/0Hyundai_Starex_(TQ).jpg?width=500');"></div>
-        <div class="fleet-body">
-          <h4>Hyundai Starex</h4>
-          <div class="fleet-specs"><span>👤 10 Penumpang</span><span>🧳 7 Koper</span><span>Paket Executive</span></div>
-        </div>
-        <div class="fleet-price">Rp3.200.000 / hari</div>
-      </div>
+    <div class="fleet-grid reveal-stagger" id="fleetGrid">
+      <p class="places-loading">Memuat armada...</p>
     </div>
     <p class="fleet-foot">ⓘ Harga berlaku untuk penggunaan sepanjang rute Sabah – Kuching – Brunei – Balikpapan (per hari / 12 jam). Paket Reguler untuk Innova Reborn &amp; Avanza, Paket Executive (tour guide &amp; service premium) untuk Hiace &amp; Starex.</p>
   </div>
@@ -544,7 +511,8 @@
       <h2>Destinasi Populer di Balikpapan</h2>
       <p>Tempat menarik yang bisa Anda kunjungi setibanya di Balikpapan.</p>
     </div>
-    <div class="dest-grid reveal-stagger" id="destinasiGrid" data-place-type="destinasi">
+    <div class="filter-chips" id="destinasiFilters"></div>
+    <div class="dest-grid reveal-stagger" id="destinasiGrid">
       <p class="places-loading">Memuat destinasi...</p>
     </div>
   </div>
@@ -557,14 +525,14 @@
       <h2>Tempat Makan Favorit di Balikpapan</h2>
       <p>Kuliner khas Balikpapan yang bisa Anda cicipi sepanjang perjalanan bersama tour guide kami.</p>
     </div>
-    <div class="dest-grid reveal-stagger" id="kulinerGrid" data-place-type="kuliner">
+    <div class="filter-chips" id="kulinerFilters"></div>
+    <div class="dest-grid reveal-stagger" id="kulinerGrid">
       <p class="places-loading">Memuat kuliner...</p>
     </div>
     <p class="fleet-foot">ⓘ Ingin mampir ke tempat makan tertentu? Sampaikan saja ke tour guide kami, rute bisa disesuaikan sepanjang perjalanan di Balikpapan.</p>
   </div>
 </section>
 
-<!-- ============ Mini pop-out modal: Destinasi & Kuliner ============ -->
 <div class="dest-modal-overlay" id="destModalOverlay">
   <div class="dest-modal" role="dialog" aria-modal="true" aria-labelledby="destModalTitle">
     <div class="dest-modal-photo" id="destModalPhoto">
@@ -623,7 +591,7 @@
       <div class="team-card">
         <img class="team-photo" src="https://raw.githubusercontent.com/hecatesorata/danates/main/assets/WhatsApp%20Image%202026-08-27%20at%2009.32.32.jpeg" alt="Fauzy - Direktur Operasional BorneoDrive" loading="lazy" />
         <div class="team-body">
-          <b>Aji Fauzy Azwary</b>
+          <b>Fauzy</b>
           <span>Direktur Operasional</span>
         </div>
       </div>
@@ -649,7 +617,7 @@
         <ul class="price-list">
           <li>Sewa mobil + supir</li>
           <li>Tour guide</li>
-          <li>Makan / minum &amp; BBM termasuk</li>
+          <li>BBM termasuk</li>
           <li>Asuransi penumpang</li>
         </ul>
         <a href="#reservasi" class="price-cta">Pilih Paket</a>
@@ -665,7 +633,7 @@
         <ul class="price-list">
           <li>Sewa mobil + supir</li>
           <li>Tour guide premium</li>
-          <li>Makan / minum &amp; BBM termasuk</li>
+          <li>BBM termasuk</li>
           <li>Service premium &amp; asuransi penumpang</li>
         </ul>
         <a href="#reservasi" class="price-cta">Pilih Paket</a>
@@ -783,7 +751,6 @@
             <input type="date" id="rTanggal" required />
           </div>
           <span class="resv-error">Pilih tanggal keberangkatan.</span>
-          <span class="avail-status" id="availStatus"></span>
         </div>
         <div class="resv-field">
           <label for="rPenumpang">Jumlah Penumpang</label>
@@ -795,7 +762,7 @@
         </div>
         <div class="resv-field full">
           <label>Pilihan Armada</label>
-          <div class="resv-radio-group">
+          <div class="resv-radio-group" id="rArmadaGroup">
             <label class="resv-radio"><input type="radio" name="rArmada" value="Toyota Innova Reborn" checked />Innova Reborn</label>
             <label class="resv-radio"><input type="radio" name="rArmada" value="Toyota Avanza" />Avanza</label>
             <label class="resv-radio"><input type="radio" name="rArmada" value="Toyota Hiace" />Hiace</label>
@@ -906,30 +873,15 @@
   <span class="fab-tooltip">Chat dengan kami</span>
 </a>
 
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  var firebaseConfig = {
-    apiKey: "GANTI_DENGAN_API_KEY",
-    authDomain: "GANTI.firebaseapp.com",
-    projectId: "GANTI_PROJECT_ID",
-    storageBucket: "GANTI.appspot.com",
-    messagingSenderId: "GANTI",
-    appId: "GANTI"
-  };
-  var dbReady = false;
-  var db = null;
-  try{
-    if(firebaseConfig.projectId && firebaseConfig.projectId.indexOf('GANTI') === -1){
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      dbReady = true;
-    }
-  }catch(err){ console.warn('Firebase belum dikonfigurasi:', err); }
-</script>
+  /* =============== KONFIGURASI SUPABASE =============== */
+  /* Ganti dengan anon key project Supabase Anda:
+     Supabase Dashboard > Project Settings > API > anon public */
+  var SUPABASE_URL = 'https://epuyvcwrdrltxbhdegsi.supabase.co';
+  var SUPABASE_ANON_KEY = 'GANTI_DENGAN_SUPABASE_ANON_KEY';
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-<script>
   /* ---------- Navbar scroll transition ---------- */
   var header = document.getElementById('siteHeader');
   function onScroll(){
@@ -976,92 +928,33 @@
     window.open('https://wa.me/+600149002475?text=' + pesan, '_blank');
   });
 
-  /* ---------- Reservasi form: cek ketersediaan real-time ---------- */
-  var rTanggal = document.getElementById('rTanggal');
-  var availStatus = document.getElementById('availStatus');
-  var isSlotAvailable = true; /* default true kalau database belum aktif */
-
-  function currentArmada(){
-    var checked = document.querySelector('input[name="rArmada"]:checked');
-    return checked ? checked.value : '';
-  }
-
-  function checkAvailability(){
-    var tanggal = rTanggal.value;
-    var armada = currentArmada();
-    if(!dbReady){
-      availStatus.classList.remove('show');
-      isSlotAvailable = true;
-      return;
-    }
-    if(!tanggal){
-      availStatus.classList.remove('show');
-      return;
-    }
-    availStatus.className = 'avail-status show checking';
-    availStatus.textContent = 'Mengecek ketersediaan...';
-    db.collection('availability').doc(tanggal).get().then(function(doc){
-      var blocked = doc.exists && Array.isArray(doc.data().blockedArmada) ? doc.data().blockedArmada : [];
-      if(blocked.indexOf(armada) !== -1){
-        isSlotAvailable = false;
-        availStatus.className = 'avail-status show no';
-        availStatus.textContent = '✕ ' + armada + ' tidak tersedia pada tanggal ini. Pilih tanggal atau armada lain.';
-      } else {
-        isSlotAvailable = true;
-        availStatus.className = 'avail-status show ok';
-        availStatus.textContent = '✓ ' + armada + ' tersedia pada tanggal ini.';
-      }
-    }).catch(function(err){
-      console.warn('Gagal cek ketersediaan:', err);
-      isSlotAvailable = true;
-      availStatus.classList.remove('show');
-    });
-  }
-  rTanggal.addEventListener('change', checkAvailability);
-  document.querySelectorAll('input[name="rArmada"]').forEach(function(r){
-    r.addEventListener('change', checkAvailability);
-  });
-
-  /* ---------- Reservasi form: validation + simpan ke database + WhatsApp ---------- */
+  /* ---------- Reservasi form: validation + WhatsApp ---------- */
   var resvForm = document.getElementById('resvForm');
   resvForm.addEventListener('submit', function(e){
     e.preventDefault();
-
     var nama = document.getElementById('rNama');
     var wa = document.getElementById('rWa');
     var tanggal = document.getElementById('rTanggal');
     var penumpang = document.getElementById('rPenumpang');
-
     var requiredFields = [nama, wa, tanggal, penumpang];
     var valid = true;
     requiredFields.forEach(function(field){
       var box = field.closest('.box');
       var isEmpty = !field.value || (field.type === 'number' && (Number(field.value) < 1 || Number(field.value) > 12));
-      if(isEmpty){
-        box.classList.add('invalid');
-        valid = false;
-      } else {
-        box.classList.remove('invalid');
-      }
+      if(isEmpty){ box.classList.add('invalid'); valid = false; }
+      else{ box.classList.remove('invalid'); }
     });
-
     if(!valid){
       requiredFields[0].closest('.resv-field').scrollIntoView({behavior:'smooth', block:'center'});
       return;
     }
-
-    if(dbReady && !isSlotAvailable){
-      availStatus.closest('.resv-field').scrollIntoView({behavior:'smooth', block:'center'});
-      return;
-    }
-
     var dari = document.getElementById('rDari').value;
     var tujuan = document.getElementById('rTujuan').value;
-    var armada = currentArmada();
+    var armadaChecked = document.querySelector('input[name="rArmada"]:checked');
+    var armada = armadaChecked ? armadaChecked.value : '';
     var durasi = document.getElementById('rDurasi').value;
     var jemput = document.getElementById('rJemput').value || '-';
     var catatan = document.getElementById('rCatatan').value || '-';
-
     var pesan = 'Halo BorneoDrive, saya ingin melakukan reservasi:%0A' +
       'Nama: ' + encodeURIComponent(nama.value) +
       '%0ANo. WhatsApp: ' + encodeURIComponent(wa.value) +
@@ -1073,38 +966,11 @@
       '%0ADurasi: ' + encodeURIComponent(durasi) +
       '%0ATitik Penjemputan: ' + encodeURIComponent(jemput) +
       '%0ACatatan: ' + encodeURIComponent(catatan);
-
-    function goToWhatsApp(){
-      var successBox = document.getElementById('resvSuccess');
-      successBox.classList.add('show');
-      window.open('https://wa.me/+600149002475?text=' + pesan, '_blank');
-      setTimeout(function(){ successBox.classList.remove('show'); }, 6000);
-    }
-
-    if(dbReady){
-      db.collection('reservations').add({
-        nama: nama.value,
-        whatsapp: wa.value,
-        dari: dari,
-        tujuan: tujuan,
-        tanggal: tanggal.value,
-        penumpang: Number(penumpang.value),
-        armada: armada,
-        durasi: durasi,
-        jemput: jemput,
-        catatan: catatan,
-        status: 'pending',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(goToWhatsApp).catch(function(err){
-        console.warn('Gagal menyimpan reservasi ke database:', err);
-        goToWhatsApp(); /* tetap lanjut ke WhatsApp meski gagal simpan */
-      });
-    } else {
-      goToWhatsApp();
-    }
+    var successBox = document.getElementById('resvSuccess');
+    successBox.classList.add('show');
+    window.open('https://wa.me/+600149002475?text=' + pesan, '_blank');
+    setTimeout(function(){ successBox.classList.remove('show'); }, 6000);
   });
-
-  /* clear invalid state as user types */
   resvForm.querySelectorAll('input, select, textarea').forEach(function(el){
     el.addEventListener('input', function(){
       var box = el.closest('.box');
@@ -1112,62 +978,102 @@
     });
   });
 
-  /* ---------- Destinasi & Kuliner: data dari database (Firestore) ----------
-     Admin bisa menambah/mengedit/menghapus destinasi & kuliner lewat admin.html
-     (koleksi 'places'). Jika database belum terhubung / koleksi masih kosong,
-     website tetap menampilkan data awal (seed) di bawah ini supaya tidak kosong. */
-  var SEED_PLACES = [{"type": "destinasi", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Masjid_Agung_At-Taqwa_Balikpapan.jpg?width=500", "tag": "Balikpapan", "title": "Masjid Agung At-Taqwa", "loc": "Jl. Jenderal Sudirman, Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Masjid+Agung+At-Taqwa+Balikpapan", "desc": "Masjid terbesar di Balikpapan dengan arsitektur megah, cocok untuk singgah sholat sekaligus berfoto.", "id": "seed-1", "order": 1}, {"type": "destinasi", "photo": "https://raw.githubusercontent.com/hecatesorata/danates/main/assets/images%20(15).jpeg", "tag": "Balikpapan", "title": "Pantai Kemala", "loc": "Klandasan Ilir, Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Pantai+Kemala+Balikpapan", "desc": "Pantai kota yang ramai di sore hari, favorit untuk bersantai sambil menikmati suasana pesisir Balikpapan.", "id": "seed-2", "order": 2}, {"type": "destinasi", "photo": "https://raw.githubusercontent.com/hecatesorata/danates/main/assets/History10.jpg", "tag": "Balikpapan", "title": "KWPLH Sun Bear Sanctuary", "loc": "Km 23, Hutan Wain, Balikpapan Utara, Kaltim", "meta": "08:00–17:00 WITA · Gratis/Sumbangan sukarela (parkir Rp5.000)", "maps": "https://www.google.com/maps?q=-1.1342,116.8619", "desc": "Suaka beruang madu satu-satunya di dunia, tempat edukasi konservasi satwa khas Kalimantan.", "id": "seed-3", "order": 3}, {"type": "destinasi", "photo": "https://raw.githubusercontent.com/hecatesorata/danates/main/assets/01jtmnybs1m8wg524zr25hy4xm.jpg", "tag": "Balikpapan", "title": "Bukit Bangkirai", "loc": "Samboja, Kutai Kartanegara, Kaltim", "meta": "08:00–17:00 WITA · Rp15.000 masuk, Rp30.000 canopy bridge", "maps": "https://www.google.com/maps?q=-0.9667,116.8667", "desc": "Hutan hujan tropis dengan jembatan kanopi setinggi pohon, cocok untuk wisata alam dan petualangan.", "id": "seed-4", "order": 4}, {"type": "destinasi", "photo": "https://raw.githubusercontent.com/hecatesorata/danates/main/assets/unnamed-2.jpg", "tag": "Balikpapan", "title": "Pantai Manggar Segarasari", "loc": "Manggar, Balikpapan Timur, Kaltim", "meta": "06:00–18:00 WITA · Rp10.000 dewasa, Rp5.000 anak", "maps": "https://www.google.com/maps?q=-1.1963,116.9587", "desc": "Pantai keluarga dengan pasir putih landai, area bermain anak, dan banyak warung makan pinggir pantai.", "id": "seed-5", "order": 5}, {"type": "destinasi", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Taman%20Bekapai%20Balikpapan.jpg?width=500", "tag": "Balikpapan", "title": "Taman Bekapai", "loc": "Jl. Jenderal Sudirman, Balikpapan, Kaltim", "meta": "24 jam · Taman kota, gratis", "maps": "https://www.google.com/maps/search/?api=1&query=Taman+Bekapai+Balikpapan", "desc": "Taman kota terbuka di pusat Balikpapan, nyaman untuk jalan santai dan istirahat sejenak.", "id": "seed-6", "order": 6}, {"type": "destinasi", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Traditional%20market%20Indonesia.jpg?width=500", "tag": "Balikpapan", "title": "Pasar Klandasan", "loc": "Klandasan Ulu, Balikpapan, Kaltim", "meta": "05:00–17:00 WITA · Pasar tradisional & oleh-oleh", "maps": "https://www.google.com/maps/search/?api=1&query=Pasar+Klandasan+Balikpapan", "desc": "Pasar tradisional terbesar di Balikpapan, tempat belanja oleh-oleh khas dan hasil laut segar.", "id": "seed-7", "order": 7}, {"type": "destinasi", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Mangrove%20forest.jpg?width=500", "tag": "Balikpapan", "title": "Hutan Mangrove Margomulyo", "loc": "Margomulyo, Balikpapan Barat, Kaltim", "meta": "08:00–17:00 WITA · Rp15.000 tiket masuk", "maps": "https://www.google.com/maps?q=-1.2261,116.7935", "desc": "Kawasan konservasi mangrove dengan jalur tracking kayu, cocok untuk wisata edukasi lingkungan.", "id": "seed-8", "order": 8}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Kepiting_Bakau_Papua.jpg?width=500", "tag": "Kuliner", "title": "Kepiting Soka Kenari", "loc": "Kenari Sari, Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Kepiting+Soka+Kenari+Balikpapan", "desc": "Kepiting lunak goreng renyah khas Balikpapan, bisa dimakan utuh dengan cangkangnya.", "id": "seed-9", "order": 9}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Ikan_Pari_Bakar_Berempah.jpg?width=500", "tag": "Kuliner", "title": "Ikan Bakar Melawai", "loc": "Kawasan Melawai, Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Ikan+Bakar+Melawai+Balikpapan", "desc": "Ikan bakar segar khas pesisir dengan bumbu rempah, favorit wisatawan di kawasan Melawai.", "id": "seed-10", "order": 10}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20Kuning%20Banjar%20001.jpg?width=500", "tag": "Kuliner", "title": "Nasi Kuning Khas Kaltim", "loc": "Kawasan Kampung Baru / Kota, Balikpapan, Kaltim", "meta": "06:00–12:00 WITA · Rp15.000–Rp30.000/porsi", "maps": "https://www.google.com/maps?q=-1.2415,116.8288", "desc": "Sarapan khas Kalimantan Timur dengan nasi kuning gurih dan aneka lauk pelengkap.", "id": "seed-11", "order": 11}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Amplang%20from%20Sabah,%20Malaysia.jpg?width=500", "tag": "Oleh-oleh", "title": "Amplang Balikpapan", "loc": "Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Toko+Amplang+Balikpapan", "desc": "Kerupuk ikan renyah khas Balikpapan, oleh-oleh wajib untuk dibawa pulang.", "id": "seed-12", "order": 12}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Rumah%20Dahor%20Balikpapan.JPG?width=500", "tag": "Kuliner", "title": "Kawasan Kuliner Kampung Atas Air", "loc": "Margasari, Balikpapan, Kaltim", "meta": "", "maps": "https://www.google.com/maps/search/?api=1&query=Kampung+Atas+Air+Margasari+Balikpapan", "desc": "Kampung unik di atas air dengan deretan warung makan tradisional bernuansa lokal.", "id": "seed-13", "order": 13}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Sunset_ocean.jpg?width=500", "tag": "Sunset View", "title": "Cafe Puncak Pertamina", "loc": "Balikpapan, Kaltim", "meta": "15:00–23:00 WITA · Menu Rp15.000–Rp50.000", "maps": "https://www.google.com/maps?q=-1.2745,116.8211", "desc": "Cafe di ketinggian dengan pemandangan sunset terbaik di Balikpapan, cocok untuk nongkrong sore.", "id": "seed-14", "order": 14}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Fried%20seafood%20platter.jpg?width=500", "tag": "Kuliner", "title": "Seafood Haur Gading", "loc": "Pasar Inpres Kebun Sayur, Balikpapan, Kaltim", "meta": "10:00–21:00 WITA · Rp50.000–Rp150.000/porsi", "maps": "https://www.google.com/maps?q=-1.2388,116.8210", "desc": "Hidangan seafood segar hasil laut Balikpapan, diolah dengan bumbu khas nusantara.", "id": "seed-15", "order": 15}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Bakpao.jpg?width=500", "tag": "Oleh-oleh", "title": "Mantau Balikpapan", "loc": "Mantau Straat 1 / Cantik Manis, Balikpapan, Kaltim", "meta": "08:00–20:00 WITA · Rp50.000–Rp120.000/porsi", "maps": "https://www.google.com/maps?q=-1.2481,116.8402", "desc": "Roti kukus khas dengan berbagai isian, jajanan populer untuk oleh-oleh maupun camilan.", "id": "seed-16", "order": 16}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Coto%20Makassar-dish.JPG?width=500", "tag": "Kuliner", "title": "Coto Makassar H. Kasim", "loc": "Balikpapan, Kaltim", "meta": "08:00–21:00 WITA · Rp30.000–Rp45.000/porsi", "maps": "https://www.google.com/maps?q=-1.2585,116.8342", "desc": "Sup daging khas Makassar dengan kuah rempah kental, populer di kalangan warga Balikpapan.", "id": "seed-17", "order": 17}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20padang.jpg?width=500", "tag": "Kuliner", "title": "Restoran Nasi Padang Upik", "loc": "Balikpapan, Kaltim", "meta": "08:00–22:00 WITA · Rp25.000–Rp60.000/porsi", "maps": "https://www.google.com/maps?q=-1.2611,116.8415", "desc": "Nasi Padang dengan aneka lauk khas Minang, pilihan makan siang yang mengenyangkan.", "id": "seed-18", "order": 18}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Warung%20Kopi.jpg?width=500", "tag": "Kuliner & Cafe", "title": "Kopi Tiam (Kedai Kopi Nam Min)", "loc": "Balikpapan, Kaltim", "meta": "06:00–18:00 WITA · Rp15.000–Rp35.000", "maps": "https://www.google.com/maps?q=-1.2422,116.8231", "desc": "Kedai kopi legendaris bergaya Tionghoa-Melayu dengan kopi tubruk dan roti bakar klasik.", "id": "seed-19", "order": 19}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Gudeg.jpg?width=500", "tag": "Kuliner", "title": "Gudeg Jogja Km. 10", "loc": "Jl. Soekarno-Hatta Km 10, Balikpapan, Kaltim", "meta": "07:00–21:00 WITA · Rp20.000–Rp40.000/porsi", "maps": "https://www.google.com/maps?q=-1.1842,116.8685", "desc": "Gudeg khas Jogja dengan cita rasa manis gurih, hadir di tengah kota Balikpapan.", "id": "seed-20", "order": 20}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Nasi%20Pecel.jpg?width=500", "tag": "Kuliner Jawa", "title": "Nasi Pecel Mas Pery", "loc": "Balikpapan, Kaltim", "meta": "06:30–14:00 WITA · Rp15.000–Rp25.000/porsi", "maps": "https://www.google.com/maps?q=-1.2489,116.8512", "desc": "Nasi pecel khas Jawa dengan sambal kacang gurih, pilihan sarapan favorit warga lokal.", "id": "seed-21", "order": 21}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Kepiting%20saus%20padang.jpg?width=500", "tag": "Kuliner khas", "title": "Kepiting Dandito Balikpapan", "loc": "Balikpapan, Kaltim", "meta": "08:00–22:00 WITA · Rp150.000–Rp350.000/porsi", "maps": "https://www.google.com/maps?q=-1.2678,116.8643", "desc": "Kepiting saus khas dengan porsi besar, salah satu kuliner seafood paling terkenal di kota ini.", "id": "seed-22", "order": 22}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Milkfish%20bandeng.JPG?width=500", "tag": "Kuliner Seafood", "title": "Restoran Rumah Makan Torani", "loc": "Balikpapan, Kaltim", "meta": "09:00–23:00 WITA · Rp40.000–Rp150.000/porsi", "maps": "https://www.google.com/maps?q=-1.2643,116.8791", "desc": "Restoran seafood keluarga dengan menu ikan dan olahan laut segar setiap hari.", "id": "seed-23", "order": 23}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Street%20food%20night%20market.jpg?width=500", "tag": "Kuliner Malam", "title": "Kawasan Kuliner Pasar Baru", "loc": "Pasar Baru, Balikpapan, Kaltim", "meta": "17:00–23:00 WITA · Aneka jajanan & makanan ringan", "maps": "https://www.google.com/maps/search/?api=1&query=Pasar+Baru+Balikpapan", "desc": "Pusat jajanan malam dengan aneka street food, ramai dikunjungi warga saat malam hari.", "id": "seed-24", "order": 24}, {"type": "kuliner", "photo": "https://commons.wikimedia.org/wiki/Special:FilePath/Indonesian%20coffee.jpg?width=500", "tag": "Kuliner & Cafe", "title": "Deretan Kafe Jl. Sudirman", "loc": "Jl. Jenderal Sudirman, Balikpapan, Kaltim", "meta": "10:00–22:00 WITA · Kopi & makanan ringan", "maps": "https://www.google.com/maps/search/?api=1&query=Cafe+Jl+Sudirman+Balikpapan", "desc": "Barisan kafe kekinian di jalan utama kota, cocok untuk ngopi santai sambil menikmati suasana perkotaan.", "id": "seed-25", "order": 25}];
-
-  function escapePlaceText(str){
+  /* ---------- Util ---------- */
+  function escapeHtml(str){
     return String(str || '').replace(/[&<>"']/g, function(m){
       return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m];
     });
   }
 
+  /* ---------- Armada: load dari Supabase, render fleet cards + form reservasi ---------- */
+  function renderFleet(rows){
+    var grid = document.getElementById('fleetGrid');
+    if(!rows.length){ grid.innerHTML = '<p class="places-loading">Belum ada armada.</p>'; return; }
+    grid.innerHTML = rows.map(function(a){
+      return '<div class="fleet-card">' +
+        '<div class="fleet-photo" style="background-image:url(\'' + (a.foto_url||'').replace(/'/g,'%27') + '\');"></div>' +
+        '<div class="fleet-body"><h4>' + escapeHtml(a.nama) + '</h4>' +
+          '<div class="fleet-specs"><span>👤 ' + a.penumpang + ' Penumpang</span><span>🧳 ' + a.koper + ' Koper</span><span class="pkg">Paket ' + escapeHtml(a.paket) + '</span></div>' +
+        '</div>' +
+        '<div class="fleet-price">Rp' + Number(a.harga).toLocaleString('id-ID') + ' / hari</div>' +
+      '</div>';
+    }).join('');
+
+    /* sinkronkan pilihan armada di form reservasi dengan data terbaru */
+    var group = document.getElementById('rArmadaGroup');
+    group.innerHTML = rows.map(function(a, i){
+      return '<label class="resv-radio"><input type="radio" name="rArmada" value="' + escapeHtml(a.nama) + '"' + (i===0?' checked':'') + ' />' + escapeHtml(a.nama.replace('Toyota ','').replace('Hyundai ','')) + '</label>';
+    }).join('');
+  }
+
+  supabase.from('borneodrive_armada').select('*').order('urutan', { ascending: true }).then(function(res){
+    if(res.error || !res.data || !res.data.length){
+      document.getElementById('fleetGrid').innerHTML = '<p class="places-loading">Data armada belum tersedia.</p>';
+      return;
+    }
+    renderFleet(res.data);
+  });
+
+  /* ---------- Destinasi & Kuliner: load dari Supabase + filter kategori ---------- */
   function placeCardHtml(p){
-    var desc = escapePlaceText(p.desc);
-    var photo = (p.photo || '').replace(/'/g, "%27");
-    var metaHtml = p.meta ? '<span class="meta">' + escapePlaceText(p.meta) + '</span>' : '';
-    var mapsHtml = p.maps ? (
-      '<a class="maps-link" href="' + escapePlaceText(p.maps) + '" target="_blank" rel="noopener">' +
+    var desc = escapeHtml(p.deskripsi);
+    var photo = (p.foto_url || '').replace(/'/g, '%27');
+    var metaHtml = p.info ? '<span class="meta">' + escapeHtml(p.info) + '</span>' : '';
+    var mapsHtml = p.maps_url ? (
+      '<a class="maps-link" href="' + escapeHtml(p.maps_url) + '" target="_blank" rel="noopener">' +
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>' +
         'Lihat Lokasi' +
       '</a>'
     ) : '';
-    return '<div class="dest-card" data-desc="' + desc + '" tabindex="0">' +
-      '<div class="dest-photo" style="background-image:url(\'' + photo + '\');"><span class="tag">' + escapePlaceText(p.tag) + '</span></div>' +
-      '<div class="dest-info"><b>' + escapePlaceText(p.title) + '</b><span class="loc">' + escapePlaceText(p.loc) + '</span>' + metaHtml + mapsHtml + '</div>' +
+    return '<div class="dest-card" data-kategori="' + escapeHtml(p.kategori) + '" data-desc="' + desc + '" tabindex="0">' +
+      '<div class="dest-photo" style="background-image:url(\'' + photo + '\');"><span class="tag">' + escapeHtml(p.kategori) + '</span></div>' +
+      '<div class="dest-info"><b>' + escapeHtml(p.nama) + '</b><span class="loc">' + escapeHtml(p.lokasi) + '</span>' + metaHtml + mapsHtml + '</div>' +
     '</div>';
   }
 
-  function renderPlaces(list){
-    var destGrid = document.getElementById('destinasiGrid');
-    var kulinerGrid = document.getElementById('kulinerGrid');
-    var destItems = list.filter(function(p){ return p.type === 'destinasi'; });
-    var kulinerItems = list.filter(function(p){ return p.type === 'kuliner'; });
-    destGrid.innerHTML = destItems.length ? destItems.map(placeCardHtml).join('') : '<p class="places-loading">Belum ada destinasi.</p>';
-    kulinerGrid.innerHTML = kulinerItems.length ? kulinerItems.map(placeCardHtml).join('') : '<p class="places-loading">Belum ada kuliner.</p>';
+  function renderPlaceSection(tipe, rows){
+    var gridEl = document.getElementById(tipe + 'Grid');
+    var filterEl = document.getElementById(tipe + 'Filters');
+    if(!rows.length){
+      gridEl.innerHTML = '<p class="places-loading">Belum ada data.</p>';
+      filterEl.innerHTML = '';
+      return;
+    }
+    var categories = [];
+    rows.forEach(function(p){ if(categories.indexOf(p.kategori) === -1) categories.push(p.kategori); });
+
+    filterEl.innerHTML = ['Semua'].concat(categories).map(function(cat, i){
+      return '<button type="button" class="filter-chip' + (i===0?' active':'') + '" data-cat="' + escapeHtml(cat) + '">' + escapeHtml(cat) + '</button>';
+    }).join('');
+
+    gridEl.innerHTML = rows.map(placeCardHtml).join('');
+
+    filterEl.querySelectorAll('.filter-chip').forEach(function(chip){
+      chip.addEventListener('click', function(){
+        filterEl.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
+        chip.classList.add('active');
+        var cat = chip.dataset.cat;
+        gridEl.querySelectorAll('.dest-card').forEach(function(card){
+          var show = (cat === 'Semua') || (card.dataset.kategori === cat);
+          card.style.display = show ? '' : 'none';
+        });
+      });
+    });
   }
 
-  if(dbReady){
-    db.collection('places').orderBy('order', 'asc').onSnapshot(function(snap){
-      if(snap.empty){
-        renderPlaces(SEED_PLACES);
+  function loadPlaces(tipe){
+    supabase.from('borneodrive_places').select('*').eq('tipe', tipe).order('urutan', { ascending: true }).then(function(res){
+      if(res.error){
+        document.getElementById(tipe + 'Grid').innerHTML = '<p class="places-loading">Gagal memuat data.</p>';
         return;
       }
-      var list = [];
-      snap.forEach(function(doc){ list.push(doc.data()); });
-      renderPlaces(list);
-    }, function(err){
-      console.warn('Gagal memuat destinasi/kuliner dari database:', err);
-      renderPlaces(SEED_PLACES);
+      renderPlaceSection(tipe, res.data || []);
     });
-  } else {
-    renderPlaces(SEED_PLACES);
   }
+  loadPlaces('destinasi');
+  loadPlaces('kuliner');
 
-  /* ---------- Destinasi/Kuliner mini pop-out modal ----------
-     Delegated listeners so this also works for cards rendered dynamically above. */
+  /* ---------- Destinasi/Kuliner mini pop-out modal ---------- */
   var destModalOverlay = document.getElementById('destModalOverlay');
   var destModalPhoto = document.getElementById('destModalPhoto');
   var destModalTag = document.getElementById('destModalTag');
@@ -1193,36 +1099,28 @@
     destModalTag.style.display = tag ? '' : 'none';
     destModalTitle.textContent = title ? title.textContent : '';
     destModalLoc.textContent = loc ? loc.textContent : '';
-    if(meta){
-      destModalMeta.textContent = meta.textContent;
-      destModalMeta.style.display = '';
-    } else {
-      destModalMeta.style.display = 'none';
-    }
+    if(meta){ destModalMeta.textContent = meta.textContent; destModalMeta.style.display = ''; }
+    else{ destModalMeta.style.display = 'none'; }
     destModalDesc.textContent = desc || '';
     destModalDesc.style.display = desc ? '' : 'none';
-    if(mapsLink){
-      destModalMapsLink.href = mapsLink.href;
-      destModalMapsLink.style.display = '';
-    } else {
-      destModalMapsLink.style.display = 'none';
-    }
+    if(mapsLink){ destModalMapsLink.href = mapsLink.href; destModalMapsLink.style.display = ''; }
+    else{ destModalMapsLink.style.display = 'none'; }
 
     lastFocusedCard = card;
     destModalOverlay.classList.add('open');
     destModalClose.focus();
     document.body.style.overflow = 'hidden';
   }
-
   function closeDestModal(){
     destModalOverlay.classList.remove('open');
     document.body.style.overflow = '';
     if(lastFocusedCard){ lastFocusedCard.focus(); }
   }
-
   document.addEventListener('click', function(e){
     var mapsLink = e.target.closest('.maps-link');
     if(mapsLink){ e.stopPropagation(); return; }
+    var chip = e.target.closest('.filter-chip');
+    if(chip){ return; }
     var card = e.target.closest('.dest-card');
     if(card){ openDestModal(card); }
   });
@@ -1233,7 +1131,6 @@
       if(card){ e.preventDefault(); openDestModal(card); }
     }
   });
-
   destModalClose.addEventListener('click', closeDestModal);
   destModalOverlay.addEventListener('click', function(e){
     if(e.target === destModalOverlay){ closeDestModal(); }
@@ -1244,10 +1141,7 @@
   if('IntersectionObserver' in window){
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
-        if(entry.isIntersecting){
-          entry.target.classList.add('is-visible');
-          io.unobserve(entry.target);
-        }
+        if(entry.isIntersecting){ entry.target.classList.add('is-visible'); io.unobserve(entry.target); }
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
     revealEls.forEach(function(el){ io.observe(el); });
