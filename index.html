@@ -170,6 +170,33 @@
   .fab-tooltip{position:absolute;right:68px;top:50%;transform:translateY(-50%) translateX(6px);background:var(--navy-deep);color:#fff;font-size:12px;font-weight:600;padding:8px 12px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s var(--ease),transform .2s var(--ease);}
   .fab-whatsapp:hover .fab-tooltip,.fab-whatsapp:focus-visible .fab-tooltip{opacity:1;transform:translateY(-50%) translateX(0);}
 
+  /* ---------- Chat dengan Admin ---------- */
+  .fab-chat{position:fixed;right:22px;bottom:92px;z-index:50;background:var(--navy);color:#fff;width:52px;height:52px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(15,38,71,0.4);cursor:pointer;transition:transform .18s var(--ease);}
+  .fab-chat:hover{transform:scale(1.08);}
+  .chat-badge{position:absolute;top:-4px;right:-4px;background:#d94f4f;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+  .chat-panel{position:fixed;right:22px;bottom:154px;z-index:65;width:320px;max-width:calc(100vw - 44px);background:#fff;border-radius:16px;box-shadow:0 20px 44px rgba(15,38,71,0.28);overflow:hidden;display:flex;flex-direction:column;max-height:0;opacity:0;visibility:hidden;transform:translateY(12px);transition:max-height .3s var(--ease),opacity .25s var(--ease),transform .3s var(--ease);}
+  .chat-panel.open{max-height:460px;opacity:1;visibility:visible;transform:translateY(0);}
+  .chat-header{background:linear-gradient(120deg,var(--navy),var(--navy-2));color:#fff;padding:13px 16px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+  .chat-header button{background:transparent;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:0;}
+  .chat-name-gate{padding:18px 16px;display:flex;flex-direction:column;gap:10px;}
+  .chat-name-gate p{font-size:12.5px;color:var(--muted);margin:0;}
+  .chat-name-gate input{border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;font-size:13px;background:var(--panel);}
+  .chat-name-gate input:focus{outline:none;border-color:var(--navy);background:#fff;}
+  .chat-name-gate button{background:var(--navy);color:#fff;border:none;border-radius:9px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;}
+  .chat-body{display:flex;flex-direction:column;height:380px;}
+  .chat-messages{flex:1;overflow-y:auto;padding:14px 14px 6px;display:flex;flex-direction:column;gap:8px;background:var(--panel);}
+  .chat-msg{display:flex;}
+  .chat-msg.from-visitor{justify-content:flex-end;}
+  .chat-msg.from-admin{justify-content:flex-start;}
+  .chat-msg .bubble{max-width:78%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.4;word-wrap:break-word;}
+  .chat-msg.from-visitor .bubble{background:var(--navy);color:#fff;border-bottom-right-radius:4px;}
+  .chat-msg.from-admin .bubble{background:#fff;color:var(--text);border:1px solid var(--line);border-bottom-left-radius:4px;}
+  .chat-empty-note{margin:auto;color:var(--muted);font-size:12.5px;text-align:center;padding:20px;}
+  .chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:#fff;}
+  .chat-input-row input{flex:1;border:1.5px solid var(--line);border-radius:20px;padding:9px 14px;font:inherit;font-size:13px;outline:none;background:var(--panel);}
+  .chat-input-row input:focus{border-color:var(--navy);background:#fff;}
+  .chat-input-row button{background:var(--navy);border:none;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;}
+
   /* ---------- Sections ---------- */
   .section{padding:24px 0 64px;}
   .section.alt{background:var(--panel);}
@@ -873,6 +900,32 @@
   <span class="fab-tooltip">Chat dengan kami</span>
 </a>
 
+<button class="fab-chat" id="chatFab" aria-label="Chat dengan Admin BorneoDrive">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H8l-4 4V6a1 1 0 0 1 1-1Z" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></svg>
+  <span class="chat-badge" id="chatBadge" style="display:none;">0</span>
+</button>
+
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <span>Chat dengan Admin BorneoDrive</span>
+    <button id="chatCloseBtn" aria-label="Tutup chat">&times;</button>
+  </div>
+  <form class="chat-name-gate" id="chatNameGate">
+    <p>Masukkan nama Anda untuk mulai chat langsung dengan admin kami.</p>
+    <input type="text" id="chatNameInput" placeholder="Nama Anda" required />
+    <button type="submit">Mulai Chat</button>
+  </form>
+  <div class="chat-body" id="chatBody" style="display:none;">
+    <div class="chat-messages" id="chatMessages"></div>
+    <form class="chat-input-row" id="chatSendForm">
+      <input type="text" id="chatInput" placeholder="Tulis pesan..." autocomplete="off" />
+      <button type="submit" aria-label="Kirim pesan">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 11l18-8-8 18-2-8-8-2Z" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></svg>
+      </button>
+    </form>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   /* =============== KONFIGURASI SUPABASE =============== */
@@ -1148,6 +1201,126 @@
   } else {
     revealEls.forEach(function(el){ el.classList.add('is-visible'); });
   }
+
+  /* =============== CHAT DENGAN ADMIN (Supabase realtime) =============== */
+  var CHAT_TABLE = 'borneodrive_chat';
+
+  function getVisitorId(){
+    var id = localStorage.getItem('bd_visitor_id');
+    if(!id){
+      id = 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem('bd_visitor_id', id);
+    }
+    return id;
+  }
+  function getVisitorName(){ return localStorage.getItem('bd_visitor_name') || ''; }
+  function setVisitorName(n){ localStorage.setItem('bd_visitor_name', n); }
+
+  var visitorId = getVisitorId();
+  var chatOpen = false;
+  var chatChannel = null;
+
+  var chatFab = document.getElementById('chatFab');
+  var chatPanel = document.getElementById('chatPanel');
+  var chatBadge = document.getElementById('chatBadge');
+  var chatNameGate = document.getElementById('chatNameGate');
+  var chatBody = document.getElementById('chatBody');
+  var chatMessagesEl = document.getElementById('chatMessages');
+
+  function renderChatMessages(rows){
+    if(!rows.length){
+      chatMessagesEl.innerHTML = '<p class="chat-empty-note">Belum ada pesan. Tulis pesan pertama Anda di bawah ini.</p>';
+      return;
+    }
+    chatMessagesEl.innerHTML = rows.map(function(m){
+      return '<div class="chat-msg ' + (m.sender === 'admin' ? 'from-admin' : 'from-visitor') + '"><div class="bubble">' + escapeHtml(m.message) + '</div></div>';
+    }).join('');
+    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+  }
+
+  function markChatSeen(rows){
+    var adminCount = (rows || []).filter(function(m){ return m.sender === 'admin'; }).length;
+    localStorage.setItem('bd_chat_seen_count', String(adminCount));
+    chatBadge.style.display = 'none';
+  }
+
+  function checkChatUnread(rows){
+    var lastSeen = Number(localStorage.getItem('bd_chat_seen_count') || 0);
+    var adminCount = (rows || []).filter(function(m){ return m.sender === 'admin'; }).length;
+    if(!chatOpen && adminCount > lastSeen){
+      chatBadge.style.display = 'flex';
+      chatBadge.textContent = String(adminCount - lastSeen);
+    } else {
+      chatBadge.style.display = 'none';
+    }
+  }
+
+  function loadChatMessages(){
+    supabase.from(CHAT_TABLE).select('*').eq('visitor_id', visitorId).order('created_at', { ascending: true }).then(function(res){
+      if(res.error) return;
+      var rows = res.data || [];
+      if(chatOpen){ renderChatMessages(rows); markChatSeen(rows); }
+      else { checkChatUnread(rows); }
+    });
+  }
+
+  function subscribeChat(){
+    if(chatChannel) return;
+    chatChannel = supabase.channel('bd-chat-' + visitorId)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: CHAT_TABLE, filter: 'visitor_id=eq.' + visitorId }, function(){
+        loadChatMessages();
+      })
+      .subscribe();
+  }
+
+  chatFab.addEventListener('click', function(){
+    chatOpen = !chatOpen;
+    if(chatOpen){
+      chatPanel.classList.add('open');
+      var name = getVisitorName();
+      chatNameGate.style.display = name ? 'none' : 'flex';
+      chatBody.style.display = name ? 'flex' : 'none';
+      loadChatMessages();
+      subscribeChat();
+    } else {
+      chatPanel.classList.remove('open');
+    }
+  });
+
+  document.getElementById('chatCloseBtn').addEventListener('click', function(){
+    chatOpen = false;
+    chatPanel.classList.remove('open');
+  });
+
+  chatNameGate.addEventListener('submit', function(e){
+    e.preventDefault();
+    var val = document.getElementById('chatNameInput').value.trim();
+    if(!val) return;
+    setVisitorName(val);
+    chatNameGate.style.display = 'none';
+    chatBody.style.display = 'flex';
+    loadChatMessages();
+  });
+
+  document.getElementById('chatSendForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var input = document.getElementById('chatInput');
+    var text = input.value.trim();
+    if(!text) return;
+    input.value = '';
+    supabase.from(CHAT_TABLE).insert({
+      visitor_id: visitorId,
+      visitor_name: getVisitorName(),
+      sender: 'visitor',
+      message: text
+    }).then(function(res){
+      if(!res.error) loadChatMessages();
+    });
+  });
+
+  /* Polling ringan sebagai fallback jika realtime tidak aktif di project Supabase */
+  setInterval(loadChatMessages, 15000);
+  loadChatMessages();
 </script>
 
 </body>
